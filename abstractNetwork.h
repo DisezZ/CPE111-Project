@@ -18,6 +18,8 @@ int addLink(char *fromKey, char *toKey);
 
 int deleteLink(char *fromKey, char *toKey);
 
+void *findLink(char *fromKey, char *toKey);
+
 void printBreadthFirst(char *startKey);
 
 void printDepthFirst(char *startKey);
