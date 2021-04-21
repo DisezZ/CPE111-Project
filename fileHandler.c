@@ -62,6 +62,7 @@ int main()
                     i++;
                 }
                 printf("------------------------------\n");
+                i=0;
                 break;
             case 2:
                 printf("Enter project name:");
@@ -72,7 +73,12 @@ int main()
             
             case 3:
                 printf("File in folder[].......\n");
-                findProjectFileDatabase(addressDatabaseDirectory);
+                allProjectName = findProjectFileDatabase(addressDatabaseDirectory);
+                while(allProjectName[i] != NULL)
+                {
+                    printf("Name: %s\n",allProjectName[i]);
+                    i++;
+                }
                 status = renameProjectFile(addressDatabaseDirectory);
                 if(status == 1)
                 {
@@ -84,15 +90,26 @@ int main()
                 }
                 break;
             case 4:
-                findProjectFileDatabase(addressDatabaseDirectory);
+                allProjectName = findProjectFileDatabase(addressDatabaseDirectory);
+                while(allProjectName[i] != NULL)
+                {
+                    printf("Name: %s\n",allProjectName[i]);
+                    i++;
+                }
                 deleteProjectFile(addressDatabaseDirectory);
                 break;
             case 5:
-                findProjectFileDatabase(addressDatabaseDirectory);
+                allProjectName = findProjectFileDatabase(addressDatabaseDirectory);
+                while(allProjectName[i] != NULL)
+                {
+                    printf("Name: %s\n",allProjectName[i]);
+                    i++;
+                }
                 printf("Enter project name:");
                 fgets(input,sizeof(input),stdin);
                 sscanf(input,"%s",userProjectName);
                 readInformationFile(userProjectName,addressDatabaseDirectory);
+                i=0;
                 break;
             default:
                 printf("all of above\n");
@@ -138,7 +155,7 @@ char ** findProjectFileDatabase(char *addressFolder)
 
     int nameLength = 0;
     int projectCount = 0;
-    int listIndex =0;
+    int listIndex = 0;
     char projectName[128];
     char * outputName[64] = {0};
     char ** projectNameList = NULL;
@@ -393,6 +410,8 @@ int readInformationFile(char projectName[],char* addressFolder)
     char keyEdgeOne[64] = {0};
     char keyEdgeTwo[64] = {0};
     int  weight = 0;
+    int add_edge_status = -4;
+    int add_vertex_status = -2;
 
     FILE * databaseFile = NULL;
 
@@ -402,23 +421,49 @@ int readInformationFile(char projectName[],char* addressFolder)
         sscanf(projectName,"%s",projectFileName);
         strcat(projectFileName,"-database.dat");
         databaseFile = fopen(projectFileName,"r+");
+        initNetwork();
         while(fgets(inputLine,sizeof(inputLine),databaseFile) != NULL)
         {
             if(sscanf(inputLine,"NAME:%[^;];INFORMATION:%[^;];WEIGHT:%[^;];"
                     ,taskName,information,charWeight) == 3)
             {
-                printf("Task name:%s\n",taskName);
-                printf("Task information:%s\n",information);
-                sscanf(charWeight,"%d",&weight);
-                printf("Task weight:%d\n",weight);
-                /**ADD CODE TO ADD VERTEX*/
-                //addVertex(taskName,information,weight); 
-
-                
+                add_vertex_status = addVertex(taskName,information,weight); 
+                if(add_vertex_status == 1)
+                {
+                    continue;
+                }
+                else if(add_vertex_status == 0)
+                {
+                    printf("\tMemory allocation failed\n");
+                }
+                else if(add_vertex_status == -1)
+                {
+                    printf("\tDuplicated task name '%s'\n",taskName);
+                }
             }
             if(sscanf(inputLine,"FROM:%[^;];TO:%[^;];",keyEdgeOne,keyEdgeTwo) == 2)
             {
-                printf("add edge from %s -> %s\n",keyEdgeOne,keyEdgeTwo);
+                add_edge_status = addEdge(keyEdgeOne,keyEdgeTwo);
+                if(add_edge_status == 1)
+                {
+                    continue;
+                }
+                else if(add_edge_status == 0)
+                {
+                    printf("\tMemory allocation failed\n");
+                }
+                else if(add_edge_status == -1)
+                {
+                    printf("\t'%s' or '%s' does not in vertex.\n",keyEdgeOne,keyEdgeTwo);
+                }
+                else if(add_edge_status == -2)
+                {
+                    printf("\tEdge between '%s' to '%s' already exist.\n",keyEdgeOne,keyEdgeTwo);
+                }
+                else if(add_edge_status == -3)
+                {
+                    printf("\tCan not create '%s' to '%s' cause make the loop.\n",keyEdgeOne,keyEdgeTwo);
+                }
             }
         }
         fclose(databaseFile);
