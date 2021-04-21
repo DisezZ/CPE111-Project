@@ -1,10 +1,22 @@
-/*############################################
+/*=======================================================================
  *  fileHandler.c
- *  hello world 
+ *
+ *  This program will manage file to read and store the information
+ *  in database folder.
  * 
- *  -directory read
- *  -savefile
- *############################################
+ *  create by
+ *      Name:Pattaraphum chuamuangphan
+ *      ID:63070503437
+ * 
+ *                  _______
+ *                 < Hello >
+ *                  -------
+ *                         \   ^__^
+ *                          \  (oo)\_______
+ *                             (__)\       )\/\
+ *                                 ||----w |
+ *                                 ||     ||
+ *=======================================================================
  */
 #include <unistd.h>
 #include <stdio.h>
@@ -324,8 +336,8 @@ int deleteProjectFile(char projectName[], char* addressFolder)
 *		oldProjectName	-	the old project name 
 *		newProjectName 	-	the new project name
 *       addressFolder   -   the address of the database folder 
-* This functino will return 1 if fond the exist project name that user enter in project list
-* and return 0 if not found the exist project name.
+* This functino will return 1 if rename success, return 0 if can not rename the file,
+* return -1 if already have exist project and return -2 if does not found the project name.
 *==========================================================================================
 */
 int renameProjectFile(char oldProjectName[], char newProjectName[], char* addressFolder)
@@ -340,7 +352,7 @@ int renameProjectFile(char oldProjectName[], char newProjectName[], char* addres
     strcat(oldFileName,"-database.dat");
     if(existProjectFileCheck(oldFileName,addressFolder) == 0)
     {
-        rename_status = -1;
+        rename_status = -2;
     }
     else
     {
@@ -348,7 +360,7 @@ int renameProjectFile(char oldProjectName[], char newProjectName[], char* addres
         strcat(newFileName,"-database.dat");
         if(existProjectFileCheck(newFileName,addressFolder) == 1)
         {
-            rename_status = 0;
+            rename_status = -1;
         }
         else
         {
@@ -405,63 +417,6 @@ int existProjectFileCheck(char projectName[],char* addressFolder)
         return 0;
     }
     fclose(existProjectFileName);
-    chdir("..");
-}
-
-
-/*=========================================================================================
-* This function will rename the exist project name 
-* This function will ask the exist project name that want to rename 
-* and ask new project name and then rename it.
-*	create by
-*		NAME:Pattaraphum chuamuangphan 
-*		ID:63070503437
-*
-*   Arguments
-*		oldProjectName	-	the old project name 
-*		newProjectName 	-	the new project name
-*       addressFolder   -   the address of the database folder 
-* This functino will return 1 if rename success, return 0 if already have new project name
-* and return -1 if does not found the old project name.
-*==========================================================================================
-*/
-int renameProjectFile(char oldProjectName[], char newProjectName[], char* addressFolder)
-{
-    char input[64] = {0};
-    char oldFileName[64] = {0};
-    char newFileName[64] = {0};
-
-    int rename_status = -2;
-
-    sscanf(oldProjectName,"%s",oldFileName);
-    strcat(oldFileName,"-database.dat");
-    if(existProjectFileCheck(oldFileName,addressFolder) == 0)
-    {
-        rename_status = -1;
-    }
-    else
-    {
-        sscanf(newProjectName,"%s",newFileName);
-        strcat(newFileName,"-database.dat");
-        if(existProjectFileCheck(newFileName,addressFolder) == 1)
-        {
-            rename_status = 0;
-        }
-        else
-        {
-            chdir(addressFolder);
-            rename_status = rename(oldProjectName,newProjectName);
-            if(rename_status == 0)
-            {
-                rename_status = 1;
-            }
-            else
-            {
-                rename_status = 0;
-            }
-            return  rename_status;
-        } 
-    }
     chdir("..");
 }
 
