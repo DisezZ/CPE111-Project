@@ -13,7 +13,7 @@
 
 /*==========================================================================
 * This function will read all porject file in the folder database directory 
-* and then print out all the exist project that have in folder.
+* and then return the project name list.
 *
 * This function is from stack overflow
 * REF:https://stackoverflow.com/questions/11736060/how-to-read-all-files-in-a-folder-using-c
@@ -24,10 +24,10 @@
 *
 *   Arguments
 *       addressFolder   -   the address of the database folder 
-*                           
+*this function will return the project name list in folder.                     
 *===========================================================================
 */
-void findProjectFileDatabase(char *addressFolder);
+char ** findProjectFileDatabase(char *addressFolder);
 
 
 /*=================================================================

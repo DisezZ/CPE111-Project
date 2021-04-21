@@ -4,7 +4,7 @@
  * 
  *  -directory read
  *  -savefile
- *##############################################
+ *############################################
  */
 #include <unistd.h>
 #include <stdio.h>
@@ -12,6 +12,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <stdlib.h>
+#include "abstractNetwork.h"
 
 /************************************************
 *	This function is from stack overflow
@@ -26,12 +27,12 @@
 #define addressDatabaseDirectory "../fileReadtest/project_list_database"
 
 void printMenu();
-void findProjectFileDatabase(char *addressFolder);
+char ** findProjectFileDatabase(char *addressFolder);
 int addNewProjectFile(char projectName[],char *addressFolder);
 int existProjectFileCheck(char projectName[],char* addressFolder);
 int renameProjectFile(char* addressFolder);
 int deleteProjectFile(char* addressFolder);
-int readInformationfile(char projectName[],char* addressFolder);
+int readInformationFile(char projectName[],char* addressFolder);
 
 int main()
 {
@@ -39,6 +40,8 @@ int main()
     char userProjectName[64] = {0};
     int numberInput = 0;
     int status = 0;
+    int i = 0;
+    char ** allProjectName = NULL;
 
     while(numberInput >= 0)
     {
@@ -52,7 +55,12 @@ int main()
             case 1:
                 printf("\nFile in folder[].......\n");
                 printf("------------------------------\n");
-                findProjectFileDatabase(addressDatabaseDirectory);
+                allProjectName = findProjectFileDatabase(addressDatabaseDirectory);
+                while(allProjectName[i] != NULL)
+                {
+                    printf("Name: %s\n",allProjectName[i]);
+                    i++;
+                }
                 printf("------------------------------\n");
                 break;
             case 2:
@@ -84,14 +92,13 @@ int main()
                 printf("Enter project name:");
                 fgets(input,sizeof(input),stdin);
                 sscanf(input,"%s",userProjectName);
-                readInformationfile(userProjectName,addressDatabaseDirectory);
+                readInformationFile(userProjectName,addressDatabaseDirectory);
                 break;
             default:
                 printf("all of above\n");
             break;
         }
         printf("\n\n");
-        //printf("\n\nDone.\n");
     }
 }
 /*#########################################################*/
@@ -106,13 +113,36 @@ void printMenu()
     printf("5-Read file and built node\n");
     printf("\nSelect(-1 to exit):");
 }
-/*#########################################################*/
-void findProjectFileDatabase(char *addressFolder)
+
+
+/*========================================================================================
+* This function will read all porject file in the folder database directory 
+* and then print out all the exist project that have in folder.
+*
+* This function is from stack overflow
+* REF:https://stackoverflow.com/questions/11736060/how-to-read-all-files-in-a-folder-using-c
+*
+*	modify by
+*		NAME:Pattaraphum chuamuangphan 
+*		ID:63070503437
+*
+*   Arguments
+*       addressFolder   -   the address of the database folder 
+*                           
+*========================================================================================
+*/
+char ** findProjectFileDatabase(char *addressFolder)
 {
     DIR *directory;
     struct dirent *projectDatabase;
-    char projectName[128];
+
     int nameLength = 0;
+    int projectCount = 0;
+    int listIndex =0;
+    char projectName[128];
+    char * outputName[64] = {0};
+    char ** projectNameList = NULL;
+
 
     if((directory = opendir(addressFolder)) == NULL) 
     {
@@ -125,21 +155,50 @@ void findProjectFileDatabase(char *addressFolder)
             if(strcmp(projectDatabase->d_name,".") == 0 ||
                 strcmp(projectDatabase->d_name,"..") == 0 )
                 continue;
-            memset(projectName,0,sizeof(projectName));
-            sscanf(projectDatabase->d_name,"%s",projectName);
-            nameLength = strlen(projectName);
-            //printf("name lengt = %d\n",nameLength);
-            for(int i = nameLength-4; i<nameLength; i++)
+            projectCount++;
+        }
+        closedir(directory);
+        if((directory = opendir(addressFolder)) != NULL) 
+        {
+            projectNameList = calloc(projectCount,sizeof(outputName));
+            while((projectDatabase = readdir(directory)) != NULL)
             {
-                projectName[i] = 0;
+                if(strcmp(projectDatabase->d_name,".") == 0 ||
+                    strcmp(projectDatabase->d_name,"..") == 0 )
+                    continue;
+                memset(projectName,0,sizeof(projectName));
+                sscanf(projectDatabase->d_name,"%s",projectName);
+                nameLength = strlen(projectName);
+                for(int i = nameLength-13; i<nameLength; i++)
+                {
+                    projectName[i] = 0;
+                }
+                projectNameList[listIndex] = calloc(1,sizeof(outputName));
+                strcpy(projectNameList[listIndex],projectName);
+                listIndex++;
             }
-            printf("\t-%s\n",projectName);
         }
     }
+    return projectNameList;
     chdir("..");
     closedir(directory);
 }
-/*#########################################################*/
+
+
+/*=========================================================================================
+* This function will add new project file in database folder directory 
+* 
+*	create by
+*		NAME:Pattaraphum chuamuangphan 
+*		ID:63070503437
+*
+*   Arguments
+*       projectName     -   the project name that user enter
+*       addressFolder   -   the address of the database folder 
+* This functino will return 1 if success to add new project file in database
+* and return 0 if can not add new project file.
+*==========================================================================================
+*/
 int addNewProjectFile(char projectName[],char *addressFolder)
 {   
     DIR *databasedirectory;
@@ -163,7 +222,22 @@ int addNewProjectFile(char projectName[],char *addressFolder)
     }
     chdir("..");
 }
-/*#########################################################*/
+
+
+/*=========================================================================================
+* This function will rename the exist project name 
+* This function will ask the exist project name that want to rename 
+* and ask new project name and then rename it.
+*	create by
+*		NAME:Pattaraphum chuamuangphan 
+*		ID:63070503437
+*
+*   Arguments
+*       addressFolder   -   the address of the database folder 
+* This functino will return 1 if fond the exist project name that user enter in project list
+* and return 0 if not found the exist project name.
+*==========================================================================================
+*/
 int renameProjectFile(char* addressFolder)
 {
     char input[64] = {0};
@@ -207,7 +281,25 @@ int renameProjectFile(char* addressFolder)
     }
     chdir("..");
 }
-/*#########################################################*/
+
+
+/*=================================================================================================
+* This function will check the exist project in file directory.
+*
+* This function is from stack overflow
+* REF:https://stackoverflow.com/questions/230062/whats-the-best-way-to-check-if-a-file-exists-in-c
+*
+*	modify by
+*		NAME:Pattaraphum chuamuangphan 
+*		ID:63070503437
+*
+*   Arguments
+*       projectName     -   the project name that user enter
+*       addressFolder   -   the address of the database folder 
+* This functino will return 1 if fond the exist project name that user enter in project list
+* and return 0 if not found the exist project name.
+*==================================================================================================
+*/
 int existProjectFileCheck(char projectName[],char* addressFolder)
 {
     char projectNameTemp[128];
@@ -229,7 +321,22 @@ int existProjectFileCheck(char projectName[],char* addressFolder)
     fclose(existProjectFileName);
     chdir("..");
 }
-/*#########################################################*/
+
+
+/*=========================================================================================
+* This function will deltete exist project in database file 
+* This function will ask user to enter exist project name and then delete that user 
+*
+*	create by
+*		NAME:Pattaraphum chuamuangphan 
+*		ID:63070503437
+*
+*   Arguments
+*       addressFolder   -   the address of the database folder 
+* This functino will return 1 if fond the exist project name that user enter in project list
+* and return 0 if not found the exist project name.
+*==========================================================================================
+*/
 int deleteProjectFile(char* addressFolder)
 {
     char input[64] = {0};
@@ -274,7 +381,7 @@ int deleteProjectFile(char* addressFolder)
     chdir("..");
 }
 
-int readInformationfile(char projectName[],char* addressFolder)
+int readInformationFile(char projectName[],char* addressFolder)
 {
     char input[64] = {0};
     char inputLine[256] = {0};
@@ -304,6 +411,10 @@ int readInformationfile(char projectName[],char* addressFolder)
                 printf("Task information:%s\n",information);
                 sscanf(charWeight,"%d",&weight);
                 printf("Task weight:%d\n",weight);
+                /**ADD CODE TO ADD VERTEX*/
+                //addVertex(taskName,information,weight); 
+
+                
             }
             if(sscanf(inputLine,"FROM:%[^;];TO:%[^;];",keyEdgeOne,keyEdgeTwo) == 2)
             {
