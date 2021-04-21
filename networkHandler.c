@@ -21,26 +21,6 @@
 #define GRAY 1
 #define BLACK 2
 
-typedef struct _adjVertex
-{
-    void *pVertex;
-    int weight;
-    struct _adjVertex *pNext;
-} EDGE_T;
-
-typedef struct _vertex
-{
-    char *name;
-    char *description;
-    int dayWork;
-    int totalDay;
-    int color;
-    struct _vertex *pNext;
-    struct _vertex *pParentVertex;
-    EDGE_T *adjListHead;
-    EDGE_T *adjListTail;
-} VERTEX_T;
-
 VERTEX_T *endVertex = NULL;
 VERTEX_T *startVertex = NULL;
 VERTEX_T *vertexListHead = NULL;
@@ -487,7 +467,7 @@ int addVertex(char *key, char *description, int weight)
     return status;
 }
 
-int modifyVertex(char *key, char *option, void *newInfo)
+int modifyVertex(char *key, char *newKey, char *newDescription, int newWeight)
 {
     int status = 1;
     VERTEX_T *pFound = NULL;
@@ -497,32 +477,16 @@ int modifyVertex(char *key, char *option, void *newInfo)
     pFound = findVertexByKey(key, &pPrev);
     if (pFound == NULL)
     {
-        status = -2;
+        status = -1;
     }
     else
     {
-        if (strcasecmp(option, "key") == 0)
-        {
-            strcpy(pFound->name, newInfo);
-        }
-        else if (strcasecmp(option, "description") == 0)
-        {
-            strcpy(pFound->description, newInfo);
-        }
-        else if (strcasecmp(option, "weight") == 0)
-        {
-            pFound->dayWork = (__intptr_t)newInfo;
-            pCurrentEdge = pFound->adjListHead;
-            while (pCurrentEdge != NULL)
-            {
-                pCurrentEdge->weight = (__intptr_t)newInfo;
-                pCurrentEdge = pCurrentEdge->pNext;
-            }
-        }
-        else
-        {
-            status = -3;
-        }
+        if (strlen(newKey) != 0)
+            pFound->name = strdup(newKey);
+        if (strlen(newDescription) != 0)
+            pFound->description = strdup(newDescription);
+        if (newWeight > 0)
+            pFound->dayWork = newWeight;
     }
 
     return status;
@@ -569,7 +533,7 @@ void *findVertex(char *key)
     VERTEX_T *pPrev = NULL;
 
     pFound = findVertexByKey(key, &pPrev);
-    return pFound;
+    return pFound == NULL ? 0 : 1;
 }
 
 char **searchVertex(char *key, int *status)
@@ -657,16 +621,19 @@ int addEdge(char *fromKey, char *toKey)
 
 int modifyEdge(char *fromKey, char *oldToKey, char *newToKey)
 {
-    int status = 0;
+    int status = -4;
     VERTEX_T *pFound1 = NULL;
     VERTEX_T *pFound2 = NULL;
     VERTEX_T *pFound3 = NULL;
+    VERTEX_T *pPrev1 = NULL;
+    VERTEX_T *pPrev2 = NULL;
+    VERTEX_T *pPrev3 = NULL;
     VERTEX_T *pAdjVertex = NULL;
     EDGE_T *pCurrentEdge = NULL;
 
-    pFound1 = findVertex(fromKey);
-    pFound2 = findVertex(oldToKey);
-    pFound3 = findVertex(newToKey);
+    pFound1 = findVertexByKey(fromKey, &pPrev1);
+    pFound2 = findVertexByKey(oldToKey, &pPrev2);
+    pFound3 = findVertexByKey(newToKey, &pPrev3);
     if (pFound1 != NULL || pFound2 != NULL || pFound3 != NULL)
     {
         status = -1;
@@ -677,16 +644,24 @@ int modifyEdge(char *fromKey, char *oldToKey, char *newToKey)
     }
     else
     {
-        pCurrentEdge = pFound1->adjListHead;
-        while (pCurrentEdge != NULL)
+        traverseBreadthFirst(pFound1, NULL);
+        if (pFound3->color == BLACK)
         {
-            pAdjVertex = pCurrentEdge->pVertex;
-            if (pAdjVertex == pFound2)
+            status = -3;
+        }
+        else
+        {
+            pCurrentEdge = pFound1->adjListHead;
+            while (pCurrentEdge != NULL)
             {
-                status = 1;
-                pCurrentEdge->pVertex = pFound3;
+                pAdjVertex = pCurrentEdge->pVertex;
+                if (pAdjVertex == pFound2)
+                {
+                    status = 1;
+                    pCurrentEdge->pVertex = pFound3;
+                }
+                pCurrentEdge = pCurrentEdge->pNext;
             }
-            pCurrentEdge = pCurrentEdge->pNext;
         }
     }
     return status;
@@ -775,6 +750,7 @@ int main(int argc, char *argv[])
 {
     VERTEX_T *pCurrentVertex = NULL;
     VERTEX_T *pAdjVertex = NULL;
+    VERTEX_T *pPrevVertex = NULL;
     EDGE_T *pCurrentEdge = NULL;
     char terminalInput[128];
     char fromKey[128];
@@ -839,31 +815,6 @@ int main(int argc, char *argv[])
         }
         else if (choice == 2)
         {
-            memset(terminalInput, 0, sizeof(terminalInput));
-            printf("Enter from key value for vertex: ");
-            fgets(terminalInput, sizeof(terminalInput), stdin);
-            terminalInput[strlen(terminalInput) - 1] = '\0';
-            sscanf(terminalInput, "%[^\n]", fromKey);
-            printf("Enter to key for vertex: ");
-            memset(terminalInput, 0, sizeof(terminalInput));
-            terminalInput[strlen(terminalInput) - 1] = '\0';
-            sscanf(terminalInput, "%[^\n]", toKey);
-            if (strlen(key) == 0)
-            {
-                printf(">>> Input error - key or data empty!\n");
-            }
-            else
-            {
-                pCurrentVertex = findVertex(key);
-                if (pCurrentVertex != NULL)
-                {
-                    traverseBreadthFirst(pCurrentVertex, &printBreadthFirst);
-                }
-                else
-                {
-                    printf(">>> Vertex with key |%s| didn't exists in graph\n", key);
-                }
-            }
             fgets(terminalInput, sizeof(terminalInput), stdin);
             terminalInput[strlen(terminalInput) - 1] = '\0';
             sscanf(terminalInput, "%[^\n]", toKey);
@@ -989,7 +940,7 @@ int main(int argc, char *argv[])
             }
             else
             {
-                pCurrentVertex = findVertex(key);
+                pCurrentVertex = findVertexByKey(key, &pPrevVertex);
                 if (pCurrentVertex != NULL)
                 {
                     traverseBreadthFirst(pCurrentVertex, &printBreadthFirst);
@@ -1011,7 +962,7 @@ int main(int argc, char *argv[])
             fgets(terminalInput, sizeof(terminalInput), stdin);
             terminalInput[strlen(terminalInput) - 1] = '\0';
             sscanf(terminalInput, "%[^\n]", key);
-            pCurrentVertex = findVertex(key);
+            pCurrentVertex = findVertexByKey(key, &pPrevVertex);
             if (pCurrentVertex == NULL && strcasecmp(key, "start") != 0 && strcasecmp(key, "end") != 0)
             {
                 printf(">>> Vertex with key |%s| didn't exists in graph\n", key);
