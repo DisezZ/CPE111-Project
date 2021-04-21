@@ -75,7 +75,7 @@ void addDate(int day,int month,int year,int numberDay)
     countDate.tm_year = year-1900; 
     countDate.tm_mon = month-1;
     countDate.tm_mday = day;
-    countDate.tm_mday = countDate.tm_mday + numberDay -1;
+    countDate.tm_mday = countDate.tm_mday + numberDay-1;
     mktime(&countDate);
     endDay = countDate.tm_mday;
     endMonth = countDate.tm_mon+1;
