@@ -404,27 +404,34 @@ void LongestPath()
 /** Public function section **/
 /*****************************/
 
-void initNetwork()
+int initNetwork()
 {
     EDGE_T *pTemptEdge = NULL;
     char endName[] = "end";
+    int status = 1;
 
-    //endName = calloc(4, sizeof(char));
     startVertex = calloc(1, sizeof(VERTEX_T));
     endVertex = calloc(1, sizeof(VERTEX_T));
-
+    if (startVertex == NULL || endVertex == NULL)
+    {
+        status = 0;
+    }
     startVertex->name = "start";
     startVertex->description = "start vertex as dependent of all vertex";
     endVertex->name = "end";
     endVertex->description = "start vertex as depend on all vertex";
 
     pTemptEdge = calloc(1, sizeof(EDGE_T));
+    if (pTemptEdge == NULL)
+    {
+        status = 0;
+    }
     pTemptEdge->pVertex = endVertex;
     startVertex->adjListHead = startVertex->adjListTail = pTemptEdge;
     totalVertex = 2;
 }
 
-int addVertex(char *key, char *description, int weight, char *autoSave)
+int addVertex(char *key, char *description, int weight)
 {
     int status = 1;
     int addStatus1;
@@ -474,10 +481,6 @@ int addVertex(char *key, char *description, int weight, char *autoSave)
             else
             {
                 ++totalVertex;
-                if (strcasecmp(autoSave, "ON") == 0)
-                {
-                    // call file handler
-                }
             }
         }
     }
@@ -592,7 +595,7 @@ char **searchVertex(char *key, int *status)
     return resultList;
 }
 
-int addEdge(char *fromKey, char *toKey, char *autoSave)
+int addEdge(char *fromKey, char *toKey)
 {
     int status = 1;
     int reachable;
@@ -613,7 +616,6 @@ int addEdge(char *fromKey, char *toKey, char *autoSave)
     }
     else
     {
-        //printf("before\n");
         if (findEdgeByStruct(pFound1, pFound2, &pPrevEdge) != NULL)
         {
             status = -2;
@@ -645,11 +647,6 @@ int addEdge(char *fromKey, char *toKey, char *autoSave)
                     {
                         pFound1->adjListTail->pNext = pEdge;
                         pFound1->adjListTail = pEdge;
-                    }
-
-                    if (strcasecmp(autoSave, "ON") == 0)
-                    {
-                        // call file handler
                     }
                 }
             }
@@ -822,7 +819,7 @@ int main(int argc, char *argv[])
             }
             else
             {
-                returnStatus = addVertex(key, description, weight, "OFF");
+                returnStatus = addVertex(key, description, weight);
                 if (returnStatus == 1)
                 {
                     printf(">>> Vertex |%s| added\n", key);
@@ -877,7 +874,7 @@ int main(int argc, char *argv[])
             }
             else
             {
-                returnStatus = addEdge(fromKey, toKey, "OFF");
+                returnStatus = addEdge(fromKey, toKey);
                 if (returnStatus == 1)
                 {
                     printf(">>> Edge |%s| -> |%s| added\n", fromKey, toKey);
