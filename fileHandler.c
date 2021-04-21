@@ -14,6 +14,27 @@
 #include <stdlib.h>
 #include "abstractNetwork.h"
 
+typedef struct _adjVertex
+{
+    void *pVertex;
+    int weight;
+    struct _adjVertex *pNext;
+} EDGE_T;
+
+typedef struct _vertex
+{
+    char *name;
+    char *description;
+    int dayWork;
+    int totalDay;
+    int color;
+    struct _vertex *pNext;
+    struct _vertex *pParentVertex;
+    EDGE_T *adjListHead;
+    EDGE_T *adjListTail;
+} VERTEX_T;
+
+
 /************************************************
 *	This function is from stack overflow
 *	REF:https://stackoverflow.com/questions/11736060/how-to-read-all-files-in-a-folder-using-c
@@ -398,6 +419,20 @@ int deleteProjectFile(char* addressFolder)
     chdir("..");
 }
 
+/*=========================================================================================
+* This function will read the database file and then create vertex and add edge of any vertex
+*
+*	create by
+*		NAME:Pattaraphum chuamuangphan 
+*		ID:63070503437
+*
+*   Arguments
+*       projectName     -   the project name that user enter
+*       addressFolder   -   the address of the database folder 
+* This functino will return 1 if every thing success well, return 0 if something wrong when
+* add vertex or add edge and return -1 if the project name does not exist.
+*==========================================================================================
+*/
 int readInformationFile(char projectName[],char* addressFolder)
 {
     char input[64] = {0};
@@ -412,6 +447,7 @@ int readInformationFile(char projectName[],char* addressFolder)
     int  weight = 0;
     int add_edge_status = -4;
     int add_vertex_status = -2;
+    int status = 1;
 
     FILE * databaseFile = NULL;
 
@@ -435,10 +471,12 @@ int readInformationFile(char projectName[],char* addressFolder)
                 else if(add_vertex_status == 0)
                 {
                     printf("\tMemory allocation failed\n");
+                    status = 0;
                 }
                 else if(add_vertex_status == -1)
                 {
                     printf("\tDuplicated task name '%s'\n",taskName);
+                    status = 0;
                 }
             }
             if(sscanf(inputLine,"FROM:%[^;];TO:%[^;];",keyEdgeOne,keyEdgeTwo) == 2)
@@ -451,18 +489,22 @@ int readInformationFile(char projectName[],char* addressFolder)
                 else if(add_edge_status == 0)
                 {
                     printf("\tMemory allocation failed\n");
+                    status = 0;
                 }
                 else if(add_edge_status == -1)
                 {
                     printf("\t'%s' or '%s' does not in vertex.\n",keyEdgeOne,keyEdgeTwo);
+                    status = 0;
                 }
                 else if(add_edge_status == -2)
                 {
                     printf("\tEdge between '%s' to '%s' already exist.\n",keyEdgeOne,keyEdgeTwo);
+                    status = 0;
                 }
                 else if(add_edge_status == -3)
                 {
                     printf("\tCan not create '%s' to '%s' cause make the loop.\n",keyEdgeOne,keyEdgeTwo);
+                    status = 0;
                 }
             }
         }
@@ -471,25 +513,83 @@ int readInformationFile(char projectName[],char* addressFolder)
     else
     {
         printf("\tcan not find '%s' in project name\n",projectName);
+        status = -1;
     }
+    return status;
     chdir("..");
 }
-/*
-int writeInformationfile(char projectName[],char* addressFolder,void* vertexstruct)
+/*=========================================================================================
+* This function will write all information of project into the database file.
+*
+*	create by
+*		NAME:Pattaraphum chuamuangphan 
+*		ID:63070503437
+*
+*   Arguments
+*       projectName     -   the project name that user enter
+*       addressFolder   -   the address of the database folder 
+*       vertexStruct    -   the pointer of head vertesx structure 
+* This functino will return 1 if can write the information in file and return 0 if can not
+* open the file;
+*==========================================================================================
+*/
+int writeInformationFile(char projectName[],char* addressFolder,void* vertexStruct)
 {
     char input[64] = {0};
     char inputLine[128] = {0};
     char projectFileName[128] = {0};
+    char taskName[64] = {0};
+    char taskInformation[128] = {0};
+    char charWeight[8] = {0};
+    char temp[128] = {0};
+    char keyEdgeOne[64] = {0};
+    char keyEdgeTwo[64] = {0};
+    int taskWeight = 0;
+    int status = 0;
 
-    File * databaseFile = NULL;
+    VERTEX_T * currentVertex = NULL;
+    VERTEX_T * currentEdge = NULL;
+    EDGE_T * currentAdjencent = NULL;
 
-    sscanf(projectName,"%s"projectFileName);
+    FILE * currentProjectFile = NULL;
+
+    sscanf(projectName,"%s",projectFileName);
     strcat(projectFileName,"-database.dat");
-    databaseFile = fopen(fileName,"r+");
-    if(existProjectFileCheck(projectFileName,addressFolder) == 1)
+    if(existProjectFileCheck(projectName,addressFolder) == 1)
     {
-        writeVertexInFile()
+        currentProjectFile = fopen(projectFileName,"r+");
+        currentVertex = vertexStruct;
+        fprintf(currentProjectFile,"VERTEX:");
+        while(currentVertex != NULL)
+        {
+            strcpy(taskName,currentVertex->name);
+            strcpy(taskInformation,currentVertex->description);
+            taskWeight = currentVertex->dayWork;
+            fprintf(currentProjectFile,"NAME:%s;INFORMATION:%s;WEIGHT:%d;",taskName,taskInformation,taskWeight);
+            currentVertex = currentVertex->pNext;
+        }
+        currentEdge = vertexStruct;
+        fprintf(currentProjectFile,"EDGE:");
+        fprintf(currentProjectFile,"EDGE:----------------");
+        while(currentEdge != NULL)
+        {
+            currentAdjencent = currentEdge->adjListHead;
+            while(currentAdjencent != NULL)
+            {
+                strcpy(keyEdgeOne,currentEdge->name);
+                strcpy(keyEdgeTwo,currentAdjencent->pVertex);
+                fprintf(currentProjectFile,"FROM:%s;TO:%s;",keyEdgeOne,keyEdgeTwo);
+                currentAdjencent = currentAdjencent->pNext;
+            }
+            currentEdge = currentEdge->pNext;
+        }
+        status = 1;
+        fclose(currentProjectFile);
     }
-
+    else
+    {
+        printf("can not find '%s' in project name\n",projectName);
+        status = 0;
+    }
+    return status;
 }
-*/
