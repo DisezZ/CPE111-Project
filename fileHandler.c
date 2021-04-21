@@ -51,8 +51,8 @@ void printMenu();
 char ** findProjectFileDatabase(char *addressFolder);
 int addNewProjectFile(char projectName[],char *addressFolder);
 int existProjectFileCheck(char projectName[],char* addressFolder);
-int renameProjectFile(char* addressFolder);
-int deleteProjectFile(char* addressFolder);
+int renameProjectFile(char oldFileName[], char newFileName[], char* addressFolder);
+int deleteProjectFile(char projectName[], char* addressFolder);
 int readInformationFile(char projectName[],char* addressFolder);
 
 int main()
@@ -85,6 +85,7 @@ int main()
                 printf("------------------------------\n");
                 i=0;
                 break;
+            /*
             case 2:
                 printf("Enter project name:");
                 fgets(input,sizeof(input),stdin);
@@ -119,6 +120,7 @@ int main()
                 }
                 deleteProjectFile(addressDatabaseDirectory);
                 break;
+            */
             case 5:
                 allProjectName = findProjectFileDatabase(addressDatabaseDirectory);
                 while(allProjectName[i] != NULL)
@@ -166,7 +168,7 @@ void printMenu()
 *
 *   Arguments
 *       addressFolder   -   the address of the database folder 
-*                           
+* This function will return the project name list                         
 *========================================================================================
 */
 char ** findProjectFileDatabase(char *addressFolder)
@@ -234,29 +236,77 @@ char ** findProjectFileDatabase(char *addressFolder)
 *       projectName     -   the project name that user enter
 *       addressFolder   -   the address of the database folder 
 * This functino will return 1 if success to add new project file in database
-* and return 0 if can not add new project file.
+* and return 0 if found duplicated the project name.
 *==========================================================================================
 */
 int addNewProjectFile(char projectName[],char *addressFolder)
 {   
     DIR *databasedirectory;
     char projectFileName[128];
-    int existProject_status = -1;
+    int addNew_status = -1;
 
     FILE * outputFileproject = NULL;
 
     sscanf(projectName,"%s",projectFileName);
     strcat(projectFileName,"-database.dat");
-    existProject_status = existProjectFileCheck(projectFileName,addressFolder);
-    if(existProject_status == 0)
+    addNew_status = existProjectFileCheck(projectFileName,addressFolder);
+    if(addNew_status == 0)
     {
         chdir(addressFolder);
         outputFileproject = fopen(projectFileName,"w");
         fclose(outputFileproject);
+        addNew_status = 1;
     }
     else
     {
-        printf("'%s' is dupicated project name\n",projectName);
+        addNew_status = 0;
+    }
+    return addNew_status;
+    chdir("..");
+}
+
+/*=========================================================================================
+* This function will deltete exist project in database file 
+* This function will ask user to enter exist project name and then delete that user 
+*
+*	create by
+*		NAME:Pattaraphum chuamuangphan 
+*		ID:63070503437
+*
+*   Arguments
+*       projectName     -   the project name that user enter
+*       addressFolder   -   the address of the database folder 
+* This functino will return 1 if delete success, return 0 if can not delete the project
+* and return -1 if does not found the project name.
+*==========================================================================================
+*/
+int deleteProjectFile(char projectName[], char* addressFolder)
+{
+    char input[64] = {0};
+    char conditions[64] = {0};
+    char deleteProjectName[64] = {0};
+
+    int delete_status = 0;
+
+    if(existProjectFileCheck(projectName,addressFolder) == 1)
+    {
+            chdir(addressFolder);
+            sscanf(projectName,"%s",deleteProjectName);
+            strcat(deleteProjectName,"-database.dat");
+            delete_status = remove(deleteProjectName);
+            if(delete_status == 0)
+            {
+                delete_status = 1;
+            }
+            else
+            {
+                delete_status = 0;
+            }
+            return delete_status;
+    }
+    else
+    {
+        delete_status = -1;
     }
     chdir("..");
 }
@@ -271,40 +321,38 @@ int addNewProjectFile(char projectName[],char *addressFolder)
 *		ID:63070503437
 *
 *   Arguments
+*		oldProjectName	-	the old project name 
+*		newProjectName 	-	the new project name
 *       addressFolder   -   the address of the database folder 
 * This functino will return 1 if fond the exist project name that user enter in project list
 * and return 0 if not found the exist project name.
 *==========================================================================================
 */
-int renameProjectFile(char* addressFolder)
+int renameProjectFile(char oldProjectName[], char newProjectName[], char* addressFolder)
 {
     char input[64] = {0};
-    char oldProjectName[64] = {0};
-    char newProjectName[64] = {0};
+    char oldFileName[64] = {0};
+    char newFileName[64] = {0};
 
-    int rename_status = 0;
+    int rename_status = -2;
 
-    printf("Old project name:");
-    fgets(input,sizeof(input),stdin);
-    sscanf(input,"%s",oldProjectName);
-    if(existProjectFileCheck(oldProjectName,addressFolder) == 0)
+    sscanf(oldProjectName,"%s",oldFileName);
+    strcat(oldFileName,"-database.dat");
+    if(existProjectFileCheck(oldFileName,addressFolder) == 0)
     {
-        printf("can not find '%s' in project name\n",oldProjectName);
+        rename_status = -1;
     }
     else
     {
-        printf("new project name:");
-        fgets(input,sizeof(input),stdin);
-        sscanf(input,"%s",newProjectName);
-        if(existProjectFileCheck(newProjectName,addressFolder) == 1)
+        sscanf(newProjectName,"%s",newFileName);
+        strcat(newFileName,"-database.dat");
+        if(existProjectFileCheck(newFileName,addressFolder) == 1)
         {
-            printf("'%s' is dupicated project name\n",newProjectName);
+            rename_status = 0;
         }
         else
         {
             chdir(addressFolder);
-            strcat(oldProjectName,"-database.dat");
-            strcat(newProjectName,"-database.dat");
             rename_status = rename(oldProjectName,newProjectName);
             if(rename_status == 0)
             {
@@ -362,59 +410,57 @@ int existProjectFileCheck(char projectName[],char* addressFolder)
 
 
 /*=========================================================================================
-* This function will deltete exist project in database file 
-* This function will ask user to enter exist project name and then delete that user 
-*
+* This function will rename the exist project name 
+* This function will ask the exist project name that want to rename 
+* and ask new project name and then rename it.
 *	create by
 *		NAME:Pattaraphum chuamuangphan 
 *		ID:63070503437
 *
 *   Arguments
+*		oldProjectName	-	the old project name 
+*		newProjectName 	-	the new project name
 *       addressFolder   -   the address of the database folder 
-* This functino will return 1 if fond the exist project name that user enter in project list
-* and return 0 if not found the exist project name.
+* This functino will return 1 if rename success, return 0 if already have new project name
+* and return -1 if does not found the old project name.
 *==========================================================================================
 */
-int deleteProjectFile(char* addressFolder)
+int renameProjectFile(char oldProjectName[], char newProjectName[], char* addressFolder)
 {
     char input[64] = {0};
-    char conditions[64] = {0};
-    char deleteProjectName[64] = {0};
+    char oldFileName[64] = {0};
+    char newFileName[64] = {0};
 
-    int delete_status = 0;
+    int rename_status = -2;
 
-    printf("..<!>..[Delete project]..<!>..\n");
-    printf("Enter project Name:");
-    fgets(input,sizeof(input),stdin);
-    sscanf(input,"%s",deleteProjectName);
-    if(existProjectFileCheck(deleteProjectName,addressFolder) == 1)
+    sscanf(oldProjectName,"%s",oldFileName);
+    strcat(oldFileName,"-database.dat");
+    if(existProjectFileCheck(oldFileName,addressFolder) == 0)
     {
-        printf("Are you sure to delete '%s' project(YES|NO):",deleteProjectName);
-        fgets(input,sizeof(input),stdin);
-        sscanf(input,"%s",conditions);
-        if(strcasecmp(conditions,"yes") == 0)
-        {
-            chdir(addressFolder);
-            strcat(deleteProjectName,"-database.dat");
-            delete_status = remove(deleteProjectName);
-            if(delete_status == 0)
-            {
-                delete_status = 1;
-            }
-            else
-            {
-                delete_status = 0;
-            }
-            return delete_status;
-        }
-        else
-        {
-            printf("\t'%s' doesn't delete",deleteProjectName);
-        }
+        rename_status = -1;
     }
     else
     {
-        printf("\tcan not find '%s' in project name\n",deleteProjectName);
+        sscanf(newProjectName,"%s",newFileName);
+        strcat(newFileName,"-database.dat");
+        if(existProjectFileCheck(newFileName,addressFolder) == 1)
+        {
+            rename_status = 0;
+        }
+        else
+        {
+            chdir(addressFolder);
+            rename_status = rename(oldProjectName,newProjectName);
+            if(rename_status == 0)
+            {
+                rename_status = 1;
+            }
+            else
+            {
+                rename_status = 0;
+            }
+            return  rename_status;
+        } 
     }
     chdir("..");
 }
