@@ -6,20 +6,25 @@
  * 
  * */
 
-int addNode(char *key, char *description);
+#ifndef ABSTRACTNETWORK_H
+#define ABSTRACTNETWORK_H
 
-int modifyNode(char *key, char *keyNew, char *newdescription);
+void initNetwork();
 
-int deleteNode(char *key);
+int addVertex(char *key, char *description, int weight, char *autoSave);
 
-void *findNode(char *key);
+int modifyVertex(char *key, char *option, void *newInfo);
 
-int addLink(char *fromKey, char *toKey);
+int deleteVertex(char *key);
 
-int deleteLink(char *fromKey, char *toKey);
+void *findVertex(char *key);
 
-void *findLink(char *fromKey, char *toKey);
+char **searchVertex(char *key, int *status);
 
-void printBreadthFirst(char *startKey);
+int addEdge(char *fromKey, char *toKey, char *autoSave);
 
-void printDepthFirst(char *startKey);
+int modifyEdge(char *fromKey, char *oldToKey, char *newToKey);
+
+int deleteEdge(char *fromKey, char *toKey);
+
+#endif // !ABSTRACTNETWORK_H
