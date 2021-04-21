@@ -1,10 +1,22 @@
-/*############################################
+/*=======================================================================
  *  fileHandler.c
- *  hello world 
+ *
+ *  This program will manage file to read and store the information
+ *  in database folder.
  * 
- *  -directory read
- *  -savefile
- *##############################################
+ *  create by
+ *      Name:Pattaraphum chuamuangphan
+ *      ID:63070503437
+ * 
+ *                  _______
+ *                 < Hello >
+ *                  -------
+ *                         \   ^__^
+ *                          \  (oo)\_______
+ *                             (__)\       )\/\
+ *                                 ||----w |
+ *                                 ||     ||
+ *=======================================================================
  */
 #include <unistd.h>
 #include <stdio.h>
@@ -12,6 +24,28 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <stdlib.h>
+#include "abstractNetwork.h"
+
+typedef struct _adjVertex
+{
+    void *pVertex;
+    int weight;
+    struct _adjVertex *pNext;
+} EDGE_T;
+
+typedef struct _vertex
+{
+    char *name;
+    char *description;
+    int dayWork;
+    int totalDay;
+    int color;
+    struct _vertex *pNext;
+    struct _vertex *pParentVertex;
+    EDGE_T *adjListHead;
+    EDGE_T *adjListTail;
+} VERTEX_T;
+
 
 /************************************************
 *	This function is from stack overflow
@@ -26,12 +60,12 @@
 #define addressDatabaseDirectory "../fileReadtest/project_list_database"
 
 void printMenu();
-void findProjectFileDatabase(char *addressFolder);
+char ** findProjectFileDatabase(char *addressFolder);
 int addNewProjectFile(char projectName[],char *addressFolder);
 int existProjectFileCheck(char projectName[],char* addressFolder);
-int renameProjectFile(char* addressFolder);
-int deleteProjectFile(char* addressFolder);
-int readInformationfile(char projectName[],char* addressFolder);
+int renameProjectFile(char oldFileName[], char newFileName[], char* addressFolder);
+int deleteProjectFile(char projectName[], char* addressFolder);
+int readInformationFile(char projectName[],char* addressFolder);
 
 int main()
 {
@@ -39,6 +73,8 @@ int main()
     char userProjectName[64] = {0};
     int numberInput = 0;
     int status = 0;
+    int i = 0;
+    char ** allProjectName = NULL;
 
     while(numberInput >= 0)
     {
@@ -52,9 +88,16 @@ int main()
             case 1:
                 printf("\nFile in folder[].......\n");
                 printf("------------------------------\n");
-                findProjectFileDatabase(addressDatabaseDirectory);
+                allProjectName = findProjectFileDatabase(addressDatabaseDirectory);
+                while(allProjectName[i] != NULL)
+                {
+                    printf("Name: %s\n",allProjectName[i]);
+                    i++;
+                }
                 printf("------------------------------\n");
+                i=0;
                 break;
+            /*
             case 2:
                 printf("Enter project name:");
                 fgets(input,sizeof(input),stdin);
@@ -64,7 +107,12 @@ int main()
             
             case 3:
                 printf("File in folder[].......\n");
-                findProjectFileDatabase(addressDatabaseDirectory);
+                allProjectName = findProjectFileDatabase(addressDatabaseDirectory);
+                while(allProjectName[i] != NULL)
+                {
+                    printf("Name: %s\n",allProjectName[i]);
+                    i++;
+                }
                 status = renameProjectFile(addressDatabaseDirectory);
                 if(status == 1)
                 {
@@ -76,22 +124,33 @@ int main()
                 }
                 break;
             case 4:
-                findProjectFileDatabase(addressDatabaseDirectory);
+                allProjectName = findProjectFileDatabase(addressDatabaseDirectory);
+                while(allProjectName[i] != NULL)
+                {
+                    printf("Name: %s\n",allProjectName[i]);
+                    i++;
+                }
                 deleteProjectFile(addressDatabaseDirectory);
                 break;
+            */
             case 5:
-                findProjectFileDatabase(addressDatabaseDirectory);
+                allProjectName = findProjectFileDatabase(addressDatabaseDirectory);
+                while(allProjectName[i] != NULL)
+                {
+                    printf("Name: %s\n",allProjectName[i]);
+                    i++;
+                }
                 printf("Enter project name:");
                 fgets(input,sizeof(input),stdin);
                 sscanf(input,"%s",userProjectName);
-                readInformationfile(userProjectName,addressDatabaseDirectory);
+                readInformationFile(userProjectName,addressDatabaseDirectory);
+                i=0;
                 break;
             default:
                 printf("all of above\n");
             break;
         }
         printf("\n\n");
-        //printf("\n\nDone.\n");
     }
 }
 /*#########################################################*/
@@ -106,13 +165,36 @@ void printMenu()
     printf("5-Read file and built node\n");
     printf("\nSelect(-1 to exit):");
 }
-/*#########################################################*/
-void findProjectFileDatabase(char *addressFolder)
+
+
+/*========================================================================================
+* This function will read all porject file in the folder database directory 
+* and then print out all the exist project that have in folder.
+*
+* This function is from stack overflow
+* REF:https://stackoverflow.com/questions/11736060/how-to-read-all-files-in-a-folder-using-c
+*
+*	modify by
+*		NAME:Pattaraphum chuamuangphan 
+*		ID:63070503437
+*
+*   Arguments
+*       addressFolder   -   the address of the database folder 
+* This function will return the project name list                         
+*========================================================================================
+*/
+char ** findProjectFileDatabase(char *addressFolder)
 {
     DIR *directory;
     struct dirent *projectDatabase;
-    char projectName[128];
+
     int nameLength = 0;
+    int projectCount = 0;
+    int listIndex = 0;
+    char projectName[128];
+    char * outputName[64] = {0};
+    char ** projectNameList = NULL;
+
 
     if((directory = opendir(addressFolder)) == NULL) 
     {
@@ -125,74 +207,164 @@ void findProjectFileDatabase(char *addressFolder)
             if(strcmp(projectDatabase->d_name,".") == 0 ||
                 strcmp(projectDatabase->d_name,"..") == 0 )
                 continue;
-            memset(projectName,0,sizeof(projectName));
-            sscanf(projectDatabase->d_name,"%s",projectName);
-            nameLength = strlen(projectName);
-            //printf("name lengt = %d\n",nameLength);
-            for(int i = nameLength-4; i<nameLength; i++)
+            projectCount++;
+        }
+        closedir(directory);
+        if((directory = opendir(addressFolder)) != NULL) 
+        {
+            projectNameList = calloc(projectCount,sizeof(outputName));
+            while((projectDatabase = readdir(directory)) != NULL)
             {
-                projectName[i] = 0;
+                if(strcmp(projectDatabase->d_name,".") == 0 ||
+                    strcmp(projectDatabase->d_name,"..") == 0 )
+                    continue;
+                memset(projectName,0,sizeof(projectName));
+                sscanf(projectDatabase->d_name,"%s",projectName);
+                nameLength = strlen(projectName);
+                for(int i = nameLength-13; i<nameLength; i++)
+                {
+                    projectName[i] = 0;
+                }
+                projectNameList[listIndex] = calloc(1,sizeof(outputName));
+                strcpy(projectNameList[listIndex],projectName);
+                listIndex++;
             }
-            printf("\t-%s\n",projectName);
         }
     }
+    return projectNameList;
     chdir("..");
     closedir(directory);
 }
-/*#########################################################*/
+
+
+/*=========================================================================================
+* This function will add new project file in database folder directory 
+* 
+*	create by
+*		NAME:Pattaraphum chuamuangphan 
+*		ID:63070503437
+*
+*   Arguments
+*       projectName     -   the project name that user enter
+*       addressFolder   -   the address of the database folder 
+* This functino will return 1 if success to add new project file in database
+* and return 0 if found duplicated the project name.
+*==========================================================================================
+*/
 int addNewProjectFile(char projectName[],char *addressFolder)
 {   
     DIR *databasedirectory;
     char projectFileName[128];
-    int existProject_status = -1;
+    int addNew_status = -1;
 
     FILE * outputFileproject = NULL;
 
     sscanf(projectName,"%s",projectFileName);
     strcat(projectFileName,"-database.dat");
-    existProject_status = existProjectFileCheck(projectFileName,addressFolder);
-    if(existProject_status == 0)
+    addNew_status = existProjectFileCheck(projectFileName,addressFolder);
+    if(addNew_status == 0)
     {
         chdir(addressFolder);
         outputFileproject = fopen(projectFileName,"w");
         fclose(outputFileproject);
+        addNew_status = 1;
     }
     else
     {
-        printf("'%s' is dupicated project name\n",projectName);
+        addNew_status = 0;
+    }
+    return addNew_status;
+    chdir("..");
+}
+
+/*=========================================================================================
+* This function will deltete exist project in database file 
+* This function will ask user to enter exist project name and then delete that user 
+*
+*	create by
+*		NAME:Pattaraphum chuamuangphan 
+*		ID:63070503437
+*
+*   Arguments
+*       projectName     -   the project name that user enter
+*       addressFolder   -   the address of the database folder 
+* This functino will return 1 if delete success, return 0 if can not delete the project
+* and return -1 if does not found the project name.
+*==========================================================================================
+*/
+int deleteProjectFile(char projectName[], char* addressFolder)
+{
+    char input[64] = {0};
+    char conditions[64] = {0};
+    char deleteProjectName[64] = {0};
+
+    int delete_status = 0;
+
+    if(existProjectFileCheck(projectName,addressFolder) == 1)
+    {
+            chdir(addressFolder);
+            sscanf(projectName,"%s",deleteProjectName);
+            strcat(deleteProjectName,"-database.dat");
+            delete_status = remove(deleteProjectName);
+            if(delete_status == 0)
+            {
+                delete_status = 1;
+            }
+            else
+            {
+                delete_status = 0;
+            }
+            return delete_status;
+    }
+    else
+    {
+        delete_status = -1;
     }
     chdir("..");
 }
-/*#########################################################*/
-int renameProjectFile(char* addressFolder)
+
+
+/*=========================================================================================
+* This function will rename the exist project name 
+* This function will ask the exist project name that want to rename 
+* and ask new project name and then rename it.
+*	create by
+*		NAME:Pattaraphum chuamuangphan 
+*		ID:63070503437
+*
+*   Arguments
+*		oldProjectName	-	the old project name 
+*		newProjectName 	-	the new project name
+*       addressFolder   -   the address of the database folder 
+* This functino will return 1 if rename success, return 0 if can not rename the file,
+* return -1 if already have exist project and return -2 if does not found the project name.
+*==========================================================================================
+*/
+int renameProjectFile(char oldProjectName[], char newProjectName[], char* addressFolder)
 {
     char input[64] = {0};
-    char oldProjectName[64] = {0};
-    char newProjectName[64] = {0};
+    char oldFileName[64] = {0};
+    char newFileName[64] = {0};
 
-    int rename_status = 0;
+    int rename_status = -2;
 
-    printf("Old project name:");
-    fgets(input,sizeof(input),stdin);
-    sscanf(input,"%s",oldProjectName);
-    if(existProjectFileCheck(oldProjectName,addressFolder) == 0)
+    sscanf(oldProjectName,"%s",oldFileName);
+    strcat(oldFileName,"-database.dat");
+    if(existProjectFileCheck(oldFileName,addressFolder) == 0)
     {
-        printf("can not find '%s' in project name\n",oldProjectName);
+        rename_status = -2;
     }
     else
     {
-        printf("new project name:");
-        fgets(input,sizeof(input),stdin);
-        sscanf(input,"%s",newProjectName);
-        if(existProjectFileCheck(newProjectName,addressFolder) == 1)
+        sscanf(newProjectName,"%s",newFileName);
+        strcat(newFileName,"-database.dat");
+        if(existProjectFileCheck(newFileName,addressFolder) == 1)
         {
-            printf("'%s' is dupicated project name\n",newProjectName);
+            rename_status = -1;
         }
         else
         {
             chdir(addressFolder);
-            strcat(oldProjectName,"-database.dat");
-            strcat(newProjectName,"-database.dat");
             rename_status = rename(oldProjectName,newProjectName);
             if(rename_status == 0)
             {
@@ -207,7 +379,25 @@ int renameProjectFile(char* addressFolder)
     }
     chdir("..");
 }
-/*#########################################################*/
+
+
+/*=================================================================================================
+* This function will check the exist project in file directory.
+*
+* This function is from stack overflow
+* REF:https://stackoverflow.com/questions/230062/whats-the-best-way-to-check-if-a-file-exists-in-c
+*
+*	modify by
+*		NAME:Pattaraphum chuamuangphan 
+*		ID:63070503437
+*
+*   Arguments
+*       projectName     -   the project name that user enter
+*       addressFolder   -   the address of the database folder 
+* This functino will return 1 if fond the exist project name that user enter in project list
+* and return 0 if not found the exist project name.
+*==================================================================================================
+*/
 int existProjectFileCheck(char projectName[],char* addressFolder)
 {
     char projectNameTemp[128];
@@ -229,52 +419,22 @@ int existProjectFileCheck(char projectName[],char* addressFolder)
     fclose(existProjectFileName);
     chdir("..");
 }
-/*#########################################################*/
-int deleteProjectFile(char* addressFolder)
-{
-    char input[64] = {0};
-    char conditions[64] = {0};
-    char deleteProjectName[64] = {0};
 
-    int delete_status = 0;
-
-    printf("..<!>..[Delete project]..<!>..\n");
-    printf("Enter project Name:");
-    fgets(input,sizeof(input),stdin);
-    sscanf(input,"%s",deleteProjectName);
-    if(existProjectFileCheck(deleteProjectName,addressFolder) == 1)
-    {
-        printf("Are you sure to delete '%s' project(YES|NO):",deleteProjectName);
-        fgets(input,sizeof(input),stdin);
-        sscanf(input,"%s",conditions);
-        if(strcasecmp(conditions,"yes") == 0)
-        {
-            chdir(addressFolder);
-            strcat(deleteProjectName,"-database.dat");
-            delete_status = remove(deleteProjectName);
-            if(delete_status == 0)
-            {
-                delete_status = 1;
-            }
-            else
-            {
-                delete_status = 0;
-            }
-            return delete_status;
-        }
-        else
-        {
-            printf("\t'%s' doesn't delete",deleteProjectName);
-        }
-    }
-    else
-    {
-        printf("\tcan not find '%s' in project name\n",deleteProjectName);
-    }
-    chdir("..");
-}
-
-int readInformationfile(char projectName[],char* addressFolder)
+/*=========================================================================================
+* This function will read the database file and then create vertex and add edge of any vertex
+*
+*	create by
+*		NAME:Pattaraphum chuamuangphan 
+*		ID:63070503437
+*
+*   Arguments
+*       projectName     -   the project name that user enter
+*       addressFolder   -   the address of the database folder 
+* This functino will return 1 if every thing success well, return 0 if something wrong when
+* add vertex or add edge and return -1 if the project name does not exist.
+*==========================================================================================
+*/
+int readInformationFile(char projectName[],char* addressFolder)
 {
     char input[64] = {0};
     char inputLine[256] = {0};
@@ -286,6 +446,9 @@ int readInformationfile(char projectName[],char* addressFolder)
     char keyEdgeOne[64] = {0};
     char keyEdgeTwo[64] = {0};
     int  weight = 0;
+    int add_edge_status = -4;
+    int add_vertex_status = -2;
+    int status = 1;
 
     FILE * databaseFile = NULL;
 
@@ -295,19 +458,55 @@ int readInformationfile(char projectName[],char* addressFolder)
         sscanf(projectName,"%s",projectFileName);
         strcat(projectFileName,"-database.dat");
         databaseFile = fopen(projectFileName,"r+");
+        initNetwork();
         while(fgets(inputLine,sizeof(inputLine),databaseFile) != NULL)
         {
             if(sscanf(inputLine,"NAME:%[^;];INFORMATION:%[^;];WEIGHT:%[^;];"
                     ,taskName,information,charWeight) == 3)
             {
-                printf("Task name:%s\n",taskName);
-                printf("Task information:%s\n",information);
-                sscanf(charWeight,"%d",&weight);
-                printf("Task weight:%d\n",weight);
+                add_vertex_status = addVertex(taskName,information,weight); 
+                if(add_vertex_status == 1)
+                {
+                    continue;
+                }
+                else if(add_vertex_status == 0)
+                {
+                    printf("\tMemory allocation failed\n");
+                    status = 0;
+                }
+                else if(add_vertex_status == -1)
+                {
+                    printf("\tDuplicated task name '%s'\n",taskName);
+                    status = 0;
+                }
             }
             if(sscanf(inputLine,"FROM:%[^;];TO:%[^;];",keyEdgeOne,keyEdgeTwo) == 2)
             {
-                printf("add edge from %s -> %s\n",keyEdgeOne,keyEdgeTwo);
+                add_edge_status = addEdge(keyEdgeOne,keyEdgeTwo);
+                if(add_edge_status == 1)
+                {
+                    continue;
+                }
+                else if(add_edge_status == 0)
+                {
+                    printf("\tMemory allocation failed\n");
+                    status = 0;
+                }
+                else if(add_edge_status == -1)
+                {
+                    printf("\t'%s' or '%s' does not in vertex.\n",keyEdgeOne,keyEdgeTwo);
+                    status = 0;
+                }
+                else if(add_edge_status == -2)
+                {
+                    printf("\tEdge between '%s' to '%s' already exist.\n",keyEdgeOne,keyEdgeTwo);
+                    status = 0;
+                }
+                else if(add_edge_status == -3)
+                {
+                    printf("\tCan not create '%s' to '%s' cause make the loop.\n",keyEdgeOne,keyEdgeTwo);
+                    status = 0;
+                }
             }
         }
         fclose(databaseFile);
@@ -315,25 +514,83 @@ int readInformationfile(char projectName[],char* addressFolder)
     else
     {
         printf("\tcan not find '%s' in project name\n",projectName);
+        status = -1;
     }
+    return status;
     chdir("..");
 }
-/*
-int writeInformationfile(char projectName[],char* addressFolder,void* vertexstruct)
+/*=========================================================================================
+* This function will write all information of project into the database file.
+*
+*	create by
+*		NAME:Pattaraphum chuamuangphan 
+*		ID:63070503437
+*
+*   Arguments
+*       projectName     -   the project name that user enter
+*       addressFolder   -   the address of the database folder 
+*       vertexStruct    -   the pointer of head vertesx structure 
+* This functino will return 1 if can write the information in file and return 0 if can not
+* open the file;
+*==========================================================================================
+*/
+int writeInformationFile(char projectName[],char* addressFolder,void* vertexStruct)
 {
     char input[64] = {0};
     char inputLine[128] = {0};
     char projectFileName[128] = {0};
+    char taskName[64] = {0};
+    char taskInformation[128] = {0};
+    char charWeight[8] = {0};
+    char temp[128] = {0};
+    char keyEdgeOne[64] = {0};
+    char keyEdgeTwo[64] = {0};
+    int taskWeight = 0;
+    int status = 0;
 
-    File * databaseFile = NULL;
+    VERTEX_T * currentVertex = NULL;
+    VERTEX_T * currentEdge = NULL;
+    EDGE_T * currentAdjencent = NULL;
 
-    sscanf(projectName,"%s"projectFileName);
+    FILE * currentProjectFile = NULL;
+
+    sscanf(projectName,"%s",projectFileName);
     strcat(projectFileName,"-database.dat");
-    databaseFile = fopen(fileName,"r+");
-    if(existProjectFileCheck(projectFileName,addressFolder) == 1)
+    if(existProjectFileCheck(projectName,addressFolder) == 1)
     {
-        writeVertexInFile()
+        currentProjectFile = fopen(projectFileName,"r+");
+        currentVertex = vertexStruct;
+        fprintf(currentProjectFile,"VERTEX:");
+        while(currentVertex != NULL)
+        {
+            strcpy(taskName,currentVertex->name);
+            strcpy(taskInformation,currentVertex->description);
+            taskWeight = currentVertex->dayWork;
+            fprintf(currentProjectFile,"NAME:%s;INFORMATION:%s;WEIGHT:%d;",taskName,taskInformation,taskWeight);
+            currentVertex = currentVertex->pNext;
+        }
+        currentEdge = vertexStruct;
+        fprintf(currentProjectFile,"EDGE:");
+        fprintf(currentProjectFile,"EDGE:----------------");
+        while(currentEdge != NULL)
+        {
+            currentAdjencent = currentEdge->adjListHead;
+            while(currentAdjencent != NULL)
+            {
+                strcpy(keyEdgeOne,currentEdge->name);
+                strcpy(keyEdgeTwo,currentAdjencent->pVertex);
+                fprintf(currentProjectFile,"FROM:%s;TO:%s;",keyEdgeOne,keyEdgeTwo);
+                currentAdjencent = currentAdjencent->pNext;
+            }
+            currentEdge = currentEdge->pNext;
+        }
+        status = 1;
+        fclose(currentProjectFile);
     }
-
+    else
+    {
+        printf("can not find '%s' in project name\n",projectName);
+        status = 0;
+    }
+    return status;
 }
-*/
