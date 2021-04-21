@@ -29,7 +29,6 @@
 */
 void findProjectFileDatabase(char *addressFolder);
 
-
 /*=================================================================
 * This function will add new project file in database folder directory 
 * 
@@ -41,11 +40,10 @@ void findProjectFileDatabase(char *addressFolder);
 *       projectName     -   the project name that user enter
 *       addressFolder   -   the address of the database folder 
 * This functino will return 1 if success to add new project file in database
-* and return 0 if can not add new project file.
+* and return 0 if can there is file already exist
 *==================================================================
 */
-int addNewProjectFile(char projectName[],char *addressFolder);
-
+int addNewProjectFile(char projectName[], char *addressFolder);
 
 /*=================================================================
 * This function will rename the exist project name 
@@ -61,7 +59,7 @@ int addNewProjectFile(char projectName[],char *addressFolder);
 * and return 0 if not found the exist project name.
 *==================================================================
 */
-int renameProjectFile(char* addressFolder);
+int renameProjectFile(char *addressFolder);
 
 /*=================================================================
 * This function will check the exist project in file directory.
@@ -80,10 +78,10 @@ int renameProjectFile(char* addressFolder);
 * and return 0 if not found the exist project name.
 *==================================================================
 */
-int existProjectFileCheck(char projectName[],char* addressFolder);
+int existProjectFileCheck(char projectName[], char *addressFolder);
 
-int deleteProjectFile(char* addressFolder);
+int deleteProjectFile(char *addressFolder);
 
-int readInformationfile(char projectName[],char* addressFolder);
+int readInformationFile(char projectName[], char *addressFolder);
 
 #endif
