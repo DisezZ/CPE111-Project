@@ -13,8 +13,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <time.h>
+#include <string.h>
 
 void addDate(int day,int month,int year,int numberDay);
 
@@ -27,12 +27,7 @@ typedef struct
 
 
 int main()
-{   /*
-                        printf("Enter start task date");
-                        printf("Enter how long task is finished");
-    printf("Enter holidays");
-    printf("Enter normal weekend day");
-    */
+{   
     char input[128];// user input the data
     DATE_T* date = NULL; 
     int numberDay = 0;// the number of days which tasks will finish
@@ -67,9 +62,9 @@ no return
 void addDate(int day,int month,int year,int numberDay)
 {
     struct tm countDate;
-    int endDay;
-    int endMonth;
-    int endYear;
+    int endDay = 0; // day of end tasks
+    int endMonth = 0;// month of end tasks
+    int endYear = 0;// year of end tasks
   
     memset(&countDate,0,sizeof(struct tm));
     countDate.tm_year = year-1900; 
@@ -82,3 +77,4 @@ void addDate(int day,int month,int year,int numberDay)
     endYear = countDate.tm_year+1900;
     printf("The end date of tasks: %.2d/%.2d/%d\n",endDay,endMonth,endYear);
 }
+
