@@ -86,7 +86,6 @@ VERTEX_T *findVertexByKey(char *key, VERTEX_T **pPrev)
             pFound = pCurrent;
             break;
         }
-        *pPrev = pCurrent;
         pCurrent = pCurrent->pNext;
     }
     return pFound;
