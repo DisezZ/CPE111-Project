@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include "abstractNetwork.h"
 
+/*
 typedef struct _adjVertex
 {
     void *pVertex;
@@ -45,7 +46,7 @@ typedef struct _vertex
     EDGE_T *adjListHead;
     EDGE_T *adjListTail;
 } VERTEX_T;
-
+/*
 
 /************************************************
 *	This function is from stack overflow
@@ -57,7 +58,8 @@ typedef struct _vertex
 *	
 */
 
-#define addressDatabaseDirectory "../fileReadtest/project_list_database"
+//#define addressDatabaseDirectory "../fileReadtest/project_list_database/testDirectory"
+#define addressDatabaseDirectory "./project_list_database/testDirectory"
 
 void printMenu();
 char ** findProjectFileDatabase(char *addressFolder);
@@ -66,8 +68,9 @@ int existProjectFileCheck(char projectName[],char* addressFolder);
 int renameProjectFile(char oldFileName[], char newFileName[], char* addressFolder);
 int deleteProjectFile(char projectName[], char* addressFolder);
 int readInformationFile(char projectName[],char* addressFolder);
+char* findProjectDatabaseDirectory();
 
-int main()
+int main(int argc,char* argv[])
 {
     char input[64] = {0};
     char userProjectName[64] = {0};
@@ -75,6 +78,7 @@ int main()
     int status = 0;
     int i = 0;
     char ** allProjectName = NULL;
+    char * testDirectory = NULL;
 
     while(numberInput >= 0)
     {
@@ -88,23 +92,34 @@ int main()
             case 1:
                 printf("\nFile in folder[].......\n");
                 printf("------------------------------\n");
-                allProjectName = findProjectFileDatabase(addressDatabaseDirectory);
-                while(allProjectName[i] != NULL)
+                testDirectory = findProjectDatabaseDirectory();
+                printf("DIR IS = %s\n",testDirectory);
+                allProjectName = findProjectFileDatabase(testDirectory);
+                printf("test1\n");
+                printf("argv[0] = %s\n",argv[0]);
+                if(allProjectName != NULL)
                 {
-                    printf("Name: %s\n",allProjectName[i]);
-                    i++;
+                    while(allProjectName[i] != NULL)
+                    {
+                        printf("Name: %s\n",allProjectName[i]);
+                        i++;
+                    }
                 }
                 printf("------------------------------\n");
+                
                 i=0;
                 break;
-            /*
             case 2:
                 printf("Enter project name:");
                 fgets(input,sizeof(input),stdin);
                 sscanf(input,"%s",userProjectName);
-                addNewProjectFile(userProjectName,addressDatabaseDirectory);
+                status = addNewProjectFile(userProjectName,addressDatabaseDirectory);
+                if(status == 1)
+                {
+                    printf("good\n");
+                }
                 break;
-            
+            /*
             case 3:
                 printf("File in folder[].......\n");
                 allProjectName = findProjectFileDatabase(addressDatabaseDirectory);
@@ -194,8 +209,6 @@ char ** findProjectFileDatabase(char *addressFolder)
     char projectName[128];
     char * outputName[64] = {0};
     char ** projectNameList = NULL;
-
-
     if((directory = opendir(addressFolder)) == NULL) 
     {
         fprintf(stderr,"cannot open directory: %s\n",addressFolder);
@@ -593,4 +606,39 @@ int writeInformationFile(char projectName[],char* addressFolder,void* vertexStru
         status = 0;
     }
     return status;
+}
+
+/*=================================================================================================
+* This function will find the working program folder directory.
+*
+* This function is from stack overflow
+* REF:https://stackoverflow.com/questions/298510/how-to-get-the-current-directory-in-a-c-program
+*
+*	modify by
+*		NAME:Pattaraphum chuamuangphan 
+*		ID:63070503437
+*
+*   Arguments
+* This functino will return the database directory.
+*==================================================================================================
+*/
+char* findProjectDatabaseDirectory()
+{
+    int findDatabase_status = -2;
+    char cwd[256];
+    char databaseDirectory[128] = {0};
+    char * addressDirectory = NULL;
+
+    if(getcwd(cwd, sizeof(cwd)) != NULL) 
+    {
+        sscanf(cwd,"%s",databaseDirectory);
+        strcat(databaseDirectory,"/project_list_database");
+        addressDirectory = calloc(1,sizeof(databaseDirectory));
+        strcpy(addressDirectory,databaseDirectory);
+    } 
+    else 
+    {
+        perror("getcwd() error: can not return the directory of database\n");
+    }
+    return addressDirectory;
 }

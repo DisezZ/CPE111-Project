@@ -9,7 +9,7 @@
 #ifndef FILEMANAGEMENT_H
 #define FILEMANAGEMENT_H
 
-#define addressDatabaseDirectory "../fileReadtest/project_list_database"
+//#define addressDatabaseDirectory "../fileReadtest/project_list_database"
 
 /*==========================================================================
 * This function will read all porject file in the folder database directory 
@@ -119,5 +119,22 @@ int deleteProjectFile(char projectName[], char* addressFolder);
 *==========================================================================================
 */
 int readInformationFile(char projectName[],char* addressFolder);
+
+
+/*=================================================================================================
+* This function will find the working program folder directory.
+*
+* This function is from stack overflow
+* REF:https://stackoverflow.com/questions/298510/how-to-get-the-current-directory-in-a-c-program
+*
+*	modify by
+*		NAME:Pattaraphum chuamuangphan 
+*		ID:63070503437
+*
+*   Arguments
+* This functino will return the database directory.
+*==================================================================================================
+*/
+char* findProjectDatabaseDirectory()
 
 #endif
