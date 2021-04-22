@@ -1,14 +1,12 @@
-/*
+/***************************************************************************
+ * 
  *  networkHandler.c
+ *      This function will do all sort of thing that related to network 
+ *      like add, delete, modify vertex or add delete modify edge etc.
  * 
+ *      Created by Lutfee   Deeame ID 63070503448
  * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
+ * *************************************************************************
  * */
 
 #include <stdio.h>
@@ -16,6 +14,7 @@
 #include <string.h>
 #include "abstractNetwork.h"
 #include "abstractQueue.h"
+#include "fileManagement.h"
 
 #define WHITE 0
 #define GRAY 1
@@ -23,35 +22,15 @@
 
 VERTEX_T *endVertex = NULL;
 VERTEX_T *startVertex = NULL;
+VERTEX_T **topSortVertices = NULL;
 VERTEX_T *vertexListHead = NULL;
 VERTEX_T *vertexListTail = NULL;
-VERTEX_T **topSortVertices = NULL;
 int totalVertex = 0;
 int traverseIndex;
 
 /******************************/
 /** Private function section **/
 /******************************/
-
-int vertexCompareMax(void *data1, void *data2)
-{
-    VERTEX_T *pVertex1 = (VERTEX_T *)data1;
-    VERTEX_T *pVertex2 = (VERTEX_T *)data1;
-    int status = 0;
-
-    if (pVertex1->dayWork < pVertex2->dayWork)
-    {
-        return -1;
-    }
-    else if (pVertex1->dayWork > pVertex2->dayWork)
-    {
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
-}
 
 VERTEX_T *findVertexByKey(char *key, VERTEX_T **pPrev)
 {
@@ -481,6 +460,7 @@ int modifyVertex(char *key, char *newKey, char *newDescription, int newWeight)
     }
     else
     {
+        printf(":%s:%s:%d", newKey, newDescription, newWeight);
         if (strlen(newKey) != 0)
             pFound->name = strdup(newKey);
         if (strlen(newDescription) != 0)
@@ -533,7 +513,7 @@ void *findVertex(char *key)
     VERTEX_T *pPrev = NULL;
 
     pFound = findVertexByKey(key, &pPrev);
-    return pFound == NULL ? 0 : 1;
+    return pFound;
 }
 
 char **searchVertex(char *key, int *status)
@@ -550,11 +530,12 @@ char **searchVertex(char *key, int *status)
         if (result != NULL)
         {
             resultList[i] = strdup(pCurrentVertex->name);
-            //printf("%s\n", resultList[i]);
+            //printf("%s\n", searchResultList[i]);
             ++i;
         }
         pCurrentVertex = pCurrentVertex->pNext;
     }
+    *status = i;
     return resultList;
 }
 
@@ -634,7 +615,7 @@ int modifyEdge(char *fromKey, char *oldToKey, char *newToKey)
     pFound1 = findVertexByKey(fromKey, &pPrev1);
     pFound2 = findVertexByKey(oldToKey, &pPrev2);
     pFound3 = findVertexByKey(newToKey, &pPrev3);
-    if (pFound1 != NULL || pFound2 != NULL || pFound3 != NULL)
+    if (pFound1 == NULL || pFound2 == NULL || pFound3 == NULL)
     {
         status = -1;
     }
@@ -703,10 +684,13 @@ int deleteEdge(char *fromKey, char *toKey)
             }
             else if (pEdge == pFound1->adjListTail)
             {
+                //printf("here\n");
+                pPrevEdge->pNext = NULL;
                 pFound1->adjListTail = pPrevEdge;
             }
             else
             {
+
                 pPrevEdge->pNext = pEdge->pNext;
             }
             free(pEdge);
@@ -716,7 +700,7 @@ int deleteEdge(char *fromKey, char *toKey)
 }
 
 /*  Debuging main */
-
+/*
 int getMenuOption()
 {
     char input[32];
@@ -1001,3 +985,4 @@ int main(int argc, char *argv[])
         }
     }
 }
+*/
