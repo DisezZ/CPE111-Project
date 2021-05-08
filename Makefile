@@ -3,19 +3,22 @@ EXECUTABLES= projectSchedule
 all:$(EXECUTABLES)
 
 linkedListQueue.o :	linkedListQueue.c abstractQueue.h
-	gcc -c linkedListQueue.c
+	gcc -c -std=c99 linkedListQueue.c
 
-networkHandler.o	: networkHandler.c abstractNetwork.h abstractQueue.h
-	gcc -c networkHandler.c
+linkedListNetworkMod.o	: linkedListNetworkMod.c abstractNetwork.h abstractQueue.h
+	gcc -c -std=c99 linkedListNetworkMod.c
 
-fileManagement.o	: fileHandler.c fileManagement.h abstractNetwork.h
-	gcc -c fileHandler.c
+fileHandler.o	: fileHandler.c fileManagement.h abstractNetwork.h
+	gcc -c -std=c99 fileHandler.c
 
-main.o	: main.c
-	gcc -c main.c
+userInterface.o	: userInterface.c userInterface.h
+	gcc -c -std=c99 userInterface.c
 
-projectSchedule	: main.o networkHandler.o linkedListQueue.o fileHandler.o
-	gcc -o projectSchedule main.o  networkHandler.o linkedListQueue.o fileHandler.o
+main.o	: main.c main.h abstractNetwork.h fileManagement.h userInterface.h
+	gcc -c -std=c99 main.c 
+
+projectSchedule	: main.o linkedListNetworkMod.o linkedListQueue.o fileHandler.o userInterface.o
+	gcc -o projectSchedule main.o  linkedListNetworkMod.o linkedListQueue.o fileHandler.o userInterface.o
 
 clean:
 	- rm *.o

@@ -29,6 +29,8 @@ typedef struct _vertex
     EDGE_T *adjListTail;
 } VERTEX_T;
 
+VERTEX_T *getVertexListHead();
+
 /*  This function will initialize the graph by create end and starting vertex
  *  Return :
  *      1 - if initialize succes

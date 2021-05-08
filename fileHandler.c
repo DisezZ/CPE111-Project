@@ -16,6 +16,9 @@
  *                             (__)\       )\/\
  *                                 ||----w |
  *                                 ||     ||
+ *
+ *
+ *  The version of this file is 1.01
  *=======================================================================
  */
 #include <unistd.h>
@@ -26,7 +29,8 @@
 #include <stdlib.h>
 #include "abstractNetwork.h"
 
-/*typedef struct _adjVertex
+/*
+typedef struct _adjVertex
 {
     void *pVertex;
     int weight;
@@ -44,8 +48,8 @@ typedef struct _vertex
     struct _vertex *pParentVertex;
     EDGE_T *adjListHead;
     EDGE_T *adjListTail;
-} VERTEX_T;*/
-
+} VERTEX_T;
+*/
 /************************************************
 *	This function is from stack overflow
 *	REF:https://stackoverflow.com/questions/11736060/how-to-read-all-files-in-a-folder-using-c
@@ -56,82 +60,158 @@ typedef struct _vertex
 *	
 */
 
-#define addressDatabaseDirectory "../fileReadtest/project_list_database"
+//#define addressDatabaseDirectory "../fileReadtest/project_list_database/testDirectory"
+//#define addressDatabaseDirectory "../CPE_PROJECT/project_list_database"
 
 void printMenu();
-char **findProjectFileDatabase(char *addressFolder, int *totalFile);
+char **findProjectFileDatabase(char *addressFolder);
 int addNewProjectFile(char projectName[], char *addressFolder);
 int existProjectFileCheck(char projectName[], char *addressFolder);
 int renameProjectFile(char oldFileName[], char newFileName[], char *addressFolder);
 int deleteProjectFile(char projectName[], char *addressFolder);
 int readInformationFile(char projectName[], char *addressFolder);
+char *findProjectDatabaseDirectory();
 
-/*int main()
+/*int main(int argc,char* argv[])
 {
     char input[64] = {0};
     char userProjectName[64] = {0};
+    char userProjectNew[64] = {0};
     int numberInput = 0;
     int status = 0;
     int i = 0;
     char ** allProjectName = NULL;
+    char * testDirectory = NULL;
+    char * tempDirectory = NULL;
+    char * mainDirectory = NULL;
 
+    mainDirectory = findProjectDatabaseDirectory();
+    testDirectory = findProjectDatabaseDirectory();
     while(numberInput >= 0)
     {
         printf("Directory scan of /home:\n");
         printMenu();
         fgets(input,sizeof(input),stdin);
         sscanf(input,"%d",&numberInput);
+        //strcpy(*tempDirectory,addressDatabaseDirectory);
         switch(numberInput)
         {
-
             case 1:
                 printf("\nFile in folder[].......\n");
                 printf("------------------------------\n");
-                allProjectName = findProjectFileDatabase(addressDatabaseDirectory);
-                while(allProjectName[i] != NULL)
+                printf("DIR IS = %s\n",testDirectory);
+                allProjectName = findProjectFileDatabase(testDirectory);
+                if(allProjectName == NULL)
                 {
-                    printf("Name: %s\n",allProjectName[i]);
-                    i++;
+                    printf("\n\n-----error------\n");
+                }
+                mainDirectory = findProjectDatabaseDirectory();
+                printf("DIR IS = %s\n",mainDirectory);
+                printf("test1\n");
+                printf("argv[0] = %s\n",argv[0]);
+                if(allProjectName != NULL)
+                {
+                    while(allProjectName[i] != NULL)
+                    {
+                        printf("Name: %s\n",allProjectName[i]);
+                        i++;
+                    }
                 }
                 printf("------------------------------\n");
+                
                 i=0;
                 break;
-            
             case 2:
+                tempDirectory = testDirectory;
                 printf("Enter project name:");
                 fgets(input,sizeof(input),stdin);
                 sscanf(input,"%s",userProjectName);
-                addNewProjectFile(userProjectName,addressDatabaseDirectory);
+                status = addNewProjectFile(userProjectName,tempDirectory);
+                if(status == 1)
+                {
+                    printf("good\n");
+                }
                 break;
-            
             case 3:
                 printf("File in folder[].......\n");
-                allProjectName = findProjectFileDatabase(addressDatabaseDirectory);
+                allProjectName = findProjectFileDatabase(testDirectory);
                 while(allProjectName[i] != NULL)
                 {
                     printf("Name: %s\n",allProjectName[i]);
                     i++;
                 }
-                status = renameProjectFile(addressDatabaseDirectory);
+                i=0;
+                printf("Enter project old:");
+                fgets(input,sizeof(input),stdin);
+                sscanf(input,"%s",userProjectName);
+                printf("Enter project new:");
+                fgets(input,sizeof(input),stdin);
+                sscanf(input,"%s",userProjectNew);
+                allProjectName = findProjectFileDatabase(testDirectory);
+                while(allProjectName[i] != NULL)
+                {
+                    printf("Name: %s\n",allProjectName[i]);
+                    i++;
+                }
+                i=0;
+                status = renameProjectFile(userProjectName, userProjectNew, testDirectory);
                 if(status == 1)
                 {
                     printf("rename success\n");
                 }
-                else
+                else if(status == 0)
                 {
-                    printf("rename not success\n");
+                    printf("\n\nrename not success: error on function rename()\n");
+                }
+                else if(status == -1)
+                {
+                    printf("\n\nrename not success: already have a project name\n");
+                }
+                else if(status == -2)
+                {
+                    printf("\n\nrename not success: not found project\n");
                 }
                 break;
-            case 4:
-                allProjectName = findProjectFileDatabase(addressDatabaseDirectory);
+                allProjectName = findProjectFileDatabase(testDirectory);
                 while(allProjectName[i] != NULL)
                 {
                     printf("Name: %s\n",allProjectName[i]);
                     i++;
                 }
-                deleteProjectFile(addressDatabaseDirectory);
+                i=0;
                 break;
-            
+            case 4:
+                allProjectName = findProjectFileDatabase(testDirectory);
+                while(allProjectName[i] != NULL)
+                {
+                    printf("Name: %s\n",allProjectName[i]);
+                    i++;
+                }
+                i=0;
+                printf("Enter project name:");
+                fgets(input,sizeof(input),stdin);
+                sscanf(input,"%s",userProjectName);
+                status = deleteProjectFile(userProjectName,testDirectory);
+                if(status == 1) 
+                {
+                    printf("\n\n----Delete Success----\n");
+                }
+                else if(status == 0) 
+                {
+                    printf("\n\n----Some thing error----\n");
+                }
+                else if(status == -1) 
+                {
+                    printf("\n\n----Can not find project name----\n");
+                }
+                allProjectName = findProjectFileDatabase(testDirectory);
+                while(allProjectName[i] != NULL)
+                {
+                    printf("Name: %s\n",allProjectName[i]);
+                    i++;
+                }
+                i=0;
+                break;
             case 5:
                 allProjectName = findProjectFileDatabase(addressDatabaseDirectory);
                 while(allProjectName[i] != NULL)
@@ -152,7 +232,7 @@ int readInformationFile(char projectName[], char *addressFolder);
         printf("\n\n");
     }
 }
-#########################################################
+/*#########################################################*/
 void printMenu()
 {
     printf("Test project program\n");
@@ -164,7 +244,6 @@ void printMenu()
     printf("5-Read file and built node\n");
     printf("\nSelect(-1 to exit):");
 }
-*/
 
 /*========================================================================================
 * This function will read all porject file in the folder database directory 
@@ -182,7 +261,7 @@ void printMenu()
 * This function will return the project name list                         
 *========================================================================================
 */
-char **findProjectFileDatabase(char *addressFolder, int *totalFile)
+char **findProjectFileDatabase(char *addressFolder)
 {
     DIR *directory;
     struct dirent *projectDatabase;
@@ -193,9 +272,7 @@ char **findProjectFileDatabase(char *addressFolder, int *totalFile)
     char projectName[128];
     char *outputName[64] = {0};
     char **projectNameList = NULL;
-
-    directory = opendir(addressFolder);
-    if (directory == NULL)
+    if ((directory = opendir(addressFolder)) == NULL)
     {
         fprintf(stderr, "cannot open directory: %s\n", addressFolder);
     }
@@ -230,7 +307,6 @@ char **findProjectFileDatabase(char *addressFolder, int *totalFile)
             }
         }
     }
-    *totalFile = projectCount;
     return projectNameList;
     chdir("..");
     closedir(directory);
@@ -258,12 +334,13 @@ int addNewProjectFile(char projectName[], char *addressFolder)
 
     FILE *outputFileproject = NULL;
 
+    sscanf(projectName, "%s", projectFileName);
     addNew_status = existProjectFileCheck(projectFileName, addressFolder);
     if (addNew_status == 0)
     {
-        sscanf(projectName, "%s", projectFileName);
-        strcat(projectFileName, "-database.dat");
         chdir(addressFolder);
+        strcat(projectFileName, "-database.dat");
+
         outputFileproject = fopen(projectFileName, "w");
         fclose(outputFileproject);
         addNew_status = 1;
@@ -273,7 +350,6 @@ int addNewProjectFile(char projectName[], char *addressFolder)
         addNew_status = 0;
     }
     return addNew_status;
-    chdir("..");
 }
 
 /*=========================================================================================
@@ -296,6 +372,7 @@ int deleteProjectFile(char projectName[], char *addressFolder)
     char input[64] = {0};
     char conditions[64] = {0};
     char deleteProjectName[64] = {0};
+    char *currentDirectory = NULL;
 
     int delete_status = 0;
 
@@ -313,13 +390,12 @@ int deleteProjectFile(char projectName[], char *addressFolder)
         {
             delete_status = 0;
         }
-        return delete_status;
     }
     else
     {
         delete_status = -1;
     }
-    chdir("..");
+    return delete_status;
 }
 
 /*=========================================================================================
@@ -346,8 +422,7 @@ int renameProjectFile(char oldProjectName[], char newProjectName[], char *addres
 
     int rename_status = -2;
 
-    //sscanf(oldProjectName, "%s", oldFileName);
-    strcat(oldFileName, "-database.dat");
+    sscanf(oldProjectName, "%s", oldFileName);
     if (existProjectFileCheck(oldFileName, addressFolder) == 0)
     {
         rename_status = -2;
@@ -355,7 +430,6 @@ int renameProjectFile(char oldProjectName[], char newProjectName[], char *addres
     else
     {
         sscanf(newProjectName, "%s", newFileName);
-        strcat(newFileName, "-database.dat");
         if (existProjectFileCheck(newFileName, addressFolder) == 1)
         {
             rename_status = -1;
@@ -363,7 +437,10 @@ int renameProjectFile(char oldProjectName[], char newProjectName[], char *addres
         else
         {
             chdir(addressFolder);
-            rename_status = rename(oldProjectName, newProjectName);
+            strcat(oldFileName, "-database.dat");
+            strcat(newFileName, "-database.dat");
+            rename_status = rename(oldFileName, newFileName);
+
             if (rename_status == 0)
             {
                 rename_status = 1;
@@ -372,10 +449,9 @@ int renameProjectFile(char oldProjectName[], char newProjectName[], char *addres
             {
                 rename_status = 0;
             }
-            return rename_status;
         }
     }
-    chdir("..");
+    return rename_status;
 }
 
 /*=================================================================================================
@@ -391,7 +467,7 @@ int renameProjectFile(char oldProjectName[], char newProjectName[], char *addres
 *   Arguments
 *       projectName     -   the project name that user enter
 *       addressFolder   -   the address of the database folder 
-* This functino will return 1 if found the exist project name that user enter in project list
+* This functino will return 1 if fond the exist project name that user enter in project list
 * and return 0 if not found the exist project name.
 *==================================================================================================
 */
@@ -404,18 +480,17 @@ int existProjectFileCheck(char projectName[], char *addressFolder)
     memset(projectNameTemp, 0, sizeof(projectNameTemp));
     sscanf(projectName, "%s", projectNameTemp);
     strcat(projectNameTemp, "-database.dat");
-    //printf("user enter project: %s\n", projectNameTemp);
+    printf("user enter project: %s\n", projectNameTemp);
     existProjectFileName = fopen(projectNameTemp, "r");
-    if (existProjectFileName == NULL)
-    {
-        return 0;
-    }
-    else
+    if (existProjectFileName != NULL)
     {
         return 1;
     }
+    else
+    {
+        return 0;
+    }
     fclose(existProjectFileName);
-    chdir("..");
 }
 
 /*=========================================================================================
@@ -452,16 +527,17 @@ int readInformationFile(char projectName[], char *addressFolder)
 
     if (existProjectFileCheck(projectName, addressFolder) == 1)
     {
-        chdir(addressDatabaseDirectory);
+        chdir(addressFolder);
         sscanf(projectName, "%s", projectFileName);
         strcat(projectFileName, "-database.dat");
         databaseFile = fopen(projectFileName, "r+");
         initNetwork();
         while (fgets(inputLine, sizeof(inputLine), databaseFile) != NULL)
         {
+            printf("fgets: %s", inputLine);
+            //printf("hello test----\n");
             if (sscanf(inputLine, "NAME:%[^;];INFORMATION:%[^;];WEIGHT:%[^;];", taskName, information, charWeight) == 3)
             {
-                sscanf(charWeight, "%d", &weight);
                 add_vertex_status = addVertex(taskName, information, weight);
                 if (add_vertex_status == 1)
                 {
@@ -515,7 +591,6 @@ int readInformationFile(char projectName[], char *addressFolder)
         status = -1;
     }
     return status;
-    chdir("..");
 }
 /*=========================================================================================
 * This function will write all information of project into the database file.
@@ -554,37 +629,30 @@ int writeInformationFile(char projectName[], char *addressFolder, void *vertexSt
 
     sscanf(projectName, "%s", projectFileName);
     strcat(projectFileName, "-database.dat");
-    //printf("%s", projectFileName);
     if (existProjectFileCheck(projectName, addressFolder) == 1)
     {
-        currentProjectFile = fopen(projectFileName, "w");
-
+        currentProjectFile = fopen(projectFileName, "r+");
         currentVertex = vertexStruct;
-        fprintf(currentProjectFile, "VERTEX:\n");
+        fprintf(currentProjectFile, "VERTEX:");
         while (currentVertex != NULL)
         {
             strcpy(taskName, currentVertex->name);
             strcpy(taskInformation, currentVertex->description);
             taskWeight = currentVertex->dayWork;
-            //printf("%s %s %d\n", taskName, taskInformation, taskWeight);
-            fprintf(currentProjectFile, "NAME:%s;INFORMATION:%s;WEIGHT:%d;\n", taskName, taskInformation, taskWeight);
+            fprintf(currentProjectFile, "NAME:%s;INFORMATION:%s;WEIGHT:%d;", taskName, taskInformation, taskWeight);
             currentVertex = currentVertex->pNext;
         }
-        //printf("After\n");
         currentEdge = vertexStruct;
-        fprintf(currentProjectFile, "EDGE:\n");
+        fprintf(currentProjectFile, "EDGE:");
+        fprintf(currentProjectFile, "EDGE:----------------");
         while (currentEdge != NULL)
         {
             currentAdjencent = currentEdge->adjListHead;
             while (currentAdjencent != NULL)
             {
-                currentVertex = currentAdjencent->pVertex;
-                if (strcasecmp(currentVertex->name, "end") != 0)
-                {
-                    strcpy(keyEdgeOne, currentEdge->name);
-                    strcpy(keyEdgeTwo, currentVertex->name);
-                    fprintf(currentProjectFile, "FROM:%s;TO:%s;\n", keyEdgeOne, keyEdgeTwo);
-                }
+                strcpy(keyEdgeOne, currentEdge->name);
+                strcpy(keyEdgeTwo, currentAdjencent->pVertex);
+                fprintf(currentProjectFile, "FROM:%s;TO:%s;", keyEdgeOne, keyEdgeTwo);
                 currentAdjencent = currentAdjencent->pNext;
             }
             currentEdge = currentEdge->pNext;
@@ -598,4 +666,39 @@ int writeInformationFile(char projectName[], char *addressFolder, void *vertexSt
         status = 0;
     }
     return status;
+}
+
+/*=================================================================================================
+* This function will find the working program folder directory.
+*
+* This function is from stack overflow
+* REF:https://stackoverflow.com/questions/298510/how-to-get-the-current-directory-in-a-c-program
+*
+*	modify by
+*		NAME:Pattaraphum chuamuangphan 
+*		ID:63070503437
+*
+*   Arguments
+* This functino will return the database directory.
+*==================================================================================================
+*/
+char *findProjectDatabaseDirectory()
+{
+    int findDatabase_status = -2;
+    char cwd[256];
+    char databaseDirectory[128] = {0};
+    char *addressDirectory = NULL;
+
+    if (getcwd(cwd, sizeof(cwd)) != NULL)
+    {
+        sscanf(cwd, "%s", databaseDirectory);
+        strcat(databaseDirectory, "/project_list_database");
+        addressDirectory = calloc(1, sizeof(databaseDirectory));
+        strcpy(addressDirectory, databaseDirectory);
+    }
+    else
+    {
+        perror("getcwd() error: can not return the directory of database\n");
+    }
+    return addressDirectory;
 }

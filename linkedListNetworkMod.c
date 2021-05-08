@@ -1,13 +1,37 @@
-/***************************************************************************
+/**
+ *  linkedListNetworkMod.c
+ *
+ *  Implements an abstractNetwork using adjacency lists (linked lists).
+ *  This is a structure with two levels of list. There is a master
+ *  list of vertices, linked in series. Each vertex points to a subsidiary
+ *  linked list with references to all the other vertices to which it
+ *  is connected.
+ *
+ *  Each vertex has an integer weight and a pointer to a parent vertex 
+ *  which can be used for route finding and spanning tree algorithms
+ *
+ *  Key values are strings and are copied when vertices are inserted into
+ *  the graph. Every vertex has a void* pointer to ancillary data which
+ *  is simply stored. 
+ *
+ *  Created by Sally Goldin, 1 February 2012 for CPE 113
+ *  Modified 18 March 2013 to improve naming.
+ *  Modified 20 April 2018 to use JavaDoc keywords in comments
  * 
- *  networkHandler.c
- *      This function will do all sort of thing that related to network 
- *      like add, delete, modify vertex or add delete modify edge etc.
- * 
- *      Created by Lutfee   Deeame ID 63070503448
- * 
- * *************************************************************************
- * */
+ *  Modified with permission by [Lutfee] on [Deemae]. 
+ *  Made the following changes:
+ *  - Modify findVertexByKey function.
+ *  - Delete EdgeExists function.
+ *  - Modify freeAdjacencyList and removeReferences into deleteEdgesOfVertex function
+ *  - Delete countAdjacent function.
+ *  - Modify colorAll into colorAllVertex.
+ *  - Delete initAll function.
+ *  - 
+ *  - 
+ *  - 
+ *  - 
+ *  - 
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -362,6 +386,11 @@ void LongestPath()
 /** Public function section **/
 /*****************************/
 
+VERTEX_T *getVertexListHead()
+{
+    return vertexListHead;
+}
+
 int initNetwork()
 {
     EDGE_T *pTemptEdge = NULL;
@@ -416,8 +445,12 @@ int addVertex(char *key, char *description, int weight)
         }
         else
         {
-            pKey = strdup(key);
-            pDescription = strdup(description);
+            //pKey = strdup(key);
+            //pDescription = strdup(description);
+            pKey = calloc(strlen(key), sizeof(char));
+            strcpy(pKey, key);
+            pDescription = calloc(strlen(description), sizeof(char));
+            strcpy(pDescription, description);
             pNewVertex->name = pKey;
             pNewVertex->description = pDescription;
             pNewVertex->dayWork = weight;
@@ -462,11 +495,23 @@ int modifyVertex(char *key, char *newKey, char *newDescription, int newWeight)
     {
         printf(":%s:%s:%d", newKey, newDescription, newWeight);
         if (strlen(newKey) != 0)
-            pFound->name = strdup(newKey);
+        {
+            //pFound->name = strdup(newKey);
+            free(pFound->name);
+            pFound->name = calloc(strlen(newKey), sizeof(char));
+            strcpy(pFound->name, newKey);
+        }
         if (strlen(newDescription) != 0)
-            pFound->description = strdup(newDescription);
+        {
+            //pFound->description = strdup(newDescription);
+            free(pFound->description);
+            pFound->description = calloc(strlen(newDescription), sizeof(char));
+            strcpy(pFound->description, newDescription);
+        }
         if (newWeight > 0)
+        {
             pFound->dayWork = newWeight;
+        }
     }
 
     return status;
@@ -529,8 +574,10 @@ char **searchVertex(char *key, int *status)
         result = strstr(pCurrentVertex->name, key);
         if (result != NULL)
         {
-            resultList[i] = strdup(pCurrentVertex->name);
+            //resultList[i] = strdup(pCurrentVertex->name);
             //printf("%s\n", searchResultList[i]);
+            resultList[i] = calloc(strlen(pCurrentVertex->name), sizeof(char));
+            strcpy(resultList[i], pCurrentVertex->name);
             ++i;
         }
         pCurrentVertex = pCurrentVertex->pNext;
@@ -697,6 +744,34 @@ int deleteEdge(char *fromKey, char *toKey)
         }
     }
     return status;
+}
+
+void freeNetwork()
+{
+    VERTEX_T *pCurrentVertex = NULL;
+    VERTEX_T *pPrevVertex = NULL;
+    EDGE_T *pCurrentEdge = NULL;
+    EDGE_T *pPrevEdge = NULL;
+
+    pCurrentVertex = vertexListHead;
+    while (pCurrentVertex != NULL)
+    {
+        pCurrentEdge = pCurrentVertex->adjListHead;
+        while (pCurrentEdge != NULL)
+        {
+            pPrevEdge = pCurrentEdge;
+            pCurrentEdge = pCurrentEdge->pNext;
+            free(pPrevEdge);
+        }
+        pCurrentVertex = pCurrentVertex->pNext;
+    }
+    pCurrentVertex = vertexListHead;
+    while (pCurrentVertex != NULL)
+    {
+        pPrevVertex = pCurrentVertex;
+        pCurrentVertex = pCurrentVertex->pNext;
+        free(pPrevEdge);
+    }
 }
 
 /*  Debuging main */
