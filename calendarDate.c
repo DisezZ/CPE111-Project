@@ -132,7 +132,7 @@ int validateDay(char date[])
     statusDateFormat = checkDateFormat(date);
     if(statusDateFormat == 0)
     {
-        printf("The date format is not valid.\n");
+        printf("The date format is not valid. Please type again.\n");
     }
     else
     {
@@ -140,7 +140,7 @@ int validateDay(char date[])
         statusDatePast = checkDatePast(checkDay,checkMonth,checkYear);
         if(statusDatePast == 0)
         {
-            printf("The date is in the past.\n");
+            printf("The date is in the past. Please type again.\n");
         }
     }
     //check year
