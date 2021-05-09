@@ -11,36 +11,51 @@
 #include <string.h>
 #include "userInterface.h"
 
-char *getTerminalInput(char *bufferString, char *printString)
+void getTerminalInput(char *bufferString, size_t size, char *printString)
 {
     printf("%s", printString);
-    memset(bufferString, 0, sizeof(bufferString));
-    fgets(bufferString, sizeof(bufferString), stdin);
-    sscanf(bufferString, "%[^\n]", bufferString);
+    memset(bufferString, 0, size);
+    fgets(bufferString, size, stdin);
+    bufferString[strcspn(bufferString, "\n")] = 0;
+    //printf("%s\n", bufferString);
+    //printf("%ld\n", (size_t)strlen(bufferString));
 }
 
 void displayErrorMessage(char *errorMessage)
 {
-    printf(">>> Error - %s.\n", errorMessage);
+    fprintf(stderr, ">>> Error - %s.\n", errorMessage);
 }
 
 void displaySuccessMessage(char *successMessage)
 {
-    printf(">>> %s.\n", successMessage);
+    fprintf(stdout, ">>> Success - %s.\n", successMessage);
 }
 
 void displayInvalidMessage(char *invalidMessage)
 {
-    printf(">> Invalid - %s.\n", invalidMessage);
+    fprintf(stderr, ">> Invalid - %s.\n", invalidMessage);
 }
 
 void displayAllProjectAvailable(char **projectNameList, int totalProject)
 {
-    printf("total :%d\n", totalProject);
-    for (int i = 0; i < sizeof(projectNameList) / sizeof(char *); i++)
+    printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
+    printf("Total Project Found: %d\n", totalProject);
+    for (int i = 0; i < totalProject; i++)
     {
-        printf("%d) %s\n", i + 1, projectNameList[i]);
+        printf("Project-%d) %s\n", i + 1, projectNameList[i]);
     }
+    printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
+}
+
+void displayAllTaskAvailable(char **searchTaskList, int totalTask)
+{
+    printf("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
+    printf("Total Task Found: %d\n", totalTask);
+    for (int i = 0; i < totalTask; i++)
+    {
+        printf("Task-%d) %s\n", i + 1, searchTaskList[i]);
+    }
+    printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 }
 
 void displayProjectMenuOptions()
@@ -62,7 +77,7 @@ void displayTaskMenuOptions(char *projectName)
     printf("\t(1) Add task\n");
     printf("\t(2) Modify task\n");
     printf("\t(3) Delete task\n");
-    printf("\t(4) Search task\n");
+    printf("\t(4) Display task\n");
     printf("\t(5) Display all task\n");
     printf("\t(6) Calculate project schedule\n");
     printf("\t(7) Change project name\n");

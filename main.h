@@ -11,7 +11,7 @@ void deleteExistProject(int *fileOpenStatus);          /* This function will del
 void renameProject();                                  /* This function will rename the project*/
 void addTask();                                        /* This function will add task in program*/
 char **searchTask(int *totalTask, char *searchString); /*this function will search task in databse*/
-int findTask(char **searchTaskList, char *searchTask, int size);
+int findTask(char *searchTask);
 void changeTaskInfo(char *taskName);   /* This funtion will modify and change task info*/
 void addDependency(char *taskName);    /* This function will do the add dependency part */
 void changeDependency(char *taskName); /* This function will do the change dependency from old to new task */
@@ -20,5 +20,5 @@ void displayTask(char *taskName);      /* This function will display the task in
 void deleteTask(char *taskName);       /* This function will delete the task from graph */
 void dispalyAllTask();                 /* This function will display all the task information in graph */
 void calculateProjectSchedule();       /* This function will calculate the project schedule start date and end date of each task */
-
+void freeStringArray(int size, char **stringToFree);
 #endif

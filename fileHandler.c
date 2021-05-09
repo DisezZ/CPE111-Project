@@ -64,7 +64,7 @@ typedef struct _vertex
 //#define addressDatabaseDirectory "../CPE_PROJECT/project_list_database"
 
 void printMenu();
-char **findProjectFileDatabase(char *addressFolder);
+char **findProjectFileDatabase(char *addressFolder, int *totalProject);
 int addNewProjectFile(char projectName[], char *addressFolder);
 int existProjectFileCheck(char projectName[], char *addressFolder);
 int renameProjectFile(char oldFileName[], char newFileName[], char *addressFolder);
@@ -261,13 +261,12 @@ void printMenu()
 * This function will return the project name list                         
 *========================================================================================
 */
-char **findProjectFileDatabase(char *addressFolder)
+char **findProjectFileDatabase(char *addressFolder, int *totalProject)
 {
     DIR *directory;
     struct dirent *projectDatabase;
 
     int nameLength = 0;
-    int projectCount = 0;
     int listIndex = 0;
     char projectName[128];
     char *outputName[64] = {0};
@@ -283,12 +282,12 @@ char **findProjectFileDatabase(char *addressFolder)
             if (strcmp(projectDatabase->d_name, ".") == 0 ||
                 strcmp(projectDatabase->d_name, "..") == 0)
                 continue;
-            projectCount++;
+            ++*totalProject;
         }
         closedir(directory);
         if ((directory = opendir(addressFolder)) != NULL)
         {
-            projectNameList = calloc(projectCount, sizeof(outputName));
+            projectNameList = calloc(*totalProject, sizeof(outputName));
             while ((projectDatabase = readdir(directory)) != NULL)
             {
                 if (strcmp(projectDatabase->d_name, ".") == 0 ||
@@ -480,7 +479,7 @@ int existProjectFileCheck(char projectName[], char *addressFolder)
     memset(projectNameTemp, 0, sizeof(projectNameTemp));
     sscanf(projectName, "%s", projectNameTemp);
     strcat(projectNameTemp, "-database.dat");
-    printf("user enter project: %s\n", projectNameTemp);
+    //printf("user enter project: %s\n", projectNameTemp);
     existProjectFileName = fopen(projectNameTemp, "r");
     if (existProjectFileName != NULL)
     {
@@ -534,13 +533,13 @@ int readInformationFile(char projectName[], char *addressFolder)
         initNetwork();
         while (fgets(inputLine, sizeof(inputLine), databaseFile) != NULL)
         {
-            printf("fgets: %s", inputLine);
-            //printf("hello test----\n");
             if (sscanf(inputLine, "NAME:%[^;];INFORMATION:%[^;];WEIGHT:%[^;];", taskName, information, charWeight) == 3)
             {
+                sscanf(charWeight, "%d", &weight);
                 add_vertex_status = addVertex(taskName, information, weight);
                 if (add_vertex_status == 1)
                 {
+                    printf("add %s success\n", taskName);
                     continue;
                 }
                 else if (add_vertex_status == 0)
@@ -591,6 +590,7 @@ int readInformationFile(char projectName[], char *addressFolder)
         status = -1;
     }
     return status;
+    chdir("..");
 }
 /*=========================================================================================
 * This function will write all information of project into the database file.
@@ -622,8 +622,8 @@ int writeInformationFile(char projectName[], char *addressFolder, void *vertexSt
     int status = 0;
 
     VERTEX_T *currentVertex = NULL;
-    VERTEX_T *currentEdge = NULL;
-    EDGE_T *currentAdjencent = NULL;
+    VERTEX_T *currentAdjacent = NULL;
+    EDGE_T *currentEdge = NULL;
 
     FILE *currentProjectFile = NULL;
 
@@ -632,30 +632,33 @@ int writeInformationFile(char projectName[], char *addressFolder, void *vertexSt
     if (existProjectFileCheck(projectName, addressFolder) == 1)
     {
         currentProjectFile = fopen(projectFileName, "r+");
-        currentVertex = vertexStruct;
-        fprintf(currentProjectFile, "VERTEX:");
+        currentVertex = getVertexListHead();
+        fprintf(currentProjectFile, "VERTEX:\n");
         while (currentVertex != NULL)
         {
             strcpy(taskName, currentVertex->name);
             strcpy(taskInformation, currentVertex->description);
             taskWeight = currentVertex->dayWork;
-            fprintf(currentProjectFile, "NAME:%s;INFORMATION:%s;WEIGHT:%d;", taskName, taskInformation, taskWeight);
+            fprintf(currentProjectFile, "NAME:%s;INFORMATION:%s;WEIGHT:%d;\n", taskName, taskInformation, taskWeight);
             currentVertex = currentVertex->pNext;
         }
-        currentEdge = vertexStruct;
-        fprintf(currentProjectFile, "EDGE:");
-        fprintf(currentProjectFile, "EDGE:----------------");
+        currentVertex = getVertexListHead();
+        fprintf(currentProjectFile, "EDGE:\n");
         while (currentEdge != NULL)
         {
-            currentAdjencent = currentEdge->adjListHead;
-            while (currentAdjencent != NULL)
+            currentEdge = currentVertex->adjListHead;
+            while (currentEdge != NULL)
             {
-                strcpy(keyEdgeOne, currentEdge->name);
-                strcpy(keyEdgeTwo, currentAdjencent->pVertex);
-                fprintf(currentProjectFile, "FROM:%s;TO:%s;", keyEdgeOne, keyEdgeTwo);
-                currentAdjencent = currentAdjencent->pNext;
+                currentAdjacent = currentEdge->pVertex;
+                if (strcmp(currentAdjacent->name, "end") != 0)
+                {
+                    strcpy(keyEdgeOne, currentVertex->name);
+                    strcpy(keyEdgeTwo, currentAdjacent->name);
+                    fprintf(currentProjectFile, "FROM:%s;TO:%s;\n", keyEdgeOne, keyEdgeTwo);
+                }
+                currentEdge = currentEdge->pNext;
             }
-            currentEdge = currentEdge->pNext;
+            currentVertex = currentVertex->pNext;
         }
         status = 1;
         fclose(currentProjectFile);
@@ -691,8 +694,8 @@ char *findProjectDatabaseDirectory()
 
     if (getcwd(cwd, sizeof(cwd)) != NULL)
     {
-        sscanf(cwd, "%s", databaseDirectory);
-        strcat(databaseDirectory, "/project_list_database");
+        sscanf(cwd, "%[^\n]", databaseDirectory);
+        strcat(databaseDirectory, "/dataBase");
         addressDirectory = calloc(1, sizeof(databaseDirectory));
         strcpy(addressDirectory, databaseDirectory);
     }

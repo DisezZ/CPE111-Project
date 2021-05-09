@@ -117,4 +117,6 @@ int readInformationFile(char projectName[], char *addressFolder);
 
 int writeInformationFile(char projectName[], char *addressFolder, void *vertexStruct);
 
+char *findProjectDatabaseDirectory();
+
 #endif

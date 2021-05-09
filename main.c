@@ -21,36 +21,40 @@
 #include "fileManagement.h"
 #include "userInterface.h"
 
-#define DATABASE_DIRECTORY "../CPE111 - Project/dataBase"
-
+char *dataBaseDirectory = NULL;
 char workingProjectName[128] = {0};
 
 int argvOneProcess(char *projectNameIn)
 {
-    int returnStatus = 0;
-    char terminalInput[128];
+    int fileOpenStatus = 0;
+    int returnStatus;
+    char choice[8];
 
-    returnStatus = readInformationFile(projectNameIn, DATABASE_DIRECTORY);
-    if (returnStatus == 0)
+    returnStatus = readInformationFile(projectNameIn, dataBaseDirectory);
+    if (returnStatus == -1)
     {
-        printf("Oops!, Can't see the file name.\n");
-        getTerminalInput(terminalInput, "Do you want to create new one? [YES=y|NO=else] : ");
-        if (strcmp(terminalInput, "y") == 0)
+        displayErrorMessage("Can't find a file with given name in project's folder");
+        getTerminalInput(choice, sizeof(choice), "Create new project with given name? [YES=y|NO=else] : ");
+        if (strcmp(choice, "y") == 0)
         {
-            returnStatus = addNewProjectFile(projectNameIn, DATABASE_DIRECTORY);
-            returnStatus = 1;
+            returnStatus = addNewProjectFile(projectNameIn, dataBaseDirectory);
+            if (returnStatus)
+                displaySuccessMessage("New project is created");
+            else
+                displayErrorMessage("While creating project's file with given name");
         }
     }
-    else if (returnStatus == -1)
+    else if (returnStatus == 0)
     {
-        returnStatus = 0;
+        displayErrorMessage("While reading information from database");
     }
     else
     {
         memset(workingProjectName, 0, sizeof(workingProjectName));
         strcpy(workingProjectName, projectNameIn);
+        fileOpenStatus = 1;
     }
-    return returnStatus;
+    return fileOpenStatus;
 }
 
 void addNewProject(int *fileOpenStatus)
@@ -59,25 +63,25 @@ void addNewProject(int *fileOpenStatus)
     char projectNameIn[128];
     char choice[8];
 
-    getTerminalInput(projectNameIn, "Enter new project name : ");
+    getTerminalInput(projectNameIn, sizeof(projectNameIn), "Enter new project name : ");
     if (!strlen(projectNameIn))
     {
-        displayInvalidMessage("File name can't be empty");
+        displayInvalidMessage("Project name can't be empty");
     }
     else
     {
-        returnStatus = addNewProjectFile(projectNameIn, DATABASE_DIRECTORY);
+        returnStatus = addNewProjectFile(projectNameIn, dataBaseDirectory);
         if (!returnStatus)
         {
-            printf("Oops, the file with given file name already exist.\n");
-            getTerminalInput(choice, "Do you want to overwrite this file? [YES=y|NO=else] : ");
+            displayErrorMessage("File with given file name already exist");
+            getTerminalInput(choice, sizeof(choice), "Do you want to continue(overwrite) this file? [YES=y|NO=else] : ");
             if (strcmp(choice, "y") == 0)
             {
-                if (deleteProjectFile(projectNameIn, DATABASE_DIRECTORY) &&
-                    addNewProjectFile(projectNameIn, DATABASE_DIRECTORY))
+                if (deleteProjectFile(projectNameIn, dataBaseDirectory) &&
+                    addNewProjectFile(projectNameIn, dataBaseDirectory))
                 {
                     displaySuccessMessage("Success to create new project");
-                    getTerminalInput(choice, "Do you want to working this file [YES=y|NO=else]: ");
+                    getTerminalInput(choice, sizeof(choice), "Do you want to working this file [YES=y|NO=else]: ");
                     if (strcmp(choice, "y") == 0)
                     {
                         strcpy(workingProjectName, projectNameIn);
@@ -86,12 +90,15 @@ void addNewProject(int *fileOpenStatus)
                 }
                 else
                 {
-                    displayErrorMessage("While overwriting to file \"%s\"");
+                    displayErrorMessage("While overwriting to database file");
                 }
             }
         }
+        else
+        {
+            displaySuccessMessage("Added project to database folder");
+        }
     }
-
     if (*fileOpenStatus)
         taskOptionFlowManager(fileOpenStatus);
 }
@@ -101,20 +108,20 @@ void enterExistProject(int *fileOpenStatus)
     char choice[8];
     char projectNameIn[128];
     char **projectNameList;
-    int totalProject;
+    int totalProject = 0;
     int returnStatus;
     int searchStatus;
 
-    projectNameList = findProjectFileDatabase(DATABASE_DIRECTORY, &totalProject);
+    projectNameList = findProjectFileDatabase(dataBaseDirectory, &totalProject);
     displayAllProjectAvailable(projectNameList, totalProject);
-    getTerminalInput(projectNameIn, "Enter file name: ");
+    getTerminalInput(projectNameIn, sizeof(projectNameIn), "Enter project name: ");
     if (strlen(projectNameIn) == 0)
     {
-        displayInvalidMessage("File name can't be empty");
+        displayInvalidMessage("Project name can't be empty");
     }
     else
     {
-        returnStatus = readInformationFile(projectNameIn, DATABASE_DIRECTORY);
+        returnStatus = readInformationFile(projectNameIn, dataBaseDirectory);
         searchStatus = 0;
         for (int i = 0; i < totalProject; i++)
         {
@@ -125,11 +132,11 @@ void enterExistProject(int *fileOpenStatus)
         }
         if (returnStatus == 0 || searchStatus == 0)
         {
-            printf("Oops, the file with given file name is not exist.\n");
-            getTerminalInput(choice, "Do you want to create new one ? [YES=y][NO=else] : ");
+            displayErrorMessage("Project with given file name is not exist");
+            getTerminalInput(choice, sizeof(choice), "Create new project with given name? [YES=y][NO=else] : ");
             if (strcmp(choice, "y\n") == 0)
             {
-                returnStatus = addNewProjectFile(projectNameIn, DATABASE_DIRECTORY);
+                returnStatus = addNewProjectFile(projectNameIn, dataBaseDirectory);
                 strcpy(workingProjectName, projectNameIn);
                 *fileOpenStatus = 1;
             }
@@ -141,6 +148,7 @@ void enterExistProject(int *fileOpenStatus)
         }
     }
 
+    freeStringArray(totalProject, projectNameList);
     if (*fileOpenStatus)
         taskOptionFlowManager(fileOpenStatus);
 }
@@ -150,27 +158,28 @@ void deleteExistProject(int *fileOpenStatus)
     int returnStatus;              /*return status*/
     char projectNameDelete[128];   /*project file name that want to delete*/
     char **projectNameList = NULL; /*list of project name*/
-    int totalProject;              /*total file in database*/
+    int totalProject = 0;          /*total file in database*/
 
-    projectNameList = findProjectFileDatabase(DATABASE_DIRECTORY, &totalProject);
+    projectNameList = findProjectFileDatabase(dataBaseDirectory, &totalProject);
     displayAllProjectAvailable(projectNameList, totalProject);
-    getTerminalInput(projectNameDelete, "Enter task name to delete: ");
+    getTerminalInput(projectNameDelete, sizeof(projectNameDelete), "Enter project name to delete: ");
     if (strlen(projectNameDelete) == 0)
     {
-        printf("Try again, file name can't be empty.\n");
+        displayInvalidMessage("Project name can't be empty");
     }
     else
     {
-        returnStatus = deleteProjectFile(projectNameDelete, DATABASE_DIRECTORY);
+        returnStatus = deleteProjectFile(projectNameDelete, dataBaseDirectory);
         if (returnStatus == 1)
         {
-            printf("Success to delete the file.\n");
+            displaySuccessMessage("Project deleted");
         }
         else
         {
-            printf("Oops, Can't see the file which you want to delete.\n");
+            displayErrorMessage("Project with given name doesn't exist");
         }
     }
+    freeStringArray(totalProject, projectNameList);
 }
 
 void projectOptionFlowManager(int *fileOpenStatus)
@@ -183,7 +192,7 @@ void projectOptionFlowManager(int *fileOpenStatus)
     while (1)
     {
         displayProjectMenuOptions();
-        getTerminalInput(choice, "Enter your option: ");
+        getTerminalInput(choice, sizeof(choice), "Enter your option: ");
         if (strcmp(choice, "1") == 0) // add project
         {
             addNewProject(fileOpenStatus);
@@ -210,48 +219,48 @@ void projectOptionFlowManager(int *fileOpenStatus)
 
 void renameProject()
 {
-    char fileNameRename[128]; /* new file name to be raname into */
-    int returnStatus;         /* store return value from function */
+    char projectNameRename[128]; /* new file name to be raname into */
+    int returnStatus;            /* store return value from function */
 
-    getTerminalInput(fileNameRename, "Enter new file name: ");
-    if (strlen(fileNameRename) == 0)
+    getTerminalInput(projectNameRename, sizeof(projectNameRename), "Enter new project name: ");
+    if (strlen(projectNameRename) == 0)
     {
-        displayInvalidMessage("Try again, file name can't be empty");
+        displayInvalidMessage("Project name can't be empty");
     }
     else
     {
-        returnStatus = renameProjectFile(workingProjectName, fileNameRename, DATABASE_DIRECTORY);
+        returnStatus = renameProjectFile(workingProjectName, projectNameRename, dataBaseDirectory);
         if (returnStatus == 1)
         {
-            strcpy(workingProjectName, fileNameRename);
-            printf("Success to rename the project.\n");
+            strcpy(workingProjectName, projectNameRename);
+            displaySuccessMessage("Project renamed");
         }
         else if (returnStatus == -1)
         {
-            printf("Oops, the file name is already exist.\n");
+            displayErrorMessage("Project with given name is already exist");
         }
         else if (returnStatus == -2)
         {
-            printf("Oops, not found the project to rename.\n");
+            displayErrorMessage("Not found project with given name");
         }
         else
         {
-            printf("Oops, can't rename the project.\n");
+            displayErrorMessage("While rename the project");
         }
     }
 }
 
 void addTask()
 {
-    char taskName[128];        /* sore task name */
-    char taskDescription[128]; /* store task information */
-    char taskWeightString[8];  /* store task weight in string */
-    int taskWeight;            /* store weight of task */
-    int returnStatus;          /* store retrun value from function */
+    char taskName[128];         /* sore task name */
+    char taskDescription[128];  /* store task information */
+    char taskWeightString[128]; /* store task weight in string */
+    int taskWeight = -1;        /* store weight of task */
+    int returnStatus;           /* store retrun value from function */
 
-    getTerminalInput(taskName, "Enter task name: ");
-    getTerminalInput(taskDescription, "Enter task description: ");
-    getTerminalInput(taskWeightString, "Enter task weight: ");
+    getTerminalInput(taskName, sizeof(taskName), "Enter task's name: ");
+    getTerminalInput(taskDescription, sizeof(taskDescription), "Enter task's description: ");
+    getTerminalInput(taskWeightString, sizeof(taskWeightString), "Enter task's number of working days : ");
     sscanf(taskWeightString, "%d", &taskWeight);
     if (!strlen(taskName) || !strlen(taskDescription))
     {
@@ -262,7 +271,7 @@ void addTask()
         returnStatus = addVertex(taskName, taskDescription, taskWeight);
         if (returnStatus == 1)
         {
-            if (!writeInformationFile(workingProjectName, DATABASE_DIRECTORY, getVertexListHead()))
+            if (!writeInformationFile(workingProjectName, dataBaseDirectory, getVertexListHead()))
             {
                 displayErrorMessage("Can't save the to database file");
             }
@@ -283,13 +292,34 @@ void addTask()
     }
 }
 
+int allTask(char **searchResultList)
+{
+    VERTEX_T *pAdjVertex = NULL;
+    VERTEX_T *pCurrentVertex = getStartVertex();
+    EDGE_T *pCurrentEdge = pCurrentVertex->adjListHead;
+    int totalVertex = getTotalVertex();
+    int i = 0;
+    while (pCurrentEdge && i < totalVertex)
+    {
+        pAdjVertex = pCurrentEdge->pVertex;
+        if (strcmp(pAdjVertex->name, "start") != 0 && strcmp(pAdjVertex->name, "end") != 0)
+        {
+            searchResultList[i] = calloc(strlen(pAdjVertex->name), sizeof(char));
+            strcpy(searchResultList[i], pAdjVertex->name);
+            ++i;
+        }
+        pCurrentEdge = pCurrentEdge->pNext;
+    }
+    return i;
+}
+
 char **searchTask(int *totalTask, char *searchString)
 {
     char terminalInput[128];  /*string in terminal*/
     char taskName[128];       /*name of task*/
     char **resultList = NULL; /*the result of function*/
 
-    getTerminalInput(taskName, "Enter the task name : ");
+    getTerminalInput(taskName, sizeof(taskName), "Enter the task name : ");
     memset(searchString, 0, sizeof(searchString));
     strcpy(searchString, taskName);
     resultList = searchVertex(taskName, totalTask);
@@ -297,20 +327,21 @@ char **searchTask(int *totalTask, char *searchString)
     return resultList;
 }
 
-int findTask(char **searchTaskList, char *searchTask, int size)
+int findTask(char *searchTask)
 {
+    char **searchTaskList = NULL;
     char choice[8];
+    int totalTask = 0;
     int returnStatus = 0;
 
+    searchTaskList = calloc(getTotalVertex(), sizeof(char *));
+    totalTask = allTask(searchTaskList);
     while (1)
     {
-        printf("There are %d task which are similarly to %s :\n", size + 1, searchTask);
-        for (int i = 0; i < size; i++)
-        {
-            printf("\t%d) %s.\n", i + 1, searchTaskList[i]);
-        }
-        getTerminalInput(searchTask, "Which task do you want to select : ");
-        for (int i = 0; i < size; i++)
+
+        displayAllTaskAvailable(searchTaskList, totalTask);
+        getTerminalInput(searchTask, sizeof(searchTask), "Which task do you want to select : ");
+        for (int i = 0; i < totalTask; i++)
         {
             if (strcmp(searchTask, searchTaskList[i]) == 0)
             {
@@ -320,7 +351,8 @@ int findTask(char **searchTaskList, char *searchTask, int size)
         }
         if (returnStatus == 0)
         {
-            getTerminalInput(choice, "Oops, the task isn't in the list.\n[BACK TO TASK OPTIONS = y][NO = else] : ");
+            displayInvalidMessage("Given task not exist in the database");
+            getTerminalInput(choice, sizeof(choice), "[BACK = y][CONTINUE = else] : ");
             if (strcmp(choice, "y"))
                 break;
         }
@@ -339,9 +371,9 @@ void changeTaskInfo(char *taskName)
     int newTaskWeight = 0; /* store task weight */
     int returnStatus;      /* store return value from function */
 
-    getTerminalInput(newTaskName, "Enter new task name : ");
-    getTerminalInput(newTaskDescription, "Enter new task description : ");
-    getTerminalInput(newTaskWeightString, "Enter new task weight : ");
+    getTerminalInput(newTaskName, sizeof(newTaskName), "Enter new task name : ");
+    getTerminalInput(newTaskDescription, sizeof(newTaskDescription), "Enter new task description : ");
+    getTerminalInput(newTaskWeightString, sizeof(newTaskWeightString), "Enter new task weight : ");
     sscanf(newTaskWeightString, "%d", &newTaskWeight);
     if (newTaskWeight < 0)
     {
@@ -352,7 +384,7 @@ void changeTaskInfo(char *taskName)
         returnStatus = modifyVertex(taskName, newTaskName, newTaskDescription, newTaskWeight);
         if (returnStatus == 1)
         {
-            writeInformationFile(workingProjectName, DATABASE_DIRECTORY, getVertexListHead());
+            writeInformationFile(workingProjectName, dataBaseDirectory, getVertexListHead());
             strcpy(taskName, newTaskName);
             printf("Success to change task information.\n");
         }
@@ -368,7 +400,7 @@ void addDependency(char *taskName)
     char toTaskName[128]; /*name of task*/
     int returnStatus;     /*status of this function*/
 
-    getTerminalInput(toTaskName, "Enter dependency destination : ");
+    getTerminalInput(toTaskName, sizeof(toTaskName), "Enter dependency destination : ");
     if (strlen(toTaskName) == 0)
     {
         printf("Oops, dependency destination can't be empty.\n");
@@ -378,7 +410,7 @@ void addDependency(char *taskName)
         returnStatus = addEdge(taskName, toTaskName);
         if (returnStatus == 1)
         {
-            writeInformationFile(workingProjectName, DATABASE_DIRECTORY, getVertexListHead());
+            writeInformationFile(workingProjectName, dataBaseDirectory, getVertexListHead());
             printf("Success to add dependency destination.\n");
         }
         else if (returnStatus == -1)
@@ -406,8 +438,8 @@ void changeDependency(char *taskName)
     char toTaskName[128];   /*destination vertex*/
     int returnStatus;       /*function status*/
 
-    getTerminalInput(fromTaskName, "Enter old dependency destination which you want to change : ");
-    getTerminalInput(toTaskName, "Enter new dependency destination : ");
+    getTerminalInput(fromTaskName, sizeof(fromTaskName), "Enter old dependency destination which you want to change : ");
+    getTerminalInput(toTaskName, sizeof(toTaskName), "Enter new dependency destination : ");
     if (strlen(fromTaskName) == 0 || strlen(toTaskName) == 0)
     {
         printf("Oops, dependency destination can't be empty.\n");
@@ -417,7 +449,7 @@ void changeDependency(char *taskName)
         returnStatus = modifyEdge(taskName, fromTaskName, toTaskName);
         if (returnStatus == 1)
         {
-            writeInformationFile(workingProjectName, DATABASE_DIRECTORY, getVertexListHead);
+            writeInformationFile(workingProjectName, dataBaseDirectory, getVertexListHead);
             printf("Success to change dependency destination.\n");
         }
         else if (returnStatus == -1)
@@ -444,7 +476,7 @@ void deleteDependency(char *taskName)
     char toTaskName[128]; /* store task name to */
     int returnStatus;     /* store return value from function */
 
-    getTerminalInput(toTaskName, "Enter dependency destination which you want to delete : ");
+    getTerminalInput(toTaskName, sizeof(toTaskName), "Enter dependency destination which you want to delete : ");
     if (strlen(toTaskName) == 0)
     {
         printf("Oops, dependency destination can't be empty.\n");
@@ -454,7 +486,7 @@ void deleteDependency(char *taskName)
         returnStatus = deleteEdge(taskName, toTaskName);
         if (returnStatus == 1)
         {
-            writeInformationFile(workingProjectName, DATABASE_DIRECTORY, getVertexListHead());
+            writeInformationFile(workingProjectName, dataBaseDirectory, getVertexListHead());
             printf("Success to delete dependency destination.\n");
         }
         else if (returnStatus == -1)
@@ -475,7 +507,7 @@ void modifyTaskOptionFlowManager(char *taskName)
     while (1)
     {
         displayModifyTaskMenuOptions();
-        getTerminalInput(choice, "Enter tour option: ");
+        getTerminalInput(choice, sizeof(choice), "Enter tour option: ");
         if (strcmp(choice, "1") == 0)
         {
             changeTaskInfo(taskName);
@@ -531,7 +563,7 @@ void deleteTask(char *taskName)
     int returnStatus; /* store function return value */
 
     returnStatus = deleteVertex(taskName);
-    writeInformationFile(workingProjectName, DATABASE_DIRECTORY, getVertexListHead);
+    writeInformationFile(workingProjectName, dataBaseDirectory, getVertexListHead);
     printf("Success to delete task.\n");
 }
 
@@ -551,6 +583,35 @@ void dispalyAllTask()
 
 void calculateProjectSchedule()
 {
+    char startDate[16];
+    int date;
+    VERTEX_T *pAdjVertex = NULL;
+    VERTEX_T *pCurrentVertex = getStartVertex();
+    EDGE_T *pCurrentEdge = pCurrentVertex->adjListHead;
+    LongestPath();
+    getTerminalInput(startDate, sizeof(startDate), "Enter project's start date: ");
+    sscanf(startDate, "%d", &date);
+    /*while (pCurrentEdge)
+    {
+        pAdjVertex = pCurrentEdge->pVertex;
+        printf("Name: %s\nTotal Day: %d\n", pAdjVertex->name, pAdjVertex->totalDay);
+        pCurrentEdge = pCurrentEdge->pNext;
+    }*/
+    printf("\n");
+    while (pCurrentEdge)
+    {
+        pAdjVertex = pCurrentEdge->pVertex;
+        if (strcmp(pAdjVertex->name, "start") != 0 && strcmp(pAdjVertex->name, "end") != 0)
+        {
+            printf(">>> Task: %s\n", pAdjVertex->name);
+            printf(">>> Work Day: %d\n", pAdjVertex->dayWork);
+            printf(">>> Start: %d\n", date + pAdjVertex->totalDay);
+            printf(">>> Finished: %d\n", date + pAdjVertex->totalDay + pAdjVertex->dayWork - 1);
+            printf("\n");
+        }
+
+        pCurrentEdge = pCurrentEdge->pNext;
+    }
 }
 
 void taskOptionFlowManager(int *fileOpenStatus)
@@ -563,39 +624,29 @@ void taskOptionFlowManager(int *fileOpenStatus)
 
     while (1)
     {
+        returnStatus = 0;
         displayTaskMenuOptions(workingProjectName);
-        getTerminalInput(choice, "Enter your option: ");
+        getTerminalInput(choice, sizeof(choice), "Enter your option: ");
         if (strcmp(choice, "1") == 0)
         {
             addTask();
         }
         else if (strcmp(choice, "2") == 0 || strcmp(choice, "3") == 0 || strcmp(choice, "4") == 0)
         {
-            searchResultList = searchTask(&totalResult, searchString);
-            if (totalResult == 0)
+            returnStatus = findTask(searchString);
+            if (returnStatus)
             {
-                printf("Oops, Not found the task with given name.\n");
-            }
-            else
-            {
-                if (totalResult > 1)
+                if (strcmp(choice, "2") == 0) // modify task option
                 {
-                    returnStatus = findTask(searchResultList, searchString, totalResult);
+                    modifyTaskOptionFlowManager(searchString);
                 }
-                if (returnStatus == 1)
+                else if (strcmp(choice, "3") == 0)
                 {
-                    if (strcmp(choice, "2") == 0) // modify task option
-                    {
-                        modifyTaskOptionFlowManager(searchString);
-                    }
-                    else if (strcmp(choice, "3") == 0)
-                    {
-                        deleteTask(searchString); // delete task
-                    }
-                    else
-                    {
-                        displayTask(searchString); // display specific task
-                    }
+                    deleteTask(searchString); // delete task
+                }
+                else
+                {
+                    displayTask(searchString); // display specific task
                 }
             }
         }
@@ -613,7 +664,8 @@ void taskOptionFlowManager(int *fileOpenStatus)
         }
         else if (strcmp(choice, "8") == 0) // back to project selection
         {
-            fileOpenStatus = 0;
+            *fileOpenStatus = 0;
+            freeNetwork();
             break;
         }
         else if (strcmp(choice, "9") == 0) // exit
@@ -628,6 +680,17 @@ void taskOptionFlowManager(int *fileOpenStatus)
     }
 }
 
+void freeStringArray(int size, char **stringToFree)
+{
+    for (int i = 0; i < size; i++)
+    {
+        free(stringToFree[i]);
+        stringToFree[i] = NULL;
+    }
+    free(stringToFree);
+    stringToFree = NULL;
+}
+
 int main(int argc, char *argv[])
 {
     char fileNameIn[128];           /*input file name*/
@@ -635,7 +698,8 @@ int main(int argc, char *argv[])
     int totalFile;                  /*file count in database folder*/
     int fileOpenStatus = 0;         /*openfile status*/
 
-    databaseFileList = findProjectFileDatabase(DATABASE_DIRECTORY, &totalFile);
+    dataBaseDirectory = findProjectDatabaseDirectory();
+    databaseFileList = findProjectFileDatabase(dataBaseDirectory, &totalFile);
     if (!initNetwork())
     {
         displayErrorMessage("Can't initialize network");

@@ -29,7 +29,11 @@ typedef struct _vertex
     EDGE_T *adjListTail;
 } VERTEX_T;
 
+void LongestPath();
+
 VERTEX_T *getVertexListHead();
+VERTEX_T *getStartVertex();
+int getTotalVertex();
 
 /*  This function will initialize the graph by create end and starting vertex
  *  Return :
@@ -120,5 +124,7 @@ int modifyEdge(char *fromKey, char *oldToKey, char *newToKey);
  *      -2  - if edge not between two given key exist
  * */
 int deleteEdge(char *fromKey, char *toKey);
+
+void freeNetwork();
 
 #endif // !ABSTRACTNETWORK_H

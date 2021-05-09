@@ -46,11 +46,9 @@
 
 VERTEX_T *endVertex = NULL;
 VERTEX_T *startVertex = NULL;
-VERTEX_T **topSortVertices = NULL;
 VERTEX_T *vertexListHead = NULL;
 VERTEX_T *vertexListTail = NULL;
 int totalVertex = 0;
-int traverseIndex;
 
 /******************************/
 /** Private function section **/
@@ -69,6 +67,7 @@ VERTEX_T *findVertexByKey(char *key, VERTEX_T **pPrev)
             pFound = pCurrent;
             break;
         }
+        *pPrev = pCurrent;
         pCurrent = pCurrent->pNext;
     }
     return pFound;
@@ -97,6 +96,10 @@ EDGE_T *addEdgeByStruct(VERTEX_T *pFrom, VERTEX_T *pTo)
 
 void deleteEdgesOfVertex(VERTEX_T *pTargetVertex)
 {
+    VERTEX_T *pTemptTail = NULL;
+    VERTEX_T *pTemptPrev = NULL;
+    VERTEX_T *pTemptCurrent = NULL;
+    VERTEX_T *pAdjVertex = NULL;
     VERTEX_T *pCurrentVertex = NULL;
     EDGE_T *pCurrentEdge = NULL;
     EDGE_T *pPrevEdge = NULL;
@@ -112,15 +115,19 @@ void deleteEdgesOfVertex(VERTEX_T *pTargetVertex)
                 pPrevEdge = pCurrentEdge;
                 pCurrentEdge = pCurrentEdge->pNext;
                 free(pPrevEdge);
+                pPrevEdge = NULL;
             }
         }
         else
         {
             pCurrentEdge = pCurrentVertex->adjListHead;
+            pPrevEdge = NULL;
             while (pCurrentEdge != NULL)
             {
+                pTemptCurrent = pCurrentEdge->pVertex;
                 if (pCurrentEdge->pVertex == pTargetVertex)
                 {
+                    pAdjVertex = pCurrentEdge->pVertex;
                     if (pCurrentEdge == pCurrentVertex->adjListHead)
                     {
                         pCurrentVertex->adjListHead = pCurrentEdge->pNext;
@@ -129,18 +136,22 @@ void deleteEdgesOfVertex(VERTEX_T *pTargetVertex)
                             pCurrentVertex->adjListTail = NULL;
                         }
                         free(pCurrentEdge);
+                        pCurrentEdge = NULL;
                     }
                     else if (pCurrentEdge == pCurrentVertex->adjListTail)
                     {
                         pCurrentVertex->adjListTail = pPrevEdge;
                         pPrevEdge->pNext = NULL;
                         free(pCurrentEdge);
+                        pCurrentEdge = NULL;
                     }
                     else
                     {
                         pPrevEdge->pNext = pCurrentEdge->pNext;
                         free(pCurrentEdge);
+                        pCurrentEdge = NULL;
                     }
+                    break;
                 }
                 pPrevEdge = pCurrentEdge;
                 pCurrentEdge = pCurrentEdge->pNext;
@@ -181,7 +192,7 @@ void resetAllVertex()
     }
 }
 
-void traverseBreadthFirst(VERTEX_T *pVertex, void (*function)(VERTEX_T *))
+void traverseBreadthFirst(VERTEX_T *pVertex, void (*function)(VERTEX_T *pCurrenVertex))
 {
     VERTEX_T *pCurrentVertex = NULL;
     VERTEX_T *pAdjVertex = NULL;
@@ -298,29 +309,45 @@ void printfAdjVertex(VERTEX_T *pCurrentVertex)
     }
 }
 
-void indexAssign(VERTEX_T *pCurrentVertex)
+void indexAssign(VERTEX_T *pCurrentVertex, VERTEX_T **topSortVertices, int *traverseIndex)
 {
-    topSortVertices[traverseIndex] = pCurrentVertex;
-    --traverseIndex;
+    VERTEX_T *pAdjVertex = NULL;
+    EDGE_T *pCurrentEdge = NULL;
+
+    pCurrentVertex->color = GRAY;
+    pCurrentEdge = pCurrentVertex->adjListHead;
+    while (pCurrentEdge != NULL)
+    {
+        pAdjVertex = pCurrentEdge->pVertex;
+        if (pAdjVertex != NULL && pAdjVertex->color == WHITE)
+        {
+            pAdjVertex->color = GRAY;
+            indexAssign(pAdjVertex, topSortVertices, traverseIndex);
+        }
+        pCurrentEdge = pCurrentEdge->pNext;
+    }
+    pCurrentVertex->color = BLACK;
+    topSortVertices[*traverseIndex] = pCurrentVertex;
+    --(*traverseIndex);
 }
 
-int sortTopoligcal()
+int sortTopoligcal(VERTEX_T **topSortVertices, int *traverseIndex)
 {
     int status = 1;
-    topSortVertices = calloc(totalVertex, sizeof(VERTEX_T *));
+
     if (topSortVertices == NULL)
     {
         status = 0;
     }
     else
     {
-        traverseIndex = totalVertex - 1;
+        *traverseIndex = totalVertex - 1;
         colorAllVertex(WHITE);
-        traverseDepthFirst(startVertex, &indexAssign);
+        indexAssign(startVertex, topSortVertices, traverseIndex);
     }
     vertexListHead = topSortVertices[1];
     vertexListTail = topSortVertices[totalVertex - 1];
-    for (int i = 1; i < totalVertex; i++)
+    for (int i = 0; i < totalVertex; i++)
     {
         if (i == totalVertex - 1)
         {
@@ -331,28 +358,30 @@ int sortTopoligcal()
             topSortVertices[i]->pNext = topSortVertices[i + 1];
         }
     }
-    free(topSortVertices);
     return status;
 }
 
 void LongestPath()
 {
+    VERTEX_T **topSortVertices = NULL;
     VERTEX_T *pCurrentVertex = NULL;
     VERTEX_T *pAdjVertex = NULL;
     EDGE_T *pCurrentEdge = NULL;
+    int traverseIndex;
     int weight = 0;
 
-    sortTopoligcal();
+    topSortVertices = calloc(totalVertex, sizeof(VERTEX_T *));
+    sortTopoligcal(topSortVertices, &traverseIndex);
     resetAllVertex();
     /*for (int i = 0; i < totalVertex; i++)
     {
         pCurrentVertex = topSortVertices[i];
         printf("%s ", pCurrentVertex->name);
-    }*/
+    }
+    printf("\n");*/
     pCurrentVertex = vertexListHead;
     while (pCurrentVertex != NULL)
     {
-        //printf("%s\n", pCurrentVertex->name);
         pCurrentVertex->color = BLACK;
         pCurrentEdge = pCurrentVertex->adjListHead;
         weight = pCurrentVertex->dayWork;
@@ -371,7 +400,7 @@ void LongestPath()
         }
         pCurrentVertex = pCurrentVertex->pNext;
     }
-    printf("Min total weight of shortest path: %d\n", endVertex->totalDay);
+    /*printf("Max total weight of longest path: %d\n", endVertex->totalDay);
     printf("Path:\n");
     pCurrentVertex = endVertex;
     while (pCurrentVertex != NULL)
@@ -379,7 +408,8 @@ void LongestPath()
         printf("==> '%s' ", pCurrentVertex->name);
         pCurrentVertex = pCurrentVertex->pParentVertex;
     }
-    printf("\n");
+    printf("\n");*/
+    free(topSortVertices);
 }
 
 /*****************************/
@@ -389,6 +419,16 @@ void LongestPath()
 VERTEX_T *getVertexListHead()
 {
     return vertexListHead;
+}
+
+VERTEX_T *getStartVertex()
+{
+    return startVertex;
+}
+
+int getTotalVertex()
+{
+    return totalVertex - 2;
 }
 
 int initNetwork()
@@ -532,23 +572,36 @@ int deleteVertex(char *key)
         deleteEdgesOfVertex(pFound);
         if (pFound == vertexListHead)
         {
+            printf("head1\n");
             vertexListHead = pFound->pNext;
             if (vertexListHead == NULL)
             {
                 vertexListTail = NULL;
             }
+            printf("head1\n");
         }
         else if (pFound == vertexListTail)
         {
+            printf("tail1\n");
+            if (pPrev)
+                printf("Found:\n");
             vertexListTail = pPrev;
+            vertexListTail->pNext = NULL;
+            printf("tail2\n");
         }
         else
         {
+            printf("body1\n");
+            if (pPrev)
+                printf("Found:\n");
+            else
+                printf("Notfound:\n");
             pPrev->pNext = pFound->pNext;
+            printf("body2\n");
         }
         free(pFound);
+        pFound = NULL;
     }
-
     return status;
 }
 
@@ -762,6 +815,7 @@ void freeNetwork()
             pPrevEdge = pCurrentEdge;
             pCurrentEdge = pCurrentEdge->pNext;
             free(pPrevEdge);
+            pPrevEdge = NULL;
         }
         pCurrentVertex = pCurrentVertex->pNext;
     }
@@ -770,8 +824,21 @@ void freeNetwork()
     {
         pPrevVertex = pCurrentVertex;
         pCurrentVertex = pCurrentVertex->pNext;
-        free(pPrevEdge);
+        free(pPrevVertex);
+        pPrevVertex = NULL;
     }
+    pCurrentVertex = startVertex;
+    pCurrentEdge = pCurrentVertex->adjListHead;
+    while (pCurrentEdge != NULL)
+    {
+        pPrevEdge = pCurrentEdge;
+        pCurrentEdge = pCurrentEdge->pNext;
+        free(pPrevEdge);
+        pPrevEdge = NULL;
+    }
+
+    vertexListHead = NULL;
+    vertexListTail = NULL;
 }
 
 /*  Debuging main */
