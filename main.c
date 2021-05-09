@@ -327,7 +327,7 @@ char **searchTask(int *totalTask, char *searchString)
     return resultList;
 }
 
-int findTask(char *searchTask)
+int findTask(char *searchTask, size_t size)
 {
     char **searchTaskList = NULL;
     char choice[8];
@@ -340,7 +340,7 @@ int findTask(char *searchTask)
     {
 
         displayAllTaskAvailable(searchTaskList, totalTask);
-        getTerminalInput(searchTask, sizeof(searchTask), "Which task do you want to select : ");
+        getTerminalInput(searchTask, size, "Which task do you want to select : ");
         for (int i = 0; i < totalTask; i++)
         {
             if (strcmp(searchTask, searchTaskList[i]) == 0)
@@ -633,7 +633,7 @@ void taskOptionFlowManager(int *fileOpenStatus)
         }
         else if (strcmp(choice, "2") == 0 || strcmp(choice, "3") == 0 || strcmp(choice, "4") == 0)
         {
-            returnStatus = findTask(searchString);
+            returnStatus = findTask(searchString, sizeof(searchString));
             if (returnStatus)
             {
                 if (strcmp(choice, "2") == 0) // modify task option

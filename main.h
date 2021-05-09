@@ -11,7 +11,7 @@ void deleteExistProject(int *fileOpenStatus);          /* This function will del
 void renameProject();                                  /* This function will rename the project*/
 void addTask();                                        /* This function will add task in program*/
 char **searchTask(int *totalTask, char *searchString); /*this function will search task in databse*/
-int findTask(char *searchTask);
+int findTask(char *searchTask, size_t size);
 void changeTaskInfo(char *taskName);   /* This funtion will modify and change task info*/
 void addDependency(char *taskName);    /* This function will do the add dependency part */
 void changeDependency(char *taskName); /* This function will do the change dependency from old to new task */

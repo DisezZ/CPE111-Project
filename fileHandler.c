@@ -631,7 +631,7 @@ int writeInformationFile(char projectName[], char *addressFolder, void *vertexSt
     strcat(projectFileName, "-database.dat");
     if (existProjectFileCheck(projectName, addressFolder) == 1)
     {
-        currentProjectFile = fopen(projectFileName, "r+");
+        currentProjectFile = fopen(projectFileName, "w");
         currentVertex = getVertexListHead();
         fprintf(currentProjectFile, "VERTEX:\n");
         while (currentVertex != NULL)
@@ -644,7 +644,7 @@ int writeInformationFile(char projectName[], char *addressFolder, void *vertexSt
         }
         currentVertex = getVertexListHead();
         fprintf(currentProjectFile, "EDGE:\n");
-        while (currentEdge != NULL)
+        while (currentVertex != NULL)
         {
             currentEdge = currentVertex->adjListHead;
             while (currentEdge != NULL)
