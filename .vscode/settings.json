@@ -1,6 +1,0 @@
-{
-    "files.associations": {
-        "filemanagement.h": "c",
-        "userinterface.h": "c"
-    }
-}

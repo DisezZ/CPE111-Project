@@ -539,7 +539,6 @@ int readInformationFile(char projectName[], char *addressFolder)
                 add_vertex_status = addVertex(taskName, information, weight);
                 if (add_vertex_status == 1)
                 {
-                    printf("add %s success\n", taskName);
                     continue;
                 }
                 else if (add_vertex_status == 0)

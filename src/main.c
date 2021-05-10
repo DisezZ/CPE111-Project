@@ -5,8 +5,7 @@
  *      project scheduling system program and do some of validate 
  *      and alse print the user interface
  * 
- *      Created by Aplusplus team member
- *      From KMUTT34
+ *      Created by Aplusplus Team Member
  * 
  * *************************************************************************
  * */
@@ -302,7 +301,7 @@ int allTask(char **searchResultList)
     while (pCurrentEdge && i < totalVertex)
     {
         pAdjVertex = pCurrentEdge->pVertex;
-        if (strcmp(pAdjVertex->name, "start") != 0 && strcmp(pAdjVertex->name, "end") != 0)
+        if (pAdjVertex && strcmp(pAdjVertex->name, "start") != 0 && strcmp(pAdjVertex->name, "end") != 0)
         {
             searchResultList[i] = calloc(strlen(pAdjVertex->name), sizeof(char));
             strcpy(searchResultList[i], pAdjVertex->name);
@@ -313,11 +312,11 @@ int allTask(char **searchResultList)
     return i;
 }
 
-char **searchTask(int *totalTask, char *searchString)
+/*char **searchTask(int *totalTask, char *searchString)
 {
-    char terminalInput[128];  /*string in terminal*/
-    char taskName[128];       /*name of task*/
-    char **resultList = NULL; /*the result of function*/
+    char terminalInput[128];  /*string in terminal
+    char taskName[128];       /*name of task
+    char **resultList = NULL; /*the result of function
 
     getTerminalInput(taskName, sizeof(taskName), "Enter the task name : ");
     memset(searchString, 0, sizeof(searchString));
@@ -325,7 +324,7 @@ char **searchTask(int *totalTask, char *searchString)
     resultList = searchVertex(taskName, totalTask);
 
     return resultList;
-}
+}*/
 
 int findTask(char *searchTask, size_t size)
 {
@@ -334,8 +333,9 @@ int findTask(char *searchTask, size_t size)
     int totalTask = 0;
     int returnStatus = 0;
 
-    searchTaskList = calloc(getTotalVertex(), sizeof(char *));
-    totalTask = allTask(searchTaskList);
+    totalTask = getTotalVertex();
+    searchTaskList = calloc(totalTask, sizeof(char *));
+    allTask(searchTaskList);
     while (1)
     {
 
@@ -359,7 +359,7 @@ int findTask(char *searchTask, size_t size)
         else
             break;
     }
-
+    freeStringArray(totalTask, searchTaskList);
     return returnStatus;
 }
 
@@ -373,11 +373,11 @@ void changeTaskInfo(char *taskName)
 
     getTerminalInput(newTaskName, sizeof(newTaskName), "Enter new task name : ");
     getTerminalInput(newTaskDescription, sizeof(newTaskDescription), "Enter new task description : ");
-    getTerminalInput(newTaskWeightString, sizeof(newTaskWeightString), "Enter new task weight : ");
+    getTerminalInput(newTaskWeightString, sizeof(newTaskWeightString), "Enter new task working day : ");
     sscanf(newTaskWeightString, "%d", &newTaskWeight);
-    if (newTaskWeight < 0)
+    if (newTaskWeight < 1)
     {
-        printf("Task weight can't be less than 0\n");
+        displayInvalidMessage("Task weight can't empty or less than 1");
     }
     else
     {

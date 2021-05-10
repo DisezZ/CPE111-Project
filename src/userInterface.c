@@ -16,10 +16,7 @@ void getTerminalInput(char *bufferString, size_t size, char *printString)
     printf("%s", printString);
     memset(bufferString, 0, size);
     fgets(bufferString, size, stdin);
-    printf("Buffer %s\n", bufferString);
     sscanf(bufferString, "%[^\n]", bufferString);
-    printf("Buffer %s\n", bufferString);
-    //printf("%ld\n", (size_t)strlen(bufferString));
 }
 
 void displayErrorMessage(char *errorMessage)

@@ -1,25 +1,51 @@
-EXECUTABLES= projectSchedule
+#	Aplusplus CPE111 Final Project Makefile
+#	From KMUTT	
+#
+#	Contributors:
+#		
+#
+#
+#
+
+CC = gcc
+STD = -std=c99
+ODIR = bin
+SDIR = src
+PROGRAM = 	main \
+			linkedListQueue \
+			linkedListNetworkMod \
+		 	fileHandler \
+	 		userInterface
+SOURCE = $(addsuffix .c,$(PROGRAM))
+OBJECT = $(addsuffix .o,$(PROGRAM))
+SRCPATH = $(addprefix src/,$(SOURCE))
+OBJPATH = $(addprefix bin/,$(OBJECT))
+
+EXECUTABLES = main
 
 all:$(EXECUTABLES)
 
-linkedListQueue.o :	linkedListQueue.c abstractQueue.h
-	gcc -c -std=c99 linkedListQueue.c
+$(ODIR)/linkedListQueue.o :	$(SDIR)/linkedListQueue.c
+	$(CC) -c $(STD) $(SDIR)/linkedListQueue.c -o $(ODIR)/linkedListQueue.o
 
-linkedListNetworkMod.o	: linkedListNetworkMod.c abstractNetwork.h abstractQueue.h
-	gcc -c -std=c99 linkedListNetworkMod.c
+$(ODIR)/linkedListNetworkMod.o	: $(SDIR)/linkedListNetworkMod.c
+	$(CC) -c $(STD) $(SDIR)/linkedListNetworkMod.c -o $(ODIR)/linkedListNetworkMod.o
 
-fileHandler.o	: fileHandler.c fileManagement.h abstractNetwork.h
-	gcc -c -std=c99 fileHandler.c
+$(ODIR)/fileHandler.o	: $(SDIR)/fileHandler.c
+	$(CC) -c $(STD) $(SDIR)/fileHandler.c -o $(ODIR)/fileHandler.o
 
-userInterface.o	: userInterface.c userInterface.h
-	gcc -c -std=c99 userInterface.c
+$(ODIR)/userInterface.o	: $(SDIR)/userInterface.c
+	$(CC) -c $(STD) $(SDIR)/userInterface.c -o $(ODIR)/userInterface.o
 
-main.o	: main.c main.h abstractNetwork.h fileManagement.h userInterface.h
-	gcc -c -std=c99 main.c 
+$(ODIR)/main.o	: $(SDIR)/main.c
+	$(CC) -c $(STD) $(SDIR)/main.c -o $(ODIR)/main.o
 
-projectSchedule	: main.o linkedListNetworkMod.o linkedListQueue.o fileHandler.o userInterface.o
-	gcc -o projectSchedule main.o  linkedListNetworkMod.o linkedListQueue.o fileHandler.o userInterface.o
+$(EXECUTABLES)	: $(OBJPATH)
+	$(CC) -o main $(OBJPATH)
 
 clean:
-	- rm *.o
+	- rm $(ODIR)/*.o
 	- rm $(EXECUTABLES)
+
+sclean:
+	- rm %(ODIR)/*.o

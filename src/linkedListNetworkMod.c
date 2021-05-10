@@ -40,15 +40,15 @@
 #include "abstractQueue.h"
 #include "fileManagement.h"
 
-#define WHITE 0
-#define GRAY 1
-#define BLACK 2
+#define WHITE 0 /* neverseen vertex state */
+#define GRAY 1  /* queued but unvisited vertex state */
+#define BLACK 2 /* visited vertex state */
 
-VERTEX_T *endVertex = NULL;
-VERTEX_T *startVertex = NULL;
-VERTEX_T *vertexListHead = NULL;
-VERTEX_T *vertexListTail = NULL;
-int totalVertex = 0;
+VERTEX_T *startVertex = NULL;    /* special vertex as start point that every other vertex are dependent on */
+VERTEX_T *endVertex = NULL;      /* special vertex as ending point that dependent on every other vertex */
+VERTEX_T *vertexListHead = NULL; /* head of the vertex list */
+VERTEX_T *vertexListTail = NULL; /* tail of the vertex list */
+int totalVertex = 0;             /* total vertex in the graph including special vertex too */
 
 /******************************/
 /** Private function section **/
@@ -92,6 +92,44 @@ EDGE_T *addEdgeByStruct(VERTEX_T *pFrom, VERTEX_T *pTo)
         }
     }
     return pEdge;
+}
+
+void deleteEdgeByStruct(VERTEX_T *pFrom, VERTEX_T *pTo)
+{
+    VERTEX_T *pAdjVertex = NULL;
+    EDGE_T *pCurrentEdge = NULL;
+    EDGE_T *pPrevEdge = NULL;
+
+    pCurrentEdge = pFrom->adjListHead;
+    while (pCurrentEdge)
+    {
+        pAdjVertex = pCurrentEdge->pVertex;
+        if (pTo == pAdjVertex)
+        {
+            if (pCurrentEdge == startVertex->adjListHead)
+            {
+                startVertex->adjListHead = pCurrentEdge->pNext;
+                if (startVertex->adjListHead == NULL)
+                {
+                    startVertex->adjListTail = NULL;
+                }
+            }
+            else if (pCurrentEdge == startVertex->adjListTail)
+            {
+                startVertex->adjListTail = pPrevEdge;
+                startVertex->adjListTail->pNext = NULL;
+            }
+            else
+            {
+                pPrevEdge->pNext = pCurrentEdge->pNext;
+            }
+            free(pCurrentEdge);
+            pCurrentEdge = NULL;
+            break;
+        }
+        pPrevEdge = pCurrentEdge;
+        pCurrentEdge = pCurrentEdge->pNext;
+    }
 }
 
 void deleteEdgesOfVertex(VERTEX_T *pTargetVertex)
@@ -560,6 +598,9 @@ int modifyVertex(char *key, char *newKey, char *newDescription, int newWeight)
 int deleteVertex(char *key)
 {
     int status = 1;
+    EDGE_T *pCurrentEdge = NULL;
+    EDGE_T *pPrevEdge = NULL;
+    VERTEX_T *pAdjVertex = NULL;
     VERTEX_T *pFound = NULL;
     VERTEX_T *pPrev = NULL;
     pFound = findVertexByKey(key, &pPrev);
@@ -599,7 +640,51 @@ int deleteVertex(char *key)
             pPrev->pNext = pFound->pNext;
             printf("body2\n");
         }
+        deleteEdgeByStruct(startVertex, startVertex);
+        /*pCurrentEdge = startVertex->adjListHead;
+        while (pCurrentEdge)
+        {
+            pAdjVertex = pCurrentEdge->pVertex;
+            if (pFound == pAdjVertex)
+            {
+                if (pCurrentEdge == startVertex->adjListHead)
+                {
+                    printf("-head1\n");
+                    startVertex->adjListHead = pCurrentEdge->pNext;
+                    if (startVertex->adjListHead == NULL)
+                    {
+                        startVertex->adjListTail = NULL;
+                    }
+                    printf("-head1\n");
+                }
+                else if (pCurrentEdge == startVertex->adjListTail)
+                {
+                    printf("-tail1\n");
+                    if (pPrev)
+                        printf("-Found:\n");
+                    startVertex->adjListTail = pPrevEdge;
+                    startVertex->adjListTail->pNext = NULL;
+                    printf("-tail2\n");
+                }
+                else
+                {
+                    printf("-body1\n");
+                    if (pPrev)
+                        printf("-Found:\n");
+                    else
+                        printf("-Notfound:\n");
+                    pPrevEdge->pNext = pCurrentEdge->pNext;
+                    printf("-body2\n");
+                }
+                free(pCurrentEdge);
+                pCurrentEdge = NULL;
+                break;
+            }
+            pPrevEdge = pCurrentEdge;
+            pCurrentEdge = pCurrentEdge->pNext;
+        }*/
         free(pFound);
+        --totalVertex;
         pFound = NULL;
     }
     return status;
