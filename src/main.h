@@ -23,8 +23,11 @@ void displayTask(char *taskName);      /* This function will display the task in
 void deleteTask(char *taskName);       /* This function will delete the task from graph */
 void dispalyAllTask();                 /* This function will display all the task information in graph */
 void calculateProjectSchedule();       /* This function will calculate the project schedule start date and end date of each task */
+void changeProjectDescription();
 void freeStringArray(int size, char **stringToFree);
 void displayEveryDayOff();
 void removeDayOff();
 void addDayOff();
+void getProjectDescription(char *string);
+void setProjectDescription(char *string);
 #endif

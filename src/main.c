@@ -26,6 +26,7 @@
 #include "dateCalendarManager.h"
 
 char *dataBaseDirectory = NULL;
+char projectDescription[256] = {0};
 char workingProjectName[128] = {0};
 
 int argvOneProcess(char *projectNameIn)
@@ -747,6 +748,24 @@ void calculateProjectSchedule()
     }
 }
 
+void changeProjectDescription()
+{
+    char newDescription[256];
+    if (strlen(projectDescription))
+        printf("About Project:\n\t%s\n");
+    else
+        printf("\"%s\" has no description yet\n", workingProjectName);
+    getTerminalInput(projectDescription, sizeof(newDescription), "Enter new project description: ");
+    if (!writeInformationFile(workingProjectName, dataBaseDirectory))
+    {
+        displayErrorMessage("While saving changes to database");
+    }
+    else
+    {
+        displaySuccessMessage("Project description changed");
+    }
+}
+
 void taskOptionFlowManager(int *fileOpenStatus)
 {
     char **searchResultList = NULL;
@@ -795,17 +814,21 @@ void taskOptionFlowManager(int *fileOpenStatus)
         {
             modifyWorkingDayOptionFlowManager();
         }
-        else if (strcmp(choice, "8") == 0) // change project name
+        else if (strcmp(choice, "8") == 0) // change project description
+        {
+            changeProjectDescription();
+        }
+        else if (strcmp(choice, "9") == 0) // change project name
         {
             renameProject();
         }
-        else if (strcmp(choice, "9") == 0) // back to project selection
+        else if (strcmp(choice, "10") == 0) // back to project selection
         {
             *fileOpenStatus = 0;
             freeNetwork();
             break;
         }
-        else if (strcmp(choice, "10") == 0) // exit
+        else if (strcmp(choice, "11") == 0) // exit
         {
             printf("Thankyou for use our service...\n");
             exit(0);
@@ -937,6 +960,17 @@ void freeStringArray(int size, char **stringToFree)
     }
     free(stringToFree);
     stringToFree = NULL;
+}
+
+void getProjectDescription(char *string)
+{
+    string = calloc(strlen(string), sizeof(char));
+    strcpy(string, projectDescription);
+}
+
+void setProjectDescription(char *string)
+{
+    sscanf(string, "%s", projectDescription);
 }
 
 int main(int argc, char *argv[])
