@@ -197,6 +197,41 @@ void deleteEdgesOfVertex(VERTEX_T *pTargetVertex)
         }
         pCurrentVertex = pCurrentVertex->pNext;
     }
+    pCurrentEdge = startVertex->adjListHead;
+    while (pCurrentEdge)
+    {
+        pTemptCurrent = pCurrentEdge->pVertex;
+        if (pCurrentEdge->pVertex == pTargetVertex)
+        {
+            pAdjVertex = pCurrentEdge->pVertex;
+            if (pCurrentEdge == startVertex->adjListHead)
+            {
+                startVertex->adjListHead = pCurrentEdge->pNext;
+                if (startVertex->adjListHead == NULL)
+                {
+                    startVertex->adjListTail = NULL;
+                }
+                free(pCurrentEdge);
+                pCurrentEdge = NULL;
+            }
+            else if (pCurrentEdge == startVertex->adjListTail)
+            {
+                startVertex->adjListTail = pPrevEdge;
+                pPrevEdge->pNext = NULL;
+                free(pCurrentEdge);
+                pCurrentEdge = NULL;
+            }
+            else
+            {
+                pPrevEdge->pNext = pCurrentEdge->pNext;
+                free(pCurrentEdge);
+                pCurrentEdge = NULL;
+            }
+            break;
+        }
+        pPrevEdge = pCurrentEdge;
+        pCurrentEdge = pCurrentEdge->pNext;
+    }
 }
 
 void colorAllVertex(int color)
