@@ -36,22 +36,21 @@ DATE_T *getDateListHead()
     return pHead;
 }
 
-int addDateToList(char *dateString)
+int addDateToList(time_t unixTime)
 {
-    time_t *pTime = NULL;
     struct tm tm = {0};
     DATE_T *pPrev = NULL;
     DATE_T *pDateTime = NULL;
     int i;
     int status = 0;
 
-    pTime = calloc(1, sizeof(time_t));
+    /*pTime = calloc(1, sizeof(time_t));
     strptime(dateString, "%d/%m/%Y", &tm);
-    *pTime = mktime(&tm);
+    *pTime = mktime(&tm);*/
     pDateTime = calloc(1, sizeof(DATE_T));
     if (pDateTime)
     {
-        pDateTime->pData = pTime;
+        pDateTime->unixTime = unixTime;
         pCurrent = pHead;
         if (pCurrent == NULL)
         {
@@ -59,14 +58,14 @@ int addDateToList(char *dateString)
             status = 1;
             ++dateSize;
         }
-        else if ((*pTime) < (*pHead->pData))
+        else if (unixTime < pHead->unixTime)
         {
             pDateTime->pNext = pHead;
             pHead = pDateTime;
             status = 1;
             ++dateSize;
         }
-        else if ((*pTime) > (*pTail->pData))
+        else if (unixTime > pTail->unixTime)
         {
             pTail->pNext = pDateTime;
             pTail = pDateTime;
@@ -79,7 +78,7 @@ int addDateToList(char *dateString)
             pCurrent = pCurrent->pNext;
             while (pCurrent)
             {
-                if (((*pTime) > (*pPrev->pData)) && ((*pTime) < (*pCurrent->pData)))
+                if (unixTime > pPrev->unixTime && unixTime < pCurrent->unixTime)
                 {
                     pPrev->pNext = pDateTime;
                     pDateTime->pNext = pCurrent;
@@ -98,18 +97,18 @@ int addDateToList(char *dateString)
     return status;
 }
 
-int removeDateFromList(char *dateString)
+int removeDateFromList(time_t unixTime)
 {
-    time_t pTime;
-    struct tm tm = {0};
+    // time_t pTime;
+    //struct tm tm = {0};
     DATE_T *pPrev = NULL;
     DATE_T *pFound = NULL;
     int status = 0;
-    strptime(dateString, "%d/%m/%Y", &tm);
-    pTime = mktime(&tm);
+    /*strptime(dateString, "%d/%m/%Y", &tm);
+    pTime = mktime(&tm);*/
     if (pHead)
     {
-        if (pTime == *pHead->pData)
+        if (unixTime == pHead->unixTime)
         {
             pFound = pHead;
             if (pHead == pTail)
@@ -127,7 +126,7 @@ int removeDateFromList(char *dateString)
             pCurrent = pCurrent->pNext;
             while (pCurrent)
             {
-                if (pTime == (*pCurrent->pData))
+                if (unixTime == pCurrent->unixTime)
                 {
                     pFound = pCurrent;
                     pPrev->pNext = pCurrent->pNext;
@@ -160,7 +159,6 @@ void calculateEndDate(char *startDate, int dayWork, char *endDate, size_t size)
     time_t unixTime;
     strptime(startDate, "%d/%m/%Y ", &tm);
     unixTime = mktime(&tm);
-    //unixTime += dayWork * one_day;
     for (int i = 0; i <= dayWork; i++)
     {
         ptm = NULL;
@@ -180,7 +178,7 @@ void calculateEndDate(char *startDate, int dayWork, char *endDate, size_t size)
         pCurrent = pHead;
         while (pCurrent)
         {
-            if (unixTime == *pCurrent->pData)
+            if (unixTime == pCurrent->unixTime)
             {
                 unixTime += one_day;
                 ptm = NULL;

@@ -5,7 +5,7 @@
 
 typedef struct _dateList
 {
-    time_t *pData;
+    time_t unixTime;
     struct _dateList *pNext;
 } DATE_T;
 
@@ -17,9 +17,9 @@ int getTotalDayOff();
 
 DATE_T *getDateListHead();
 
-int addDateToList(char *dateString);
+int addDateToList(time_t unixTime);
 
-int removeDateFromList(char *dateSring);
+int removeDateFromList(time_t unixTime);
 
 void calculateEndDate(char *startDate, int dayWork, char *endDate, size_t size);
 

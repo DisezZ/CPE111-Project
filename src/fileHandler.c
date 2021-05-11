@@ -519,11 +519,13 @@ int readInformationFile(char projectName[], char *addressFolder)
     char temp[128] = {0};
     char keyEdgeOne[64] = {0};
     char keyEdgeTwo[64] = {0};
+    char projectDescription[256] = {0};
     int weight = 0;
     int add_edge_status = -4;
     int add_vertex_status = -2;
     int status = 1;
     int weekend = 0;
+    time_t unixTime;
 
     FILE *databaseFile = NULL;
 
@@ -536,6 +538,10 @@ int readInformationFile(char projectName[], char *addressFolder)
         initNetwork();
         while (fgets(inputLine, sizeof(inputLine), databaseFile) != NULL)
         {
+            if (sscanf(inputLine, "ABOUT:%[^;];",projectDescription) == 1)
+            {
+                printf("projectDescription:%s\n",projectDescription);
+            }
             if (sscanf(inputLine, "NAME:%[^;];INFORMATION:%[^;];WEIGHT:%[^;];", taskName, information, charWeight) == 3)
             {
                 sscanf(charWeight, "%d", &weight);
@@ -583,6 +589,23 @@ int readInformationFile(char projectName[], char *addressFolder)
                     status = 0;
                 }
             }
+            if (sscanf(inputLine, "WEEKEND:%d;",&weekend) == 1)
+            {
+                printf("weekend = %d\n",weekend);
+                if(weekend == 1)
+                {
+                    setWeekendStatus();
+                }
+            }
+            if (sscanf(inputLine, "UNIXTIME:%[^;];",input) == 1)
+            {
+                sscanf(input,"%ld",&unixTime);
+                status = addDateToList(unixTime);
+                if(status == 1)
+                {
+                    printf("good\n");
+                }
+            }
         }
         fclose(databaseFile);
     }
@@ -624,7 +647,7 @@ int writeInformationFile(char projectName[], char *addressFolder)
     int taskWeight = 0;
     int status = 0;
     int weekend = 0;
-    time_t * unixTime = NULL;
+    time_t wUnixTime;
 
     VERTEX_T *currentVertex = NULL;
     VERTEX_T *currentAdjacent = NULL;
@@ -673,8 +696,8 @@ int writeInformationFile(char projectName[], char *addressFolder)
         timeList = getDateListHead();
         while(timeList != NULL)
         {
-            unixTime = timeList->pData;
-            fprintf(currentProjectFile, "UNIXTIME:%ld;\n",*unixTime);
+            wUnixTime = timeList->unixTime;
+            fprintf(currentProjectFile, "UNIXTIME:%ld;\n",wUnixTime);
             timeList = timeList->pNext;
         }
         status = 1;

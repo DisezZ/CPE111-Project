@@ -15,6 +15,9 @@
 #include <string.h>
 #include <dirent.h>
 #include <unistd.h>
+#define __USE_XOPEN
+#define _GNU_SOURCE
+#define _XOPEN_SOURCE 700
 #include <time.h>
 #include "main.h"
 #include "abstractNetwork.h"
@@ -818,6 +821,8 @@ void addDayOff()
 {
     char dateString[128];
     int returnStatus;
+    struct tm tm = {0};
+    time_t unixTime;
 
     getTerminalInput(dateString, sizeof(dateString), "Enter date ex. 01/01/2021: ");
     if (!strlen(dateString))
@@ -830,7 +835,9 @@ void addDayOff()
     }*/
     else
     {
-        returnStatus = addDateToList(dateString);
+        strptime(dateString, "%d/%m/%Y", &tm);
+        unixTime = mktime(&tm);
+        returnStatus = addDateToList(unixTime);
     }
 }
 
@@ -838,6 +845,8 @@ void removeDayOff()
 {
     char dateString[128];
     int returnStatus;
+    struct tm tm = {0};
+    time_t unixTime;
 
     getTerminalInput(dateString, sizeof(dateString), "Enter date ex. 01/01/2021: ");
     if (!strlen(dateString))
@@ -850,7 +859,9 @@ void removeDayOff()
     }*/
     else
     {
-        returnStatus = removeDateFromList(dateString);
+        strptime(dateString, "%d/%m/%Y", &tm);
+        unixTime = mktime(&tm);
+        returnStatus = removeDateFromList(unixTime);
     }
 }
 
@@ -871,7 +882,7 @@ void displayEveryDayOff()
         pCurrent = getDateListHead();
         while (pCurrent)
         {
-            tm = localtime(pCurrent->pData);
+            tm = localtime(&pCurrent->unixTime);
             strftime(dateString, sizeof(dateString), "%d/%m/%Y", tm);
             printf("%d) %s\n", i, dateString);
             pCurrent = pCurrent->pNext;
