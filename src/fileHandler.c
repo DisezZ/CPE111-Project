@@ -27,7 +27,10 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <stdlib.h>
+#include <time.h>
+#include "main.h"
 #include "abstractNetwork.h"
+#include "dateCalendarManager.h"
 
 /*
 typedef struct _adjVertex
@@ -517,10 +520,13 @@ int readInformationFile(char projectName[], char *addressFolder)
     char temp[128] = {0};
     char keyEdgeOne[64] = {0};
     char keyEdgeTwo[64] = {0};
+    char projectDescription[256] = {0};
     int weight = 0;
     int add_edge_status = -4;
     int add_vertex_status = -2;
     int status = 1;
+    int weekend = 0;
+    time_t unixTime;
 
     FILE *databaseFile = NULL;
 
@@ -533,6 +539,11 @@ int readInformationFile(char projectName[], char *addressFolder)
         initNetwork();
         while (fgets(inputLine, sizeof(inputLine), databaseFile) != NULL)
         {
+            if (sscanf(inputLine, "ABOUT:%[^;];", projectDescription) == 1)
+            {
+                //printf("projectDescription:%s\n",projectDescription);
+                setProjectDescription(projectDescription);
+            }
             if (sscanf(inputLine, "NAME:%[^;];INFORMATION:%[^;];WEIGHT:%[^;];", taskName, information, charWeight) == 3)
             {
                 sscanf(charWeight, "%d", &weight);
@@ -580,6 +591,23 @@ int readInformationFile(char projectName[], char *addressFolder)
                     status = 0;
                 }
             }
+            if (sscanf(inputLine, "WEEKEND:%d;", &weekend) == 1)
+            {
+                printf("weekend = %d\n", weekend);
+                if (weekend == 1)
+                {
+                    setWeekendStatus();
+                }
+            }
+            if (sscanf(inputLine, "UNIXTIME:%[^;];", input) == 1)
+            {
+                sscanf(input, "%ld", &unixTime);
+                status = addDateToList(unixTime);
+                if (status == 1)
+                {
+                    printf("good\n");
+                }
+            }
         }
         fclose(databaseFile);
     }
@@ -606,7 +634,7 @@ int readInformationFile(char projectName[], char *addressFolder)
 * open the file;
 *==========================================================================================
 */
-int writeInformationFile(char projectName[], char *addressFolder, void *vertexStruct)
+int writeInformationFile(char projectName[], char *addressFolder)
 {
     char input[64] = {0};
     char inputLine[128] = {0};
@@ -617,12 +645,16 @@ int writeInformationFile(char projectName[], char *addressFolder, void *vertexSt
     char temp[128] = {0};
     char keyEdgeOne[64] = {0};
     char keyEdgeTwo[64] = {0};
+    char projectDescription[256] = {0};
     int taskWeight = 0;
     int status = 0;
+    int weekend = 0;
+    time_t wUnixTime;
 
     VERTEX_T *currentVertex = NULL;
     VERTEX_T *currentAdjacent = NULL;
     EDGE_T *currentEdge = NULL;
+    DATE_T *timeList = NULL;
 
     FILE *currentProjectFile = NULL;
 
@@ -631,6 +663,9 @@ int writeInformationFile(char projectName[], char *addressFolder, void *vertexSt
     if (existProjectFileCheck(projectName, addressFolder) == 1)
     {
         currentProjectFile = fopen(projectFileName, "w");
+        getProjectDescription(projectDescription);
+        fprintf(currentProjectFile, "PROJECT DESCRIPTION:\n");
+        fprintf(currentProjectFile, "ABOUT:%s;\n", projectDescription);
         currentVertex = getVertexListHead();
         fprintf(currentProjectFile, "VERTEX:\n");
         while (currentVertex != NULL)
@@ -658,6 +693,15 @@ int writeInformationFile(char projectName[], char *addressFolder, void *vertexSt
                 currentEdge = currentEdge->pNext;
             }
             currentVertex = currentVertex->pNext;
+        }
+        fprintf(currentProjectFile, "WEEKEND:%d;\n", getWeekendStatus());
+        fprintf(currentProjectFile, "DAYOFF:\n");
+        timeList = getDateListHead();
+        while (timeList != NULL)
+        {
+            wUnixTime = timeList->unixTime;
+            fprintf(currentProjectFile, "UNIXTIME:%ld;\n", wUnixTime);
+            timeList = timeList->pNext;
         }
         status = 1;
         fclose(currentProjectFile);

@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "abstractNetwork.h"
 #include "userInterface.h"
 
 void getTerminalInput(char *bufferString, size_t size, char *printString)
@@ -56,6 +57,41 @@ void displayAllTaskAvailable(char **searchTaskList, int totalTask)
     printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 }
 
+int displayAllDependentOn(EDGE_T *pEdge)
+{
+    VERTEX_T *pAdjVertex = NULL;
+    EDGE_T *pTempt = pEdge;
+    int i = 0;
+    if (pTempt)
+    {
+        while (pTempt)
+        {
+            pAdjVertex = pTempt->pVertex;
+            if (strcmp(pAdjVertex->name, "end") != 0)
+            {
+                ++i;
+            }
+            pTempt = pTempt->pNext;
+        }
+        pTempt = pEdge;
+        printf("\nDependent on: %d\n", i + 1);
+        i = 0;
+        while (pTempt)
+        {
+            pAdjVertex = pTempt->pVertex;
+            if (strcmp(pAdjVertex->name, "end") != 0)
+            {
+                printf("\t%d) %s\n", i + 1, pAdjVertex->name);
+                ++i;
+            }
+            pTempt = pTempt->pNext;
+        }
+    }
+    else
+        printf("There is no dependent on yet\n");
+    return i;
+}
+
 void displayProjectMenuOptions()
 {
     printf("****************************************\n");
@@ -67,11 +103,22 @@ void displayProjectMenuOptions()
     printf("****************************************\n");
 }
 
-void displayTaskMenuOptions(char *projectName)
+void displayTaskMenuOptions(char *projectName, char *projectDescription, int size)
 {
     printf("****************************************\n");
     printf("Project Name: \"%s\"\n", projectName);
-    printf("Here's your 9 options:\n");
+    printf("Description:\n");
+    for (int i = 0; i < size; i++)
+    {
+        if (i % 50 == 0)
+        {
+            if (i != 0)
+                printf("\n");
+            printf("\t");
+        }
+        printf("%c", projectDescription[i]);
+    }
+    printf("\nHere's your 9 options:\n");
     printf("\t(1) Add task\n");
     printf("\t(2) Modify task\n");
     printf("\t(3) Delete task\n");
@@ -80,8 +127,9 @@ void displayTaskMenuOptions(char *projectName)
     printf("\t(6) Calculate project schedule\n");
     printf("\t(7) Modify working days\n");
     printf("\t(8) Change project name\n");
-    printf("\t(9) Back to project selection\n");
-    printf("\t(10) Exit\n");
+    printf("\t(9) Change project description\n");
+    printf("\t(10) Back to project selection\n");
+    printf("\t(11) Exit\n");
     printf("****************************************\n");
 }
 

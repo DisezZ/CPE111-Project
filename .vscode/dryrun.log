@@ -1,5 +1,5 @@
 make all --dry-run --keep-going --print-directory
 make: Entering directory '/home/lutfee/CPE111 - Project'
-gcc -o main bin/main.o bin/linkedListQueue.o bin/linkedListNetworkMod.o bin/fileHandler.o bin/userInterface.o bin/dateCalendarManager.o
+make: Nothing to be done for 'all'.
 make: Leaving directory '/home/lutfee/CPE111 - Project'
  

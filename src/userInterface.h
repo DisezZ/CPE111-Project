@@ -15,9 +15,11 @@ void displayAllProjectAvailable(char **projectNameList, int totalProject);
 
 void displayAllTaskAvailable(char **searchTaskList, int totalTask);
 
+int displayAllDependentOn(EDGE_T *pEdge);
+
 void displayProjectMenuOptions();
 
-void displayTaskMenuOptions(char *projectName);
+void displayTaskMenuOptions(char *projectName, char *projectDescription, int size);
 
 void displayModifyTaskMenuOptions(char *taskName);
 

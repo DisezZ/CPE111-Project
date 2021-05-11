@@ -338,7 +338,7 @@ void addTask()
         returnStatus = addVertex(taskName, taskDescription, taskWeight);
         if (returnStatus == 1)
         {
-            if (!writeInformationFile(workingProjectName, dataBaseDirectory, getVertexListHead()))
+            if (!writeInformationFile(workingProjectName, dataBaseDirectory))
             {
                 snprintf(printString, sizeof(printString), "Can't save task |%s| to database", taskName);
                 displayErrorMessage(printString);
@@ -443,7 +443,7 @@ void changeTaskName(char *taskName)
         returnStatus = modifyVertexName(taskName, newTaskName);
         if (returnStatus == 1)
         {
-            if (!writeInformationFile(workingProjectName, dataBaseDirectory, getVertexListHead()))
+            if (!writeInformationFile(workingProjectName, dataBaseDirectory))
             {
                 snprintf(printString, sizeof(printString), "Can't save changed |%s| to database", newTaskName);
                 displayErrorMessage(printString);
@@ -484,7 +484,7 @@ void changeTaskDescription(char *taskName)
         returnStatus = modifyVertexDescription(taskName, newTaskDescription);
         if (returnStatus == 1)
         {
-            if (!writeInformationFile(workingProjectName, dataBaseDirectory, getVertexListHead()))
+            if (!writeInformationFile(workingProjectName, dataBaseDirectory))
             {
                 snprintf(printString, sizeof(printString), "Can't save changes |%s| to database", taskName);
                 displayErrorMessage(printString);
@@ -519,7 +519,7 @@ void changeTaskWeight(char *taskName)
     else
     {
         modifyVertexWeight(taskName, newTaskWeight);
-        if (!writeInformationFile(workingProjectName, dataBaseDirectory, getVertexListHead()))
+        if (!writeInformationFile(workingProjectName, dataBaseDirectory))
         {
             snprintf(printString, sizeof(printString), "Can't save changed |%d| to database", newTaskWeight);
             displayErrorMessage(printString);
@@ -547,7 +547,7 @@ void addDependency(char *taskName)
         returnStatus = addEdge(taskName, toTaskName);
         if (returnStatus == 1)
         {
-            writeInformationFile(workingProjectName, dataBaseDirectory, getVertexListHead());
+            writeInformationFile(workingProjectName, dataBaseDirectory);
             printf("Success to add dependency destination.\n");
         }
         else if (returnStatus == -1)
@@ -586,7 +586,7 @@ void changeDependency(char *taskName)
         returnStatus = modifyEdge(taskName, fromTaskName, toTaskName);
         if (returnStatus == 1)
         {
-            writeInformationFile(workingProjectName, dataBaseDirectory, getVertexListHead);
+            writeInformationFile(workingProjectName, dataBaseDirectory);
             printf("Success to change dependency destination.\n");
         }
         else if (returnStatus == -1)
@@ -623,7 +623,7 @@ void deleteDependency(char *taskName)
         returnStatus = deleteEdge(taskName, toTaskName);
         if (returnStatus == 1)
         {
-            writeInformationFile(workingProjectName, dataBaseDirectory, getVertexListHead());
+            writeInformationFile(workingProjectName, dataBaseDirectory);
             printf("Success to delete dependency destination.\n");
         }
         else if (returnStatus == -1)
@@ -640,7 +640,7 @@ void deleteDependency(char *taskName)
 void modifyTaskOptionFlowManager(char *taskName)
 {
     char choice[8]; /* store choice from user */
-
+    VERTEX_T *pVertex = findVertex(taskName);
     while (1)
     {
         displayModifyTaskMenuOptions(taskName);
@@ -655,11 +655,17 @@ void modifyTaskOptionFlowManager(char *taskName)
         }
         else if (strcmp(choice, "3") == 0)
         {
-            changeDependency(taskName);
+            if (displayAllDependentOn(pVertex->adjListHead))
+            {
+                changeDependency(taskName);
+            }
         }
         else if (strcmp(choice, "4") == 0)
         {
-            deleteDependency(taskName);
+            if (displayAllDependentOn(pVertex->adjListHead))
+            {
+                deleteDependency(taskName);
+            }
         }
         else if (strcmp(choice, "5") == 0)
         {
@@ -700,7 +706,7 @@ void deleteTask(char *taskName)
     int returnStatus; /* store function return value */
 
     returnStatus = deleteVertex(taskName);
-    writeInformationFile(workingProjectName, dataBaseDirectory, getVertexListHead);
+    writeInformationFile(workingProjectName, dataBaseDirectory);
     printf("Success to delete task.\n");
 }
 
@@ -752,7 +758,7 @@ void changeProjectDescription()
 {
     char newDescription[256];
     if (strlen(projectDescription))
-        printf("About Project:\n\t%s\n");
+        printf("About Project:\n\t%s\n", projectDescription);
     else
         printf("\"%s\" has no description yet\n", workingProjectName);
     getTerminalInput(projectDescription, sizeof(newDescription), "Enter new project description: ");
@@ -777,7 +783,7 @@ void taskOptionFlowManager(int *fileOpenStatus)
     while (1)
     {
         returnStatus = 0;
-        displayTaskMenuOptions(workingProjectName);
+        displayTaskMenuOptions(workingProjectName, projectDescription, strlen(projectDescription));
         getTerminalInput(choice, sizeof(choice), "Enter your option: ");
         if (strcmp(choice, "1") == 0)
         {
@@ -814,13 +820,13 @@ void taskOptionFlowManager(int *fileOpenStatus)
         {
             modifyWorkingDayOptionFlowManager();
         }
-        else if (strcmp(choice, "8") == 0) // change project description
-        {
-            changeProjectDescription();
-        }
-        else if (strcmp(choice, "9") == 0) // change project name
+        else if (strcmp(choice, "8") == 0) // change project name
         {
             renameProject();
+        }
+        else if (strcmp(choice, "9") == 0) // change project description
+        {
+            changeProjectDescription();
         }
         else if (strcmp(choice, "10") == 0) // back to project selection
         {
@@ -842,7 +848,8 @@ void taskOptionFlowManager(int *fileOpenStatus)
 
 void addDayOff()
 {
-    char dateString[128];
+    char printString[256];
+    char dateString[16];
     int returnStatus;
     struct tm tm = {0};
     time_t unixTime;
@@ -861,12 +868,23 @@ void addDayOff()
         strptime(dateString, "%d/%m/%Y", &tm);
         unixTime = mktime(&tm);
         returnStatus = addDateToList(unixTime);
+        if (returnStatus && writeInformationFile(workingProjectName, dataBaseDirectory))
+        {
+            snprintf(printString, sizeof(printString), "Added day off to \"%s\"", workingProjectName);
+            displaySuccessMessage(printString);
+        }
+        else
+        {
+            snprintf(printString, sizeof(printString), "While add day off to \"%s\"", workingProjectName);
+            displayErrorMessage(printString);
+        }
     }
 }
 
 void removeDayOff()
 {
-    char dateString[128];
+    char printString[256];
+    char dateString[16];
     int returnStatus;
     struct tm tm = {0};
     time_t unixTime;
@@ -885,15 +903,26 @@ void removeDayOff()
         strptime(dateString, "%d/%m/%Y", &tm);
         unixTime = mktime(&tm);
         returnStatus = removeDateFromList(unixTime);
+        if (returnStatus && writeInformationFile(workingProjectName, dataBaseDirectory))
+        {
+            snprintf(printString, sizeof(printString), "Deleted day off from \"%s\"", workingProjectName);
+            displaySuccessMessage(printString);
+        }
+        else
+        {
+            snprintf(printString, sizeof(printString), "While delete day off from \"%s\"", workingProjectName);
+            displayErrorMessage(printString);
+        }
     }
 }
 
-void displayEveryDayOff()
+int displayEveryDayOff()
 {
     char dateString[16];
     DATE_T *pCurrent = NULL;
     struct tm *tm = NULL;
     int totalDate;
+    int status = 0;
     int i = 1;
 
     totalDate = getTotalDayOff();
@@ -901,6 +930,7 @@ void displayEveryDayOff()
         printf(">>> There is no day off yet!.\n");
     else
     {
+        status = 1;
         printf("\nTotal %d:\n", totalDate);
         pCurrent = getDateListHead();
         while (pCurrent)
@@ -927,6 +957,10 @@ void modifyWorkingDayOptionFlowManager()
         if (strcmp(choice, "1") == 0)
         {
             setWeekendStatus();
+            if (!writeInformationFile(workingProjectName, dataBaseDirectory))
+                displayErrorMessage("While changing weekend day");
+            else
+                displaySuccessMessage("Weekend changed");
         }
         else if (strcmp(choice, "2") == 0)
         {
@@ -934,7 +968,10 @@ void modifyWorkingDayOptionFlowManager()
         }
         else if (strcmp(choice, "3") == 0)
         {
-            removeDayOff();
+            if (displayEveryDayOff())
+            {
+                removeDayOff();
+            }
         }
         else if (strcmp(choice, "4") == 0)
         {
@@ -964,8 +1001,7 @@ void freeStringArray(int size, char **stringToFree)
 
 void getProjectDescription(char *string)
 {
-    string = calloc(strlen(string), sizeof(char));
-    strcpy(string, projectDescription);
+    sscanf(projectDescription, "%s", string);
 }
 
 void setProjectDescription(char *string)

@@ -25,7 +25,7 @@ void dispalyAllTask();                 /* This function will display all the tas
 void calculateProjectSchedule();       /* This function will calculate the project schedule start date and end date of each task */
 void changeProjectDescription();
 void freeStringArray(int size, char **stringToFree);
-void displayEveryDayOff();
+int displayEveryDayOff();
 void removeDayOff();
 void addDayOff();
 void getProjectDescription(char *string);
