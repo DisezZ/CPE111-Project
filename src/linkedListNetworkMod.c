@@ -411,12 +411,6 @@ void LongestPath()
     topSortVertices = calloc(totalVertex, sizeof(VERTEX_T *));
     sortTopoligcal(topSortVertices, &traverseIndex);
     resetAllVertex();
-    /*for (int i = 0; i < totalVertex; i++)
-    {
-        pCurrentVertex = topSortVertices[i];
-        printf("%s ", pCurrentVertex->name);
-    }
-    printf("\n");*/
     pCurrentVertex = vertexListHead;
     while (pCurrentVertex != NULL)
     {
@@ -438,15 +432,6 @@ void LongestPath()
         }
         pCurrentVertex = pCurrentVertex->pNext;
     }
-    /*printf("Max total weight of longest path: %d\n", endVertex->totalDay);
-    printf("Path:\n");
-    pCurrentVertex = endVertex;
-    while (pCurrentVertex != NULL)
-    {
-        printf("==> '%s' ", pCurrentVertex->name);
-        pCurrentVertex = pCurrentVertex->pParentVertex;
-    }
-    printf("\n");*/
     free(topSortVertices);
 }
 
@@ -557,9 +542,44 @@ int addVertex(char *key, char *description, int weight)
     return status;
 }
 
-int modifyVertex(char *key, char *newKey, char *newDescription, int newWeight)
+int modifyVertexName(char *key, char *newKey)
 {
-    int status = 1;
+    int status = 0;
+    char *stringTempt = NULL;
+    VERTEX_T *pFound1 = NULL;
+    VERTEX_T *pFound2 = NULL;
+    VERTEX_T *pPrev1 = NULL;
+    VERTEX_T *pPrev2 = NULL;
+
+    pFound1 = findVertexByKey(key, &pPrev1);
+    pFound2 = findVertexByKey(newKey, &pPrev2);
+    if (pFound1 == NULL)
+    {
+        status = -1;
+    }
+    else if (pFound2)
+    {
+        status = -2;
+    }
+    else
+    {
+        stringTempt = calloc(strlen(newKey), sizeof(char));
+        if (stringTempt)
+        {
+            free(pFound1->name);
+            pFound1->name = stringTempt;
+            strcpy(pFound1->name, newKey);
+            status = 1;
+        }
+    }
+
+    return status;
+}
+
+int modifyVertexDescription(char *key, char *newDescription)
+{
+    int status = 0;
+    char *stringTempt = NULL;
     VERTEX_T *pFound = NULL;
     VERTEX_T *pPrev = NULL;
     EDGE_T *pCurrentEdge = NULL;
@@ -571,25 +591,35 @@ int modifyVertex(char *key, char *newKey, char *newDescription, int newWeight)
     }
     else
     {
-        printf(":%s:%s:%d", newKey, newDescription, newWeight);
-        if (strlen(newKey) != 0)
+        stringTempt = calloc(strlen(newDescription), sizeof(char));
+        if (pFound->description)
         {
-            //pFound->name = strdup(newKey);
-            free(pFound->name);
-            pFound->name = calloc(strlen(newKey), sizeof(char));
-            strcpy(pFound->name, newKey);
-        }
-        if (strlen(newDescription) != 0)
-        {
-            //pFound->description = strdup(newDescription);
             free(pFound->description);
-            pFound->description = calloc(strlen(newDescription), sizeof(char));
+            pFound->description = stringTempt;
             strcpy(pFound->description, newDescription);
+            status = 1;
         }
-        if (newWeight > 0)
-        {
-            pFound->dayWork = newWeight;
-        }
+    }
+
+    return status;
+}
+
+int modifyVertexWeight(char *key, int newWeight)
+{
+    int status = 0;
+    VERTEX_T *pFound = NULL;
+    VERTEX_T *pPrev = NULL;
+    EDGE_T *pCurrentEdge = NULL;
+
+    pFound = findVertexByKey(key, &pPrev);
+    if (pFound == NULL)
+    {
+        status = -1;
+    }
+    else if (newWeight > 0)
+    {
+        pFound->dayWork = newWeight;
+        status = 1;
     }
 
     return status;

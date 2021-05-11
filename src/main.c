@@ -15,10 +15,12 @@
 #include <string.h>
 #include <dirent.h>
 #include <unistd.h>
+#include <time.h>
 #include "main.h"
 #include "abstractNetwork.h"
 #include "fileManagement.h"
 #include "userInterface.h"
+#include "dateCalendarManager.h"
 
 char *dataBaseDirectory = NULL;
 char workingProjectName[128] = {0};
@@ -27,25 +29,35 @@ int argvOneProcess(char *projectNameIn)
 {
     int fileOpenStatus = 0;
     int returnStatus;
+    char printString[256];
     char choice[8];
 
     returnStatus = readInformationFile(projectNameIn, dataBaseDirectory);
     if (returnStatus == -1)
     {
-        displayErrorMessage("Can't find a file with given name in project's folder");
-        getTerminalInput(choice, sizeof(choice), "Create new project with given name? [YES=y|NO=else] : ");
+        snprintf(printString, sizeof(printString), "Not found project \"%s\"", projectNameIn);
+        displayErrorMessage(printString);
+        snprintf(printString, sizeof(printString), "Create new project named \"%s\"? [YES=y|NO=else] : ", projectNameIn);
+        getTerminalInput(choice, sizeof(choice), printString);
         if (strcmp(choice, "y") == 0)
         {
             returnStatus = addNewProjectFile(projectNameIn, dataBaseDirectory);
             if (returnStatus)
-                displaySuccessMessage("New project is created");
+            {
+                snprintf(printString, sizeof(printString), "Project \"%s\" is created", projectNameIn);
+                displaySuccessMessage(printString);
+            }
             else
-                displayErrorMessage("While creating project's file with given name");
+            {
+                snprintf(printString, sizeof(printString), "While creating project \"%s\"", projectNameIn);
+                displayErrorMessage(printString);
+            }
         }
     }
     else if (returnStatus == 0)
     {
-        displayErrorMessage("While reading information from database");
+        snprintf(printString, sizeof(printString), "While reading information from \"C%s\"", projectNameIn);
+        displayErrorMessage(printString);
     }
     else
     {
@@ -56,11 +68,45 @@ int argvOneProcess(char *projectNameIn)
     return fileOpenStatus;
 }
 
+void changeTaskInfoOptionFlowManager(char *taskName)
+{
+    char choice[8]; /* store choice from user */
+    VERTEX_T *pFound = NULL;
+
+    while (1)
+    {
+        pFound = findVertex(taskName);
+        displayChangeTaskInfoOptions(pFound->name, pFound->description, pFound->dayWork);
+        getTerminalInput(choice, sizeof(choice), "Enter tour option: ");
+        if (strcmp(choice, "1") == 0)
+        {
+            changeTaskName(taskName);
+        }
+        else if (strcmp(choice, "2") == 0)
+        {
+            changeTaskDescription(taskName);
+        }
+        else if (strcmp(choice, "3") == 0)
+        {
+            changeTaskWeight(taskName);
+        }
+        else if (strcmp(choice, "4") == 0)
+        {
+            break;
+        }
+        else
+        {
+            printf("\n----- Invalid option, please select option again -----\n\n");
+        }
+    }
+}
+
 void addNewProject(int *fileOpenStatus)
 {
-    int returnStatus;
+    char printString[256];
     char projectNameIn[128];
     char choice[8];
+    int returnStatus;
 
     getTerminalInput(projectNameIn, sizeof(projectNameIn), "Enter new project name : ");
     if (!strlen(projectNameIn))
@@ -72,15 +118,19 @@ void addNewProject(int *fileOpenStatus)
         returnStatus = addNewProjectFile(projectNameIn, dataBaseDirectory);
         if (!returnStatus)
         {
-            displayErrorMessage("File with given file name already exist");
-            getTerminalInput(choice, sizeof(choice), "Do you want to continue(overwrite) this file? [YES=y|NO=else] : ");
+            snprintf(printString, sizeof(printString), "Projetc \"%s\" already exist", projectNameIn);
+            displayErrorMessage(printString);
+            snprintf(printString, sizeof(printString), "Do you want to continue(overwrite) \"%s\"? [YES=y|NO=else] : ", projectNameIn);
+            getTerminalInput(choice, sizeof(choice), printString);
             if (strcmp(choice, "y") == 0)
             {
                 if (deleteProjectFile(projectNameIn, dataBaseDirectory) &&
                     addNewProjectFile(projectNameIn, dataBaseDirectory))
                 {
-                    displaySuccessMessage("Success to create new project");
-                    getTerminalInput(choice, sizeof(choice), "Do you want to working this file [YES=y|NO=else]: ");
+                    snprintf(printString, sizeof(printString), "Project \"%s\" is created", projectNameIn);
+                    displaySuccessMessage(printString);
+                    snprintf(printString, sizeof(printString), "Do you want to enter to project \"%s\" [YES=y|NO=else] : ", projectNameIn);
+                    getTerminalInput(choice, sizeof(choice), printString);
                     if (strcmp(choice, "y") == 0)
                     {
                         strcpy(workingProjectName, projectNameIn);
@@ -89,13 +139,15 @@ void addNewProject(int *fileOpenStatus)
                 }
                 else
                 {
-                    displayErrorMessage("While overwriting to database file");
+                    snprintf(printString, sizeof(printString), "While overwriting to project \"%s\"", projectNameIn);
+                    displayErrorMessage(printString);
                 }
             }
         }
         else
         {
-            displaySuccessMessage("Added project to database folder");
+            snprintf(printString, sizeof(printString), "Added project \"%s\" to database", projectNameIn);
+            displaySuccessMessage(printString);
         }
     }
     if (*fileOpenStatus)
@@ -106,6 +158,7 @@ void enterExistProject(int *fileOpenStatus)
 {
     char choice[8];
     char projectNameIn[128];
+    char printString[256];
     char **projectNameList;
     int totalProject = 0;
     int returnStatus;
@@ -131,8 +184,10 @@ void enterExistProject(int *fileOpenStatus)
         }
         if (returnStatus == 0 || searchStatus == 0)
         {
-            displayErrorMessage("Project with given file name is not exist");
-            getTerminalInput(choice, sizeof(choice), "Create new project with given name? [YES=y][NO=else] : ");
+            snprintf(printString, sizeof(printString), "Project \"%s\" is not exist", projectNameIn);
+            displayErrorMessage(printString);
+            snprintf(printString, sizeof(printString), "Create new project named \"%s\"? [YES=y|NO=else] : ", projectNameIn);
+            getTerminalInput(choice, sizeof(choice), printString);
             if (strcmp(choice, "y\n") == 0)
             {
                 returnStatus = addNewProjectFile(projectNameIn, dataBaseDirectory);
@@ -154,10 +209,11 @@ void enterExistProject(int *fileOpenStatus)
 
 void deleteExistProject(int *fileOpenStatus)
 {
-    int returnStatus;              /*return status*/
+    char printString[256];
     char projectNameDelete[128];   /*project file name that want to delete*/
     char **projectNameList = NULL; /*list of project name*/
     int totalProject = 0;          /*total file in database*/
+    int returnStatus;              /*return status*/
 
     projectNameList = findProjectFileDatabase(dataBaseDirectory, &totalProject);
     displayAllProjectAvailable(projectNameList, totalProject);
@@ -171,11 +227,13 @@ void deleteExistProject(int *fileOpenStatus)
         returnStatus = deleteProjectFile(projectNameDelete, dataBaseDirectory);
         if (returnStatus == 1)
         {
+            snprintf(printString, sizeof(printString), "Project \"%s\" deleted", projectNameDelete);
             displaySuccessMessage("Project deleted");
         }
         else
         {
-            displayErrorMessage("Project with given name doesn't exist");
+            snprintf(printString, sizeof(printString), "Project \"%s\" doesn't exist", projectNameDelete);
+            displayErrorMessage(printString);
         }
     }
     freeStringArray(totalProject, projectNameList);
@@ -218,6 +276,7 @@ void projectOptionFlowManager(int *fileOpenStatus)
 
 void renameProject()
 {
+    char printString[384];
     char projectNameRename[128]; /* new file name to be raname into */
     int returnStatus;            /* store return value from function */
 
@@ -231,26 +290,31 @@ void renameProject()
         returnStatus = renameProjectFile(workingProjectName, projectNameRename, dataBaseDirectory);
         if (returnStatus == 1)
         {
+            snprintf(printString, sizeof(printString), "Project \"%s\" renamed to \"%s\"", workingProjectName, projectNameRename);
+            displaySuccessMessage(printString);
             strcpy(workingProjectName, projectNameRename);
-            displaySuccessMessage("Project renamed");
         }
         else if (returnStatus == -1)
         {
-            displayErrorMessage("Project with given name is already exist");
+            snprintf(printString, sizeof(printString), "Project \"%s\" already exist", projectNameRename);
+            displayErrorMessage(printString);
         }
         else if (returnStatus == -2)
         {
-            displayErrorMessage("Not found project with given name");
+            snprintf(printString, sizeof(printString), "Project \"%s\" doesn't exist", projectNameRename);
+            displayErrorMessage(printString);
         }
         else
         {
-            displayErrorMessage("While rename the project");
+            snprintf(printString, sizeof(printString), "While rename project \"%s\" to \"%s\"", workingProjectName, projectNameRename);
+            displayErrorMessage(printString);
         }
     }
 }
 
 void addTask()
 {
+    char printString[256];
     char taskName[128];         /* sore task name */
     char taskDescription[128];  /* store task information */
     char taskWeightString[128]; /* store task weight in string */
@@ -263,7 +327,7 @@ void addTask()
     sscanf(taskWeightString, "%d", &taskWeight);
     if (!strlen(taskName) || !strlen(taskDescription))
     {
-        printf(">>> Input error - key or data empty!\n");
+        displayInvalidMessage("Task's name or description can't be empty");
     }
     else
     {
@@ -272,26 +336,33 @@ void addTask()
         {
             if (!writeInformationFile(workingProjectName, dataBaseDirectory, getVertexListHead()))
             {
-                displayErrorMessage("Can't save the to database file");
+                snprintf(printString, sizeof(printString), "Can't save task |%s| to database", taskName);
+                displayErrorMessage(printString);
             }
-            printf(">>> Vertex |%s| added\n", taskName);
+            else
+            {
+                snprintf(printString, sizeof(printString), "Task |%s| added", taskName);
+                displayErrorMessage(printString);
+            }
         }
         else if (returnStatus == -1)
         {
-            printf(">>> Vertex with key |%s| already exists in graph\n", taskName);
+            snprintf(printString, sizeof(printString), "Task |%s| already exist\n", taskName);
+            displayErrorMessage(printString);
         }
         else if (returnStatus == -2)
         {
-            printf(">>> Vertex with key |%s| has error assign start and end edge\n", taskName);
+            snprintf(printString, sizeof(printString), "While assign task |%s| to start and end\n", taskName);
+            displayErrorMessage(printString);
         }
         else
         {
-            printf(">>> Memory allocation error or graph full!\n");
+            displayErrorMessage("While allocating memory");
         }
     }
 }
 
-int allTask(char **searchResultList)
+int getAllTask(char **searchResultList)
 {
     VERTEX_T *pAdjVertex = NULL;
     VERTEX_T *pCurrentVertex = getStartVertex();
@@ -312,22 +383,9 @@ int allTask(char **searchResultList)
     return i;
 }
 
-/*char **searchTask(int *totalTask, char *searchString)
-{
-    char terminalInput[128];  /*string in terminal
-    char taskName[128];       /*name of task
-    char **resultList = NULL; /*the result of function
-
-    getTerminalInput(taskName, sizeof(taskName), "Enter the task name : ");
-    memset(searchString, 0, sizeof(searchString));
-    strcpy(searchString, taskName);
-    resultList = searchVertex(taskName, totalTask);
-
-    return resultList;
-}*/
-
 int findTask(char *searchTask, size_t size)
 {
+    char printString[256];
     char **searchTaskList = NULL;
     char choice[8];
     int totalTask = 0;
@@ -335,7 +393,7 @@ int findTask(char *searchTask, size_t size)
 
     totalTask = getTotalVertex();
     searchTaskList = calloc(totalTask, sizeof(char *));
-    allTask(searchTaskList);
+    getAllTask(searchTaskList);
     while (1)
     {
 
@@ -351,7 +409,8 @@ int findTask(char *searchTask, size_t size)
         }
         if (returnStatus == 0)
         {
-            displayInvalidMessage("Given task not exist in the database");
+            snprintf(printString, sizeof(printString), "Task |%s| not exist", searchTask);
+            displayInvalidMessage(printString);
             getTerminalInput(choice, sizeof(choice), "[BACK = y][CONTINUE = else] : ");
             if (strcmp(choice, "y"))
                 break;
@@ -363,34 +422,108 @@ int findTask(char *searchTask, size_t size)
     return returnStatus;
 }
 
-void changeTaskInfo(char *taskName)
+void changeTaskName(char *taskName)
 {
-    char newTaskName[128];        /* store task name */
-    char newTaskDescription[128]; /* store task info */
-    char newTaskWeightString[128];
-    int newTaskWeight = 0; /* store task weight */
-    int returnStatus;      /* store return value from function */
+    char printString[256];
+    char newTaskName[128];
+    int returnStatus;
 
     getTerminalInput(newTaskName, sizeof(newTaskName), "Enter new task name : ");
-    getTerminalInput(newTaskDescription, sizeof(newTaskDescription), "Enter new task description : ");
-    getTerminalInput(newTaskWeightString, sizeof(newTaskWeightString), "Enter new task working day : ");
-    sscanf(newTaskWeightString, "%d", &newTaskWeight);
-    if (newTaskWeight < 1)
+    if (strlen(newTaskName) == 0)
     {
-        displayInvalidMessage("Task weight can't empty or less than 1");
+        snprintf(printString, sizeof(printString), "Task |%s| name can't empty", taskName);
+        displayInvalidMessage(printString);
     }
     else
     {
-        returnStatus = modifyVertex(taskName, newTaskName, newTaskDescription, newTaskWeight);
+        returnStatus = modifyVertexName(taskName, newTaskName);
         if (returnStatus == 1)
         {
-            writeInformationFile(workingProjectName, dataBaseDirectory, getVertexListHead());
-            strcpy(taskName, newTaskName);
-            printf("Success to change task information.\n");
+            if (!writeInformationFile(workingProjectName, dataBaseDirectory, getVertexListHead()))
+            {
+                snprintf(printString, sizeof(printString), "Can't save changed |%s| to database", newTaskName);
+                displayErrorMessage(printString);
+            }
+            else
+            {
+                snprintf(printString, sizeof(printString), "Task |%s| name changed to |%s|", taskName, newTaskName);
+                strcpy(taskName, newTaskName);
+                displaySuccessMessage(printString);
+            }
         }
-        else if (returnStatus == -1)
+        else if (returnStatus == -2)
         {
-            printf("Oops, Can't find the task name.\n");
+            snprintf(printString, sizeof(printString), "Task |%s| already exist", newTaskName);
+            displayErrorMessage(printString);
+        }
+        else
+        {
+            displayErrorMessage("While allocating memory");
+        }
+    }
+}
+
+void changeTaskDescription(char *taskName)
+{
+    char printString[256];
+    char newTaskDescription[128];
+    int returnStatus;
+
+    getTerminalInput(newTaskDescription, sizeof(newTaskDescription), "Enter new task description : ");
+    if (strlen(newTaskDescription) == 0)
+    {
+        snprintf(printString, sizeof(printString), "Task \"%s\" description can't empty", taskName);
+        displayInvalidMessage(printString);
+    }
+    else
+    {
+        returnStatus = modifyVertexDescription(taskName, newTaskDescription);
+        if (returnStatus == 1)
+        {
+            if (!writeInformationFile(workingProjectName, dataBaseDirectory, getVertexListHead()))
+            {
+                snprintf(printString, sizeof(printString), "Can't save changes |%s| to database", taskName);
+                displayErrorMessage(printString);
+            }
+            else
+            {
+                snprintf(printString, sizeof(printString), "Task |%s| description changed to |%s|", taskName, newTaskDescription);
+                displaySuccessMessage(printString);
+            }
+        }
+        else
+        {
+            displayErrorMessage("While allocating memory");
+        }
+    }
+}
+
+void changeTaskWeight(char *taskName)
+{
+    char printString[256];
+    char newTaskWeightString[8];
+    int newTaskWeight = 0;
+    int returnStatus;
+
+    getTerminalInput(newTaskWeightString, sizeof(newTaskWeightString), "Enter new task work days : ");
+    sscanf(newTaskWeightString, "%d", &newTaskWeight);
+    if (newTaskWeight < 1)
+    {
+        snprintf(printString, sizeof(printString), "Task \"%s\" work days can't empty or less than 1", taskName);
+        displayInvalidMessage(printString);
+    }
+    else
+    {
+        modifyVertexWeight(taskName, newTaskWeight);
+        if (!writeInformationFile(workingProjectName, dataBaseDirectory, getVertexListHead()))
+        {
+            snprintf(printString, sizeof(printString), "Can't save changed |%d| to database", newTaskWeight);
+            displayErrorMessage(printString);
+        }
+        else
+        {
+            snprintf(printString, sizeof(printString), "Task |%s| day works changed to |%d|", taskName, newTaskWeight);
+            displaySuccessMessage(printString);
         }
     }
 }
@@ -506,11 +639,11 @@ void modifyTaskOptionFlowManager(char *taskName)
 
     while (1)
     {
-        displayModifyTaskMenuOptions();
+        displayModifyTaskMenuOptions(taskName);
         getTerminalInput(choice, sizeof(choice), "Enter tour option: ");
         if (strcmp(choice, "1") == 0)
         {
-            changeTaskInfo(taskName);
+            changeTaskInfoOptionFlowManager(taskName);
         }
         else if (strcmp(choice, "2") == 0)
         {
@@ -583,30 +716,27 @@ void dispalyAllTask()
 
 void calculateProjectSchedule()
 {
-    char startDate[16];
+    char projectStartDate[16];
+    char taskStartDate[16];
+    char taskEndDate[16];
     int date;
     VERTEX_T *pAdjVertex = NULL;
     VERTEX_T *pCurrentVertex = getStartVertex();
     EDGE_T *pCurrentEdge = pCurrentVertex->adjListHead;
     LongestPath();
-    getTerminalInput(startDate, sizeof(startDate), "Enter project's start date: ");
-    sscanf(startDate, "%d", &date);
-    /*while (pCurrentEdge)
-    {
-        pAdjVertex = pCurrentEdge->pVertex;
-        printf("Name: %s\nTotal Day: %d\n", pAdjVertex->name, pAdjVertex->totalDay);
-        pCurrentEdge = pCurrentEdge->pNext;
-    }*/
+    getTerminalInput(projectStartDate, sizeof(projectStartDate), "Enter project's start date: ");
     printf("\n");
     while (pCurrentEdge)
     {
         pAdjVertex = pCurrentEdge->pVertex;
         if (strcmp(pAdjVertex->name, "start") != 0 && strcmp(pAdjVertex->name, "end") != 0)
         {
+            calculateEndDate(projectStartDate, pAdjVertex->totalDay, taskStartDate, sizeof(taskStartDate));
+            calculateEndDate(projectStartDate, pAdjVertex->totalDay + pAdjVertex->dayWork - 1, taskEndDate, sizeof(taskEndDate));
             printf(">>> Task: %s\n", pAdjVertex->name);
             printf(">>> Work Day: %d\n", pAdjVertex->dayWork);
-            printf(">>> Start: %d\n", date + pAdjVertex->totalDay);
-            printf(">>> Finished: %d\n", date + pAdjVertex->totalDay + pAdjVertex->dayWork - 1);
+            printf(">>> Start: %s\n", taskStartDate);
+            printf(">>> Finished: %s\n", taskEndDate);
             printf("\n");
         }
 
@@ -658,24 +788,131 @@ void taskOptionFlowManager(int *fileOpenStatus)
         {
             calculateProjectSchedule();
         }
-        else if (strcmp(choice, "7") == 0) // change project name
+        else if (strcmp(choice, "7") == 0) // modify working day
+        {
+            modifyWorkingDayOptionFlowManager();
+        }
+        else if (strcmp(choice, "8") == 0) // change project name
         {
             renameProject();
         }
-        else if (strcmp(choice, "8") == 0) // back to project selection
+        else if (strcmp(choice, "9") == 0) // back to project selection
         {
             *fileOpenStatus = 0;
             freeNetwork();
             break;
         }
-        else if (strcmp(choice, "9") == 0) // exit
+        else if (strcmp(choice, "10") == 0) // exit
         {
             printf("Thankyou for use our service...\n");
             exit(0);
         }
         else
         {
-            printf("\n----- Invalid option, please select option again -----\n\n");
+            displayInvalidMessage("Please select option again");
+        }
+    }
+}
+
+void addDayOff()
+{
+    char dateString[128];
+    int returnStatus;
+
+    getTerminalInput(dateString, sizeof(dateString), "Enter date ex. 01/01/2021: ");
+    if (!strlen(dateString))
+    {
+        displayInvalidMessage("Date can't be empty");
+    }
+    /*else if (1) //call validate and unsuccess
+    {
+        displayInvalidMessage("Date uncorrent");
+    }*/
+    else
+    {
+        returnStatus = addDateToList(dateString);
+    }
+}
+
+void removeDayOff()
+{
+    char dateString[128];
+    int returnStatus;
+
+    getTerminalInput(dateString, sizeof(dateString), "Enter date ex. 01/01/2021: ");
+    if (!strlen(dateString))
+    {
+        displayInvalidMessage("Date can't be empty");
+    }
+    /*else if (1) //validate unsuccess
+    {
+        displayInvalidMessage("Date uncorrent");
+    }*/
+    else
+    {
+        returnStatus = removeDateFromList(dateString);
+    }
+}
+
+void displayEveryDayOff()
+{
+    char dateString[16];
+    DATE_T *pCurrent = NULL;
+    struct tm *tm = NULL;
+    int totalDate;
+    int i = 1;
+
+    totalDate = getTotalDayOff();
+    if (!totalDate)
+        printf(">>> There is no day off yet!.\n");
+    else
+    {
+        printf("\nTotal %d:\n", totalDate);
+        pCurrent = getDateListHead();
+        while (pCurrent)
+        {
+            tm = localtime(pCurrent->pData);
+            strftime(dateString, sizeof(dateString), "%d/%m/%Y", tm);
+            printf("%d) %s\n", i, dateString);
+            pCurrent = pCurrent->pNext;
+        }
+    }
+    printf("\n");
+}
+
+void modifyWorkingDayOptionFlowManager()
+{
+    char choice[8];
+    int weekendStatus;
+    int totalDayOff;
+
+    while (1)
+    {
+        displayModifyWorkingDaysOptions(getWeekendStatus(), getTotalDayOff());
+        getTerminalInput(choice, sizeof(choice), "Enter your option: ");
+        if (strcmp(choice, "1") == 0)
+        {
+            setWeekendStatus();
+        }
+        else if (strcmp(choice, "2") == 0)
+        {
+            addDayOff();
+        }
+        else if (strcmp(choice, "3") == 0)
+        {
+            removeDayOff();
+        }
+        else if (strcmp(choice, "4") == 0)
+        {
+            displayEveryDayOff();
+        }
+        else if (strcmp(choice, "5") == 0)
+        {
+            break;
+        }
+        else
+        {
+            displayInvalidMessage("Please select option again");
         }
     }
 }

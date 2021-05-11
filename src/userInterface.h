@@ -19,6 +19,10 @@ void displayProjectMenuOptions();
 
 void displayTaskMenuOptions(char *projectName);
 
-void displayModifyTaskMenuOptions();
+void displayModifyTaskMenuOptions(char *taskName);
+
+void displayChangeTaskInfoOptions();
+
+void displayModifyWorkingDaysOptions(int weekendStatus, int totalDayoff);
 
 #endif

@@ -55,17 +55,11 @@ int initNetwork();
  * */
 int addVertex(char *key, char *description, int weight);
 
-/*  This function will modify the vertex information and replace with new given info 
- *  Parameter:
- *      key             - task name that want to change information
- *      newKey          - new task name for replacing
- *      newDescription  - new task information for replacing
- *      newWeight       - new task working day for replacing
- *  Return:
- *      1   - if modify vertex succesfully
- *      -1  - if can't find the vertex
- * */
-int modifyVertex(char *key, char *newKey, char *newDescription, int newWeight);
+int modifyVertexName(char *key, char *newKey);
+
+int modifyVertexDescription(char *key, char *newDescription);
+
+int modifyVertexWeight(char *key, int newWeight);
 
 /*  This function will delete a vertex from network with given key.
  *  Parameter:

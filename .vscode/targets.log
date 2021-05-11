@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Mon May 10 20:55:29 2021
+# Make data base, printed on Tue May 11 19:43:38 2021
 
 # Variables
 
@@ -49,7 +49,7 @@ SNAP_DATA = /var/snap/code/63
 # environment
 VSCODE_NLS_CONFIG = {"locale":"en-us","availableLanguages":{},"_languagePackSupport":true}
 # environment
-JOURNAL_STREAM = 8:78021
+JOURNAL_STREAM = 8:77420
 # environment
 XDG_CONFIG_DIRS = /etc/xdg/xdg-ubuntu:/etc/xdg
 # environment
@@ -73,7 +73,7 @@ VSCODE_VERBOSE_LOGGING = true
 # environment
 _ = /snap/code/63/usr/share/code/code
 # environment
-MANAGERPID = 1575
+MANAGERPID = 1559
 # environment
 LESSOPEN = | /usr/bin/lesspipe %s
 # environment
@@ -86,15 +86,15 @@ MAKE_HOST := x86_64-pc-linux-gnu
 PATH = /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
 # environment
 GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
-# makefile (from 'Makefile', line 21)
+# makefile (from 'Makefile', line 22)
 SRCPATH = $(addprefix src/,$(SOURCE))
 # environment
-SESSION_MANAGER = local/ubuntu:@/tmp/.ICE-unix/1808,unix/ubuntu:/tmp/.ICE-unix/1808
+SESSION_MANAGER = local/ubuntu:@/tmp/.ICE-unix/1787,unix/ubuntu:/tmp/.ICE-unix/1787
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # environment
 GDK_PIXBUF_MODULE_FILE = /home/lutfee/snap/code/common/.cache/gdk-pixbuf-loaders.cache
-# makefile (from 'Makefile', line 20)
+# makefile (from 'Makefile', line 21)
 OBJECT = $(addsuffix .o,$(PROGRAM))
 # environment
 SNAP = /snap/code/63
@@ -109,7 +109,7 @@ DISABLE_WAYLAND = 1
 # environment
 VSCODE_CRASH_REPORTER_START_OPTIONS = {"companyName":"Microsoft","productName":"VSCode","submitURL":"appcenter://code?aid=fba07a4d-84bd-4fc8-a125-9640fc8ce171&uid=68f9bf43-54a1-417b-b9d2-f703f7802af7&iid=68f9bf43-54a1-417b-b9d2-f703f7802af7&sid=68f9bf43-54a1-417b-b9d2-f703f7802af7","uploadToServer":true}
 # environment
-INVOCATION_ID = 0c200ff4549e4eb1be053c3b7d5fd6a0
+INVOCATION_ID = 62fc9b8ed64b4ae785bb3ff1ac41f489
 # environment
 GDK_PIXBUF_MODULEDIR = /snap/code/63/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders
 # default
@@ -121,7 +121,7 @@ XDG_SESSION_DESKTOP = ubuntu
 # environment
 SSH_AUTH_SOCK = /run/user/1000/keyring/ssh
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 27967
+GIO_LAUNCHED_DESKTOP_FILE_PID = 2327
 # automatic
 %F = $(notdir $%)
 # environment
@@ -135,9 +135,9 @@ PWD = /home/lutfee/CPE111 - Project
 # default
 .LOADED := 
 # environment
-SSH_AGENT_PID = 1772
+SSH_AGENT_PID = 1749
 # environment
-ORIGINAL_XDG_CURRENT_DESKTOP = ubuntu:GNOME
+ORIGINAL_XDG_CURRENT_DESKTOP = Unity
 # environment
 GTK_MODULES = gail:atk-bridge
 # environment
@@ -182,15 +182,15 @@ SNAP_USER_DATA = /home/lutfee/snap/code/63
 SHLVL = 0
 # makefile (from 'Makefile', line 10)
 CC = gcc
-# makefile (from 'Makefile', line 24)
-EXECUTABLES = main
+# makefile (from 'Makefile', line 25)
+EXECUTABLES = src/main
 # environment
 GNOME_SHELL_SESSION_MODE = ubuntu
 # makefile (from 'Makefile', line 12)
 ODIR = bin
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-160d1b9b-b798-4499-a37e-678f5a571384.sock
-# makefile (from 'Makefile', line 19)
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-7f927792-3c50-4a9c-8bcc-73c3423c2b4e.sock
+# makefile (from 'Makefile', line 20)
 SOURCE = $(addsuffix .c,$(PROGRAM))
 # default
 MAKE_VERSION := 4.2.1
@@ -202,7 +202,7 @@ SNAP_REVISION = 63
 .DEFAULT_GOAL := all
 # environment
 XDG_CURRENT_DESKTOP = Unity
-# makefile (from 'Makefile', line 22)
+# makefile (from 'Makefile', line 23)
 OBJPATH = $(addprefix bin/,$(OBJECT))
 # automatic
 %D = $(patsubst %/,%,$(dir $%))
@@ -221,7 +221,7 @@ STD = -std=c99
 # environment
 VSCODE_IPC_HOOK = /run/user/1000/vscode-a7cc1097-1.56.0-main.sock
 # makefile (from 'Makefile', line 14)
-PROGRAM = main linkedListQueue linkedListNetworkMod fileHandler userInterface
+PROGRAM = main linkedListQueue linkedListNetworkMod fileHandler userInterface dateCalendarManager
 # environment
 BAMF_DESKTOP_FILE_HINT = /var/lib/snapd/desktop/applications/code_code.desktop
 # makefile
@@ -273,20 +273,20 @@ GJS_DEBUG_OUTPUT = stderr
 # environment
 LANG = C
 # environment
-VSCODE_PID = 28009
+VSCODE_PID = 30845
 # variable set hash-table stats:
-# Load=132/1024=13%, Rehash=0, Collisions=23/172=13%
+# Load=132/1024=13%, Rehash=0, Collisions=23/181=13%
 
- 
 # Pattern-specific Variable Values
+ 
 
 # No pattern-specific variable values.
 
 # Directories
 
-# . (device 2053, inode 5936848): 11 files, no impossibilities.
+# . (device 2053, inode 5936848): 10 files, no impossibilities.
 
-# 11 files, no impossibilities in 1 directories.
+# 10 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -296,75 +296,93 @@ VSCODE_PID = 28009
 
 # Not a target:
 src/linkedListNetworkMod.c:
-#  Implicit rule search has been done.
-#  Last modified 2021-05-10 19:46:30.491574247
-#  File has been updated.
-#  Successfully updated.
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 # Not a target:
 src/userInterface.c:
-#  Implicit rule search has been done.
-#  Last modified 2021-05-09 22:53:06.687862696
-#  File has been updated.
-#  Successfully updated.
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
-all: main
+all: src/main
 #  Command line target.
 #  Implicit rule search has been done.
 #  File does not exist.
 #  File has been updated.
-#  Successfully updated.
+#  Needs to be updated (-q is set).
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/7=0%
+
+src/main: bin/main.o bin/linkedListQueue.o bin/linkedListNetworkMod.o bin/fileHandler.o bin/userInterface.o bin/dateCalendarManager.o
+#  Implicit rule search has not been done.
+#  Last modified 2021-05-11 19:36:46.657766788
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/7=0%
+#  recipe to execute (from 'Makefile', line 48):
+	$(CC) -o $(EXECUTABLES) $(OBJPATH)
+
+# Not a target:
+.SUFFIXES:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2021-05-10 20:48:06.614093564
+#  Last modified 2021-05-11 03:46:07.259899431
 #  File has been updated.
 #  Successfully updated.
 
 bin/fileHandler.o: src/fileHandler.c
 #  Implicit rule search has not been done.
-#  Last modified 2021-05-10 20:48:21.782023639
-#  File has been updated.
-#  Successfully updated.
-#  recipe to execute (from 'Makefile', line 35):
-	$(CC) -c $(STD) $(SDIR)/fileHandler.c -o $(ODIR)/fileHandler.o
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 36):
+	$(CC) -c -g $(STD) $(SDIR)/fileHandler.c -o $(ODIR)/fileHandler.o
 
 bin/linkedListNetworkMod.o: src/linkedListNetworkMod.c
 #  Implicit rule search has not been done.
-#  Last modified 2021-05-10 20:48:21.742023825
-#  File has been updated.
-#  Successfully updated.
-#  recipe to execute (from 'Makefile', line 32):
-	$(CC) -c $(STD) $(SDIR)/linkedListNetworkMod.c -o $(ODIR)/linkedListNetworkMod.o
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 33):
+	$(CC) -c -g $(STD) $(SDIR)/linkedListNetworkMod.c -o $(ODIR)/linkedListNetworkMod.o
 
 bin/userInterface.o: src/userInterface.c
 #  Implicit rule search has not been done.
-#  Last modified 2021-05-10 20:48:21.81402349
-#  File has been updated.
-#  Successfully updated.
-#  recipe to execute (from 'Makefile', line 38):
-	$(CC) -c $(STD) $(SDIR)/userInterface.c -o $(ODIR)/userInterface.o
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 39):
+	$(CC) -c -g $(STD) $(SDIR)/userInterface.c -o $(ODIR)/userInterface.o
 
 # Not a target:
 src/main.c:
 #  Implicit rule search has been done.
-#  Last modified 2021-05-10 20:02:12.782528514
+#  Last modified 2021-05-11 19:40:43.464674799
 #  File has been updated.
 #  Successfully updated.
 
 # Not a target:
+src/dateCalendarManager.c:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
 src/linkedListQueue.c:
-#  Implicit rule search has been done.
-#  Last modified 2021-04-21 18:09:23.410943889
-#  File has been updated.
-#  Successfully updated.
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 sclean:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 51):
+#  recipe to execute (from 'Makefile', line 55):
 	- rm %(ODIR)/*.o
 
 # Not a target:
@@ -377,55 +395,71 @@ clean:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 47):
+#  recipe to execute (from 'Makefile', line 51):
 	- rm $(ODIR)/*.o
 	- rm $(EXECUTABLES)
 
-main: bin/main.o bin/linkedListQueue.o bin/linkedListNetworkMod.o bin/fileHandler.o bin/userInterface.o
-#  Implicit rule search has not been done.
-#  Last modified 2021-05-10 20:48:21.834023397
-#  File has been updated.
-#  Successfully updated.
-#  recipe to execute (from 'Makefile', line 44):
-	$(CC) -o main $(OBJPATH)
-
 bin/main.o: src/main.c
 #  Implicit rule search has not been done.
-#  Last modified 2021-05-10 20:48:21.658024215
+#  Implicit/static pattern stem: ''
+#  Last modified 2021-05-11 19:36:46.601767081
 #  File has been updated.
-#  Successfully updated.
-#  recipe to execute (from 'Makefile', line 41):
-	$(CC) -c $(STD) $(SDIR)/main.c -o $(ODIR)/main.o
+#  Needs to be updated (-q is set).
+# automatic
+# @ := bin/main.o
+# automatic
+# % := 
+# automatic
+# * := 
+# automatic
+# + := src/main.c
+# automatic
+# | := 
+# automatic
+# < := src/main.c
+# automatic
+# ^ := src/main.c
+# automatic
+# ? := src/main.c
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=1/15=7%
+#  recipe to execute (from 'Makefile', line 45):
+	$(CC) -c -g $(STD) $(SDIR)/main.c -o $(ODIR)/main.o
+
+bin/dateCalendarManager.o: src/dateCalendarManager.c
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 42):
+	$(CC) -c -g -I $(STD) $(SDIR)/dateCalendarManager.c -o $(ODIR)/dateCalendarManager.o
 
 bin/linkedListQueue.o: src/linkedListQueue.c
 #  Implicit rule search has not been done.
-#  Last modified 2021-05-10 20:48:21.682024103
-#  File has been updated.
-#  Successfully updated.
-#  recipe to execute (from 'Makefile', line 29):
-	$(CC) -c $(STD) $(SDIR)/linkedListQueue.c -o $(ODIR)/linkedListQueue.o
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 30):
+	$(CC) -c -g $(STD) $(SDIR)/linkedListQueue.c -o $(ODIR)/linkedListQueue.o
 
 # Not a target:
 src/fileHandler.c:
-#  Implicit rule search has been done.
-#  Last modified 2021-05-09 23:08:40.758684598
-#  File has been updated.
-#  Successfully updated.
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 # files hash-table stats:
-# Load=17/1024=2%, Rehash=0, Collisions=1/40=2%
+# Load=19/1024=2%, Rehash=0, Collisions=1/45=2%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 28 / storage = 340 B / avg = 12 B
-# current buf: size = 8162 B / used = 340 B / count = 28 / avg = 12 B
+# strcache buffers: 1 (0) / strings = 30 / storage = 396 B / avg = 13 B
+# current buf: size = 8162 B / used = 396 B / count = 30 / avg = 13 B
 
-# strcache performance: lookups = 49 / hit rate = 42%
+# strcache performance: lookups = 53 / hit rate = 43%
 # hash-table stats:
-# Load=28/8192=0%, Rehash=0, Collisions=1/49=2%
-# Finished Make data base on Mon May 10 20:55:29 2021
+# Load=30/8192=0%, Rehash=0, Collisions=1/53=2%
+# Finished Make data base on Tue May 11 19:43:38 2021
 
  
