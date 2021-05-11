@@ -22,7 +22,7 @@ OBJECT = $(addsuffix .o,$(PROGRAM))
 SRCPATH = $(addprefix src/,$(SOURCE))
 OBJPATH = $(addprefix bin/,$(OBJECT))
 
-EXECUTABLES = src/main
+EXECUTABLES = main
 
 all:$(EXECUTABLES)
 
