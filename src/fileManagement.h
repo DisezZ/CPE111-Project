@@ -115,7 +115,7 @@ int deleteProjectFile(char projectName[], char *addressFolder);
 */
 int readInformationFile(char projectName[], char *addressFolder);
 
-int writeInformationFile(char projectName[], char *addressFolder, void *vertexStruct);
+int writeInformationFile(char projectName[], char *addressFolder);
 
 char *findProjectDatabaseDirectory();
 

@@ -27,7 +27,9 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <stdlib.h>
+#include <time.h>
 #include "abstractNetwork.h"
+#include "dateCalendarManager.h"
 
 /*
 typedef struct _adjVertex
@@ -521,6 +523,7 @@ int readInformationFile(char projectName[], char *addressFolder)
     int add_edge_status = -4;
     int add_vertex_status = -2;
     int status = 1;
+    int weekend = 0;
 
     FILE *databaseFile = NULL;
 
@@ -606,7 +609,7 @@ int readInformationFile(char projectName[], char *addressFolder)
 * open the file;
 *==========================================================================================
 */
-int writeInformationFile(char projectName[], char *addressFolder, void *vertexStruct)
+int writeInformationFile(char projectName[], char *addressFolder)
 {
     char input[64] = {0};
     char inputLine[128] = {0};
@@ -617,12 +620,16 @@ int writeInformationFile(char projectName[], char *addressFolder, void *vertexSt
     char temp[128] = {0};
     char keyEdgeOne[64] = {0};
     char keyEdgeTwo[64] = {0};
+    char projectDescription[256] = {0};
     int taskWeight = 0;
     int status = 0;
+    int weekend = 0;
+    time_t * unixTime = NULL;
 
     VERTEX_T *currentVertex = NULL;
     VERTEX_T *currentAdjacent = NULL;
     EDGE_T *currentEdge = NULL;
+    DATE_T *timeList = NULL;
 
     FILE *currentProjectFile = NULL;
 
@@ -631,6 +638,8 @@ int writeInformationFile(char projectName[], char *addressFolder, void *vertexSt
     if (existProjectFileCheck(projectName, addressFolder) == 1)
     {
         currentProjectFile = fopen(projectFileName, "w");
+        fprintf(currentProjectFile, "PROJECT DESCRIPTION:\n");
+        fprintf(currentProjectFile, "ABOUT:%s;\n",projectDescription);
         currentVertex = getVertexListHead();
         fprintf(currentProjectFile, "VERTEX:\n");
         while (currentVertex != NULL)
@@ -658,6 +667,15 @@ int writeInformationFile(char projectName[], char *addressFolder, void *vertexSt
                 currentEdge = currentEdge->pNext;
             }
             currentVertex = currentVertex->pNext;
+        }
+        fprintf(currentProjectFile, "WEEKEND:%d;\n",weekend);
+        fprintf(currentProjectFile, "DAYOFF:\n");
+        timeList = getDateListHead();
+        while(timeList != NULL)
+        {
+            unixTime = timeList->pData;
+            fprintf(currentProjectFile, "UNIXTIME:%ld;\n",*unixTime);
+            timeList = timeList->pNext;
         }
         status = 1;
         fclose(currentProjectFile);
