@@ -1,14 +1,28 @@
+/* 
+ *  dateCalendarManager.c
+ *      This section will handle day off list related 
+ *      and also handle weekend too
+ *      
+ *      Created by ->
+ *      Aplusplus Members:
+ *          63070503437 Pataraphum
+ *          63070503448 Lutee           Deemae  (Lut)
+ *          63070503462 Jidapa          
+ *          63070503466 Purachet        
+ * 
+ * */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdbool.h>
 #define __USE_XOPEN
 #define _GNU_SOURCE
 #define _XOPEN_SOURCE 700
 #include <time.h>
 #include "dateCalendarManager.h"
-#include "validate.h"
+#include "validateDate.h"
 
 DATE_T *pHead = NULL;
 DATE_T *pTail = NULL;
@@ -44,9 +58,6 @@ int addDateToList(time_t unixTime)
     int i;
     int status = 0;
 
-    /*pTime = calloc(1, sizeof(time_t));
-    strptime(dateString, "%d/%m/%Y", &tm);
-    *pTime = mktime(&tm);*/
     pDateTime = calloc(1, sizeof(DATE_T));
     if (pDateTime)
     {
@@ -99,13 +110,10 @@ int addDateToList(time_t unixTime)
 
 int removeDateFromList(time_t unixTime)
 {
-    // time_t pTime;
-    //struct tm tm = {0};
     DATE_T *pPrev = NULL;
     DATE_T *pFound = NULL;
     int status = 0;
-    /*strptime(dateString, "%d/%m/%Y", &tm);
-    pTime = mktime(&tm);*/
+
     if (pHead)
     {
         if (unixTime == pHead->unixTime)

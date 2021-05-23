@@ -18,19 +18,7 @@
  *  Modified 18 March 2013 to improve naming.
  *  Modified 20 April 2018 to use JavaDoc keywords in comments
  * 
- *  Modified with permission by [Lutfee] on [Deemae]. 
- *  Made the following changes:
- *  - Modify findVertexByKey function.
- *  - Delete EdgeExists function.
- *  - Modify freeAdjacencyList and removeReferences into deleteEdgesOfVertex function
- *  - Delete countAdjacent function.
- *  - Modify colorAll into colorAllVertex.
- *  - Delete initAll function.
- *  - 
- *  - 
- *  - 
- *  - 
- *  - 
+ *  Modified with permission by [Lutfee] on [Deemae].
  */
 
 #include <stdio.h>
@@ -54,6 +42,13 @@ int totalVertex = 0;             /* total vertex in the graph including special 
 /** Private function section **/
 /******************************/
 
+/** Finds the vertex that holds the passed key
+ * (if any) and returns a pointer to that vertex.
+ *
+ *@param key    -  Key we are looking for
+ *@param pPrev  -  used to return the predecessor if any
+ *@return pointer to the vertex structure if one is found       
+ */
 VERTEX_T *findVertexByKey(char *key, VERTEX_T **pPrev)
 {
     VERTEX_T *pFound = NULL;
@@ -73,6 +68,13 @@ VERTEX_T *findVertexByKey(char *key, VERTEX_T **pPrev)
     return pFound;
 }
 
+/* Add edge by given vertex struct from->to
+ * Parameter:
+ *      pFrom       - vertex struct that will be outdegree of edge
+ *      pTo         - vertex struct that will be indegree of edge
+ * Return:
+ *      pointer to the allocated edge, NULL if there is memory error
+ * */
 EDGE_T *addEdgeByStruct(VERTEX_T *pFrom, VERTEX_T *pTo)
 {
     EDGE_T *pEdge = NULL;
@@ -94,6 +96,11 @@ EDGE_T *addEdgeByStruct(VERTEX_T *pFrom, VERTEX_T *pTo)
     return pEdge;
 }
 
+/* Delete edge by given vertex struct from->to
+ * Parameter:
+ *      pFrom       - vertex struct that has outdegree of deleted edge
+ *      pTo         - vertex struct that has indegree of deleted edge
+ * */
 void deleteEdgeByStruct(VERTEX_T *pFrom, VERTEX_T *pTo)
 {
     VERTEX_T *pAdjVertex = NULL;
@@ -132,6 +139,11 @@ void deleteEdgeByStruct(VERTEX_T *pFrom, VERTEX_T *pTo)
     }
 }
 
+/* Delete edge that have outdegree from target vertex
+ * and indegree target vertex.
+ * Parameter:
+ *      pTargetVertex   - target vertex struct that will delete all edge
+ * */
 void deleteEdgesOfVertex(VERTEX_T *pTargetVertex)
 {
     VERTEX_T *pTemptTail = NULL;
@@ -234,6 +246,9 @@ void deleteEdgesOfVertex(VERTEX_T *pTargetVertex)
     }
 }
 
+/** Color all vertices to the passed color.
+ *  @param  A color constant
+ */
 void colorAllVertex(int color)
 {
     VERTEX_T *pCurrentVertex = vertexListHead;
@@ -246,6 +261,13 @@ void colorAllVertex(int color)
     }
 }
 
+/* Reset all vertex included special vertex to white and total work day to 0
+ * Parameter:
+ *      pFrom       - vertex struct that will be outdegree of edge
+ *      pTo         - vertex struct that will be indegree of edge
+ * Return:
+ *      pointer to the allocated edge, NULL if there is memory error
+ * */
 void resetAllVertex()
 {
     VERTEX_T *pCurrentVertex = vertexListHead;
@@ -265,6 +287,11 @@ void resetAllVertex()
     }
 }
 
+/** Execute a breadth first traversal from a vertex,
+ * calling the passed function (*vFunction) on each vertex
+ * as we visit it and color it black.
+ * @param pVertex  Starting vertex for traversal
+ */
 void traverseBreadthFirst(VERTEX_T *pVertex, void (*function)(VERTEX_T *pCurrenVertex))
 {
     VERTEX_T *pCurrentVertex = NULL;
@@ -300,6 +327,11 @@ void traverseBreadthFirst(VERTEX_T *pVertex, void (*function)(VERTEX_T *pCurrenV
     }
 }
 
+/** Execute a depth first traversal from a single vertex,
+ * calling the passed function (*vFunction) on the lowest level
+ * vertex we visit, and coloring it black.
+ * @param pVertex Starting vertex for traversal
+ */
 void traverseDepthFirst(VERTEX_T *pCurrentVertex, void (*function)(VERTEX_T *))
 {
     VERTEX_T *pAdjVertex = NULL;
@@ -321,6 +353,9 @@ void traverseDepthFirst(VERTEX_T *pCurrentVertex, void (*function)(VERTEX_T *))
     (*function)(pCurrentVertex);
 }
 
+/**  Function to print the information about a vertex
+ * @param pVertex Vertex we want to print
+ */
 void printVertexData(char *key)
 {
     VERTEX_T *pFound = NULL;
@@ -336,6 +371,14 @@ void printVertexData(char *key)
     }
 }
 
+/* Find edge by two given vertex struct
+ * Parameter:
+ *      pFrom       - vertex struct that has outdegree of edge
+ *      pTo         - vertex struct that has indegree of edge
+ *      pPrevEdge   - edge struct to hold previous edge of outdegree vertex
+ * Return:
+ *      pointer to the edge found, NULL if edge not found
+ * */
 EDGE_T *findEdgeByStruct(VERTEX_T *pFrom, VERTEX_T *pTo, EDGE_T **pPrevEdge)
 {
     EDGE_T *pCurrentEdge = NULL;
@@ -355,33 +398,15 @@ EDGE_T *findEdgeByStruct(VERTEX_T *pFrom, VERTEX_T *pTo, EDGE_T **pPrevEdge)
     return pFound;
 }
 
-void printBreadthFirst(VERTEX_T *pCurrentVertex)
-{
-    printf(">>> Key: %s\n", pCurrentVertex->name);
-    printf(">>> Info: %s\n", pCurrentVertex->description);
-    printf(">>> Weight: %d\n", pCurrentVertex->dayWork);
-    printf("\n");
-}
-
-void printDepthFirst(char *startKey)
-{
-}
-
-void printfAdjVertex(VERTEX_T *pCurrentVertex)
-{
-    VERTEX_T *pAdjVertex = NULL;
-    EDGE_T *pCurrentEdge = NULL;
-
-    pCurrentEdge = pCurrentVertex->adjListHead;
-    printf("Adjacent:\n");
-    while (pCurrentEdge != NULL)
-    {
-        pAdjVertex = pCurrentEdge->pVertex;
-        printf(">>> %s\n", pAdjVertex->name);
-        pCurrentEdge = pCurrentEdge->pNext;
-    }
-}
-
+/* Sorting recursive function that will sort the vertex with depth first traversal
+ * and then assign the the vertex to array with sorted order
+ * use to assist sortTopological function.
+ * Parameter:
+ *      pCurrentVertex      - vertex struct normally will be special vertex "startVertex"
+ *      topSortVertices     - array that will hold vertex list in topological order
+ *      traverse            - index integer to keep track of index each vertex belong when
+ *                            do topological sorting.
+ * */
 void indexAssign(VERTEX_T *pCurrentVertex, VERTEX_T **topSortVertices, int *traverseIndex)
 {
     VERTEX_T *pAdjVertex = NULL;
@@ -404,6 +429,15 @@ void indexAssign(VERTEX_T *pCurrentVertex, VERTEX_T **topSortVertices, int *trav
     --(*traverseIndex);
 }
 
+/*  will sort vertex list by topological order by using recursive method
+ *  which use indexAssign function to assist
+ *  Parameter:
+ *      topSortVertices     - array that sorted order vertex will store
+ *      traverseIndex       - index to keep track of order which vertex belong when sorting
+ * Return
+ *      0                   - if sorted vertex array has not been allocated
+ *      1                   - if succesfully sorted in topological order
+ * */
 int sortTopoligcal(VERTEX_T **topSortVertices, int *traverseIndex)
 {
     int status = 1;
@@ -417,23 +451,60 @@ int sortTopoligcal(VERTEX_T **topSortVertices, int *traverseIndex)
         *traverseIndex = totalVertex - 1;
         colorAllVertex(WHITE);
         indexAssign(startVertex, topSortVertices, traverseIndex);
-    }
-    vertexListHead = topSortVertices[1];
-    vertexListTail = topSortVertices[totalVertex - 1];
-    for (int i = 0; i < totalVertex; i++)
-    {
-        if (i == totalVertex - 1)
+        vertexListHead = topSortVertices[1];
+        vertexListTail = topSortVertices[totalVertex - 1];
+        for (int i = 0; i < totalVertex; i++)
         {
-            topSortVertices[i]->pNext = NULL;
-        }
-        else
-        {
-            topSortVertices[i]->pNext = topSortVertices[i + 1];
+            if (i == totalVertex - 1)
+            {
+                topSortVertices[i]->pNext = NULL;
+            }
+            else
+            {
+                topSortVertices[i]->pNext = topSortVertices[i + 1];
+            }
         }
     }
+
     return status;
 }
 
+/*****************************/
+/** Public function section **/
+/*****************************/
+
+/* get pointer to the head of vertex list.
+ * 
+ * Return pointer to vertex list head, NULL if network isn't initialize 
+ * or no members in list yet.
+ * */
+VERTEX_T *getVertexListHead()
+{
+    return vertexListHead;
+}
+
+/* get pointer to start vertex which is special vertex
+ * which will point to every other vertex in network.
+ *
+ * Return pointer to start vertex, NULL if network isn't initialize
+ * */
+VERTEX_T *getStartVertex()
+{
+    return startVertex;
+}
+
+/* get total vertex number in the network
+ * 
+ * Return total vertex in network.
+ * */
+int getTotalVertex()
+{
+    return totalVertex - 2;
+}
+
+/* Calculate longest path of all vertex in network  
+ * which is total day work before can working on current vertex.
+ * */
 void LongestPath()
 {
     VERTEX_T **topSortVertices = NULL;
@@ -470,25 +541,11 @@ void LongestPath()
     free(topSortVertices);
 }
 
-/*****************************/
-/** Public function section **/
-/*****************************/
-
-VERTEX_T *getVertexListHead()
-{
-    return vertexListHead;
-}
-
-VERTEX_T *getStartVertex()
-{
-    return startVertex;
-}
-
-int getTotalVertex()
-{
-    return totalVertex - 2;
-}
-
+/*  This function will initialize the graph by create end and starting vertex
+ *  Return :
+ *      1 - if initialize succes
+ *      0 - if there is memory allocation error
+ * */
 int initNetwork()
 {
     EDGE_T *pTemptEdge = NULL;
@@ -516,6 +573,17 @@ int initNetwork()
     totalVertex = 2;
 }
 
+/*  This function will add a vertex into network from given key, 
+ *  description and weight of the vertex.
+ *  Parameter:
+ *      key         - task name as key of the vertex
+ *      description - information about the vertex
+ *      weight      - working day of task as outdegree weight of vertex
+ *  Return:
+ *      1   - if added vertex to netowrk succesfully
+ *      0   - if memory allocation failed
+ *      -1  - if vertex with given key already exist
+ * */
 int addVertex(char *key, char *description, int weight)
 {
     int status = 1;
@@ -577,6 +645,17 @@ int addVertex(char *key, char *description, int weight)
     return status;
 }
 
+/* Modify vertex name base on given key
+ * 
+ * Argument:
+ *      key     - key string of vertex
+ *      newKey  - new key string that want to changed to
+ * Return:
+ *      1       - if change key successful
+ *      0       - if memory allocation failed
+ *      -1      - if vertex with given key not exist
+ *      -2      - if given new key already exist
+ * */
 int modifyVertexName(char *key, char *newKey)
 {
     int status = 0;
@@ -611,6 +690,16 @@ int modifyVertexName(char *key, char *newKey)
     return status;
 }
 
+/* Modify vertex description base on given key
+ * 
+ * Argument:
+ *      key             - key string of vertex
+ *      newDescription  - new description string that want to changed to
+ * Return:
+ *      1               - if change description successful
+ *      0               - if memory allocation failed
+ *      -1              - if vertex with given key not exist
+ * */
 int modifyVertexDescription(char *key, char *newDescription)
 {
     int status = 0;
@@ -639,6 +728,16 @@ int modifyVertexDescription(char *key, char *newDescription)
     return status;
 }
 
+/* Modify vertex weight base on given key
+ * 
+ * Argument:
+ *      key             - key string of vertex
+ *      newWeight  - new weight int that want to changed to
+ * Return:
+ *      1               - if change weight successful
+ *      0               - if given weight less than 1
+ *      -1              - if vertex with given key not exist
+ * */
 int modifyVertexWeight(char *key, int newWeight)
 {
     int status = 0;
@@ -660,6 +759,13 @@ int modifyVertexWeight(char *key, int newWeight)
     return status;
 }
 
+/*  This function will delete a vertex from network with given key.
+ *  Parameter:
+ *      key - task name as key of the vertex to delete
+ *  Return:
+ *      1   - if deleted vertex successfully
+ *      -1  - if vertex with given key not exist in graph
+ * */
 int deleteVertex(char *key)
 {
     int status = 1;
@@ -678,83 +784,39 @@ int deleteVertex(char *key)
         deleteEdgesOfVertex(pFound);
         if (pFound == vertexListHead)
         {
-            printf("head1\n");
             vertexListHead = pFound->pNext;
             if (vertexListHead == NULL)
             {
                 vertexListTail = NULL;
             }
-            printf("head1\n");
         }
         else if (pFound == vertexListTail)
         {
-            printf("tail1\n");
-            if (pPrev)
-                printf("Found:\n");
             vertexListTail = pPrev;
             vertexListTail->pNext = NULL;
-            printf("tail2\n");
         }
         else
         {
-            printf("body1\n");
-            if (pPrev)
-                printf("Found:\n");
-            else
-                printf("Notfound:\n");
             pPrev->pNext = pFound->pNext;
-            printf("body2\n");
         }
         deleteEdgeByStruct(startVertex, startVertex);
-        /*pCurrentEdge = startVertex->adjListHead;
-        while (pCurrentEdge)
-        {
-            pAdjVertex = pCurrentEdge->pVertex;
-            if (pFound == pAdjVertex)
-            {
-                if (pCurrentEdge == startVertex->adjListHead)
-                {
-                    printf("-head1\n");
-                    startVertex->adjListHead = pCurrentEdge->pNext;
-                    if (startVertex->adjListHead == NULL)
-                    {
-                        startVertex->adjListTail = NULL;
-                    }
-                    printf("-head1\n");
-                }
-                else if (pCurrentEdge == startVertex->adjListTail)
-                {
-                    printf("-tail1\n");
-                    if (pPrev)
-                        printf("-Found:\n");
-                    startVertex->adjListTail = pPrevEdge;
-                    startVertex->adjListTail->pNext = NULL;
-                    printf("-tail2\n");
-                }
-                else
-                {
-                    printf("-body1\n");
-                    if (pPrev)
-                        printf("-Found:\n");
-                    else
-                        printf("-Notfound:\n");
-                    pPrevEdge->pNext = pCurrentEdge->pNext;
-                    printf("-body2\n");
-                }
-                free(pCurrentEdge);
-                pCurrentEdge = NULL;
-                break;
-            }
-            pPrevEdge = pCurrentEdge;
-            pCurrentEdge = pCurrentEdge->pNext;
-        }*/
+        free(pFound->name);
+        free(pFound->description);
         free(pFound);
+        printf("%s\n", pFound->name);
         --totalVertex;
         pFound = NULL;
     }
     return status;
 }
 
+/*  This function will find the exact task with given key
+ *  Parameter:
+ *      key - task name as key of a vertex to find
+ *  Return:
+ *      NULL        - if vertex with given key not exist in graph
+ *      VERTEX_T*   - if there exist a vertex with exact given key
+ * */
 void *findVertex(char *key)
 {
     VERTEX_T *pFound = NULL;
@@ -764,6 +826,15 @@ void *findVertex(char *key)
     return pFound;
 }
 
+/*  This function will find the vertex that have substring or whole of a given key
+ *  Parameter:
+ *      key     - task name as key of a vertex to search
+ *      *total  - interger to count total number of vertex that contain
+ *                  substring with given key to search
+ *  Return:
+ *      NULL    - if there is no vertex that containg key as substring
+ *      char**  - if there exist a vertex with given key as substring
+ * */
 char **searchVertex(char *key, int *status)
 {
     VERTEX_T *pCurrentVertex = NULL;
@@ -789,6 +860,17 @@ char **searchVertex(char *key, int *status)
     return resultList;
 }
 
+/*  This function will add a edge into network from given key
+ *  Parameter:
+ *      fromKey     - key of vertex that will be outdegree of added edge
+ *      toKey       - key of vertex that will be indegree of added edge
+ *  Return:
+ *      1   - if added edge to netowrk succesfully
+ *      0   - if memory allocation failed
+ *      -1  - if any vertex with given key not exist
+ *      -2  - if edge between two given key already exist
+ *      -3  - if create a loop from adding edge
+ * */
 int addEdge(char *fromKey, char *toKey)
 {
     int status = 1;
@@ -850,6 +932,17 @@ int addEdge(char *fromKey, char *toKey)
     return status;
 }
 
+/* Change dependency destination, each given key need to be unique
+ * Parameter:
+ *      fromKey     - key of vertex that has outdegree to oldToKey
+ *      oldToKey    - key of vertex that has indegree from fromKey
+ *      newToKey    - key of vertex that fromKey will point to
+ * Return:
+ *      1           - if change dependency destination successfully
+ *      -1          - if one of given key vertex not exist
+ *      -2          - if given key not unique
+ *      -3          - if edge from fromKey to newToKey already exist
+ * */
 int modifyEdge(char *fromKey, char *oldToKey, char *newToKey)
 {
     int status = -4;
@@ -898,6 +991,17 @@ int modifyEdge(char *fromKey, char *oldToKey, char *newToKey)
     return status;
 }
 
+/*  This function will add a vertex into network from given key, 
+ *  description and weight of the vertex.
+ *  Parameter:
+ *      fromKey     - key of vertex that will be outdegree of added edge
+ *      toKey       - key of vertex that will be indegree of added edge
+ *  Return:
+ *      1   - if deleted edge from netowrk succesfully
+ *      0   - if memory allocation failed
+ *      -1  - if any vertex with given key not exist
+ *      -2  - if edge not between two given key exist
+ * */
 int deleteEdge(char *fromKey, char *toKey)
 {
     int status = 1;
@@ -949,6 +1053,8 @@ int deleteEdge(char *fromKey, char *toKey)
     return status;
 }
 
+/*  Free memory of the network
+ * */
 void freeNetwork()
 {
     VERTEX_T *pCurrentVertex = NULL;
@@ -986,295 +1092,10 @@ void freeNetwork()
         free(pPrevEdge);
         pPrevEdge = NULL;
     }
-
+    free(startVertex);
+    free(endVertex);
     vertexListHead = NULL;
     vertexListTail = NULL;
+    startVertex = NULL;
+    endVertex = NULL;
 }
-
-/*  Debuging main */
-/*
-int getMenuOption()
-{
-    char input[32];
-    int option = -1;
-    while (option < 0)
-    {
-        printf("\nNetwork Tester options:\n");
-        printf("  1 - Insert a vertex into the graph\n");
-        printf("  2 - Insert an edge into the graph\n");
-        printf("  3 - Remove a vertex from the graph\n");
-        printf("  4 - Remove an edge from the graph\n");
-        printf("  5 - Search for vertex in graph\n");
-        printf("  6 - Modify a edge in graph\n");
-        printf("  7 - Print breadth first or depth first\n");
-        printf("  8 - Print maximum path (Dijkstra's algorithm)\n");
-        printf("  9 - Print vertex information\n");
-        printf(" 10 - Exit\n");
-        printf("Which option? ");
-        fgets(input, sizeof(input), stdin);
-        sscanf(input, "%d", &option);
-        if ((option > 9) || (option < 1))
-        {
-            printf("Invalid selection - choose 1 to 9\n");
-            option = -1;
-        }
-    }
-    printf("\n");
-    return option;
-}
-int main(int argc, char *argv[])
-{
-    VERTEX_T *pCurrentVertex = NULL;
-    VERTEX_T *pAdjVertex = NULL;
-    VERTEX_T *pPrevVertex = NULL;
-    EDGE_T *pCurrentEdge = NULL;
-    char terminalInput[128];
-    char fromKey[128];
-    char toKey[128];
-    char key[128];
-    char description[512];
-    int weight;
-    int choice;
-    int returnStatus;
-    char *string = NULL;
-    char **resultList = NULL;
-
-    initNetwork();
-    while (1)
-    {
-        memset(key, 0, sizeof(key));
-        memset(fromKey, 0, sizeof(fromKey));
-        memset(toKey, 0, sizeof(toKey));
-        memset(description, 0, sizeof(description));
-        choice = getMenuOption();
-        if (choice == 1)
-        {
-            memset(terminalInput, 0, sizeof(terminalInput));
-            printf("Enter key value for vertex: ");
-            fgets(terminalInput, sizeof(terminalInput), stdin);
-            terminalInput[strlen(terminalInput) - 1] = '\0';
-            sscanf(terminalInput, "%[^\n]", key);
-            memset(terminalInput, 0, sizeof(terminalInput));
-            printf("Enter description for vertex: ");
-            fgets(terminalInput, sizeof(terminalInput), stdin);
-            terminalInput[strlen(terminalInput) - 1] = '\0';
-            sscanf(terminalInput, "%[^\n]", description);
-            memset(terminalInput, 0, sizeof(terminalInput));
-            printf("Enter day work for vertex: ");
-            fgets(terminalInput, sizeof(terminalInput), stdin);
-            terminalInput[strlen(terminalInput) - 1] = '\0';
-            sscanf(terminalInput, "%d", &weight);
-            if (strlen(key) == 0)
-            {
-                printf(">>> Input error - key or data empty!\n");
-            }
-            else
-            {
-                returnStatus = addVertex(key, description, weight);
-                if (returnStatus == 1)
-                {
-                    printf(">>> Vertex |%s| added\n", key);
-                }
-                else if (returnStatus == -1)
-                {
-                    printf(">>> Vertex with key |%s| already exists in graph\n", key);
-                }
-                else if (returnStatus == -2)
-                {
-                    printf(">>> Vertex with key |%s| has error assign start and end edge\n", key);
-                }
-                else
-                {
-                    printf(">>> Memory allocation error or graph full!\n");
-                }
-            }
-        }
-        else if (choice == 2)
-        {
-            fgets(terminalInput, sizeof(terminalInput), stdin);
-            terminalInput[strlen(terminalInput) - 1] = '\0';
-            sscanf(terminalInput, "%[^\n]", toKey);
-            if (strlen(fromKey) == 0 || strlen(toKey) == 0)
-            {
-                printf(">>> Input error - key or data empty!\n");
-            }
-            else
-            {
-                returnStatus = addEdge(fromKey, toKey);
-                if (returnStatus == 1)
-                {
-                    printf(">>> Edge |%s| -> |%s| added\n", fromKey, toKey);
-                }
-                else if (returnStatus == -1)
-                {
-                    printf(">>> Vertex key |%s| or key |%s| not exists in graph\n", fromKey, toKey);
-                }
-                else if (returnStatus == -2)
-                {
-                    printf(">>> Edge from key |%s| to key |%s| already exists in graph\n", fromKey, toKey);
-                }
-                else if (returnStatus == -3)
-                {
-                    printf(">>> Error - Adding edge from |%s| to |%s| will create loop\n", fromKey, toKey);
-                }
-                else
-                {
-                    printf(">>> Memory allocation error or graph full!\n");
-                }
-            }
-        }
-        else if (choice == 3)
-        {
-            memset(terminalInput, 0, sizeof(terminalInput));
-            printf("Enter key value for vertex A: ");
-            fgets(terminalInput, sizeof(terminalInput), stdin);
-            terminalInput[strlen(terminalInput) - 1] = '\0';
-            sscanf(terminalInput, "%[^\n]", key);
-            if (strlen(key) == 0)
-            {
-                printf(">>> Input error - key or data empty!\n");
-            }
-            else
-            {
-                returnStatus = deleteVertex(key);
-                if (returnStatus == 1)
-                {
-                    printf(">>> Vertex |%s| deleted\n", key);
-                }
-                else
-                {
-                    printf(">>> Vertex with key |%s| didn't exists in graph\n", key);
-                }
-            }
-        }
-        else if (choice == 4)
-        {
-            memset(terminalInput, 0, sizeof(terminalInput));
-            printf("Enter from key value for vertex: ");
-            fgets(terminalInput, sizeof(terminalInput), stdin);
-            terminalInput[strlen(terminalInput) - 1] = '\0';
-            sscanf(terminalInput, "%[^\n]", fromKey);
-            memset(terminalInput, 0, sizeof(terminalInput));
-            printf("Enter to key value for vertex: ");
-            fgets(terminalInput, sizeof(terminalInput), stdin);
-            terminalInput[strlen(terminalInput) - 1] = '\0';
-            sscanf(terminalInput, "%[^\n]", toKey);
-            if (strlen(fromKey) == 0 || strlen(toKey) == 0)
-            {
-                printf(">>> Input error - key or data empty!\n");
-            }
-            else
-            {
-                returnStatus = deleteEdge(fromKey, toKey);
-                if (returnStatus == 1)
-                {
-                    printf(">>> Edge |%s| -> |%s| deleted\n", fromKey, toKey);
-                }
-                else if (returnStatus == -1)
-                {
-                    printf(">>> Vertex key |%s| or key |%s| not exists in graph\n", fromKey, toKey);
-                }
-                else if (returnStatus == -2)
-                {
-                    printf(">>> Edge from key |%s| to key |%s| didn't exists in graph\n", fromKey, toKey);
-                }
-            }
-        }
-        else if (choice == 5)
-        {
-            memset(terminalInput, 0, sizeof(terminalInput));
-            printf("Enter key value for vertex: ");
-            fgets(terminalInput, sizeof(terminalInput), stdin);
-            terminalInput[strlen(terminalInput) - 1] = '\0';
-            sscanf(terminalInput, "%[^\n]", key);
-            if (strlen(key) == 0)
-            {
-                printf(">>> Input error - key or data empty!\n");
-            }
-            else
-            {
-                resultList = searchVertex(key, &returnStatus);
-                for (int i = 0; i < 2; i++)
-                {
-                    printf("%s\n", resultList[i]);
-                }
-            }
-        }
-        else if (choice == 6)
-        {
-        }
-        else if (choice == 7)
-        {
-            memset(terminalInput, 0, sizeof(terminalInput));
-            printf("Enter key value for vertex: ");
-            fgets(terminalInput, sizeof(terminalInput), stdin);
-            terminalInput[strlen(terminalInput) - 1] = '\0';
-            sscanf(terminalInput, "%[^\n]", key);
-            if (strlen(key) == 0)
-            {
-                printf(">>> Input error - key or data empty!\n");
-            }
-            else
-            {
-                pCurrentVertex = findVertexByKey(key, &pPrevVertex);
-                if (pCurrentVertex != NULL)
-                {
-                    traverseBreadthFirst(pCurrentVertex, &printBreadthFirst);
-                }
-                else
-                {
-                    printf(">>> Vertex with key |%s| didn't exists in graph\n", key);
-                }
-            }
-        }
-        else if (choice == 8)
-        {
-            LongestPath();
-        }
-        else if (choice == 9)
-        {
-            memset(terminalInput, 0, sizeof(terminalInput));
-            printf("Enter key value for vertex: ");
-            fgets(terminalInput, sizeof(terminalInput), stdin);
-            terminalInput[strlen(terminalInput) - 1] = '\0';
-            sscanf(terminalInput, "%[^\n]", key);
-            pCurrentVertex = findVertexByKey(key, &pPrevVertex);
-            if (pCurrentVertex == NULL && strcasecmp(key, "start") != 0 && strcasecmp(key, "end") != 0)
-            {
-                printf(">>> Vertex with key |%s| didn't exists in graph\n", key);
-            }
-            else
-            {
-                if (strcasecmp(key, "start") == 0)
-                {
-                    pCurrentVertex = startVertex;
-                }
-                else if (strcasecmp(key, "end") == 0)
-                {
-                    pCurrentVertex = endVertex;
-                }
-
-                pCurrentEdge = pCurrentVertex->adjListHead;
-                printf(">>> Vertex with key |%s| exists in graph\n", key);
-                printf(">>> Key: %s\n", pCurrentVertex->name);
-                printf(">>> Info: %s\n", pCurrentVertex->description);
-                printf(">>> Weight: %d\n", pCurrentVertex->dayWork);
-                printf(">>> Parent: %s\n", pCurrentVertex->pParentVertex->name);
-                printf(">>> Total: %d\n", pCurrentVertex->totalDay);
-                printf(">>> Dependent of: \n");
-                printf(">>> ");
-                while (pCurrentEdge != NULL)
-                {
-                    pAdjVertex = (VERTEX_T *)pCurrentEdge->pVertex;
-                    printf("%s ", pAdjVertex->name);
-                    pCurrentEdge = pCurrentEdge->pNext;
-                }
-            }
-        }
-        else if (choice == 10)
-        {
-            break;
-        }
-    }
-}
-*/

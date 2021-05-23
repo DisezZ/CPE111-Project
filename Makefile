@@ -4,7 +4,7 @@
 #	Contributors:
 #		
 #
-#
+#	missing validation
 #
 
 CC = gcc
@@ -16,7 +16,9 @@ PROGRAM = 	main \
 			linkedListNetworkMod \
 		 	fileHandler \
 	 		userInterface \
-			dateCalendarManager
+			dateCalendarManager \
+			validateDate \
+			dateFunctions
 SOURCE = $(addsuffix .c,$(PROGRAM))
 OBJECT = $(addsuffix .o,$(PROGRAM))
 SRCPATH = $(addprefix src/,$(SOURCE))
@@ -24,7 +26,12 @@ OBJPATH = $(addprefix bin/,$(OBJECT))
 
 EXECUTABLES = src/main
 
-all:$(EXECUTABLES)
+.PHONY: clean all run
+
+run: $(EXECUTABLES)
+	./$(EXECUTABLES)
+
+all: $(EXECUTABLES)
 
 $(ODIR)/linkedListQueue.o :	$(SDIR)/linkedListQueue.c
 	$(CC) -c -g $(STD) $(SDIR)/linkedListQueue.c -o $(ODIR)/linkedListQueue.o
@@ -39,7 +46,13 @@ $(ODIR)/userInterface.o	: $(SDIR)/userInterface.c
 	$(CC) -c -g $(STD) $(SDIR)/userInterface.c -o $(ODIR)/userInterface.o
 
 $(ODIR)/dateCalendarManager.o	: $(SDIR)/dateCalendarManager.c
-	$(CC) -c -g -I $(STD) $(SDIR)/dateCalendarManager.c -o $(ODIR)/dateCalendarManager.o
+	$(CC) -c -g $(STD) $(SDIR)/dateCalendarManager.c -o $(ODIR)/dateCalendarManager.o
+
+$(ODIR)/validateDate.o	: $(SDIR)/validateDate.c
+	$(CC) -c -g $(STD) $(SDIR)/validateDate.c -o $(ODIR)/validateDate.o
+
+$(ODIR)/dateFunctions.o	: $(SDIR)/dateFunctions.c
+	$(CC) -c -g $(STD) $(SDIR)/dateFunctions.c -o $(ODIR)/dateFunctions.o
 
 $(ODIR)/main.o	: $(SDIR)/main.c
 	$(CC) -c -g $(STD) $(SDIR)/main.c -o $(ODIR)/main.o

@@ -1,9 +1,14 @@
-/********************************************************************************
- * 
- * 
- * 
- * 
- * 
+/* 
+ *  userInterface.c
+ *      This section will handle almost all of user interface related
+ *      and also input too    
+ *      
+ *      Created by ->
+ *      Aplusplus Members:
+ *          63070503437 Pataraphum
+ *          63070503448 Lutee           Deemae  (Lut)
+ *          63070503462 Jidapa          
+ *          63070503466 Purachet        
  * 
  * */
 
@@ -12,6 +17,12 @@
 #include "abstractNetwork.h"
 #include "userInterface.h"
 
+/* print string and get input from terminal into buffer string and
+ * Parameter:
+ *      bufferString    - buffer string for input from terminal
+ *      size            - size of buffer string
+ *      printString     - string to print before get get input from terminal
+ * */
 void getTerminalInput(char *bufferString, size_t size, char *printString)
 {
     printf("%s", printString);
@@ -20,24 +31,41 @@ void getTerminalInput(char *bufferString, size_t size, char *printString)
     bufferString[strcspn(bufferString, "\n")] = 0;
 }
 
+/* Using for display error message in the same format
+ * Parameter:
+ *       errorMessage    - message to diplay when error occured
+ * */
 void displayErrorMessage(char *errorMessage)
 {
     fprintf(stderr, ">>> Error - %s.\n", errorMessage);
 }
 
+/* Using for display success message in the same format
+ * Parameter:
+ *       successMessage    - message to diplay when operation success
+ * */
 void displaySuccessMessage(char *successMessage)
 {
     fprintf(stdout, ">>> Success - %s.\n", successMessage);
 }
 
+/* Using for display invalid message in the same format
+ * Parameter:
+ *       errorMessage    - message to diplay when invalid.
+ * */
 void displayInvalidMessage(char *invalidMessage)
 {
     fprintf(stderr, ">> Invalid - %s.\n", invalidMessage);
 }
 
+/* Display all available project from given project's string array
+ * Parameter:
+ *      projectNameList     - array of all project name
+ *      totalProject        - total prroject in string array
+ * */
 void displayAllProjectAvailable(char **projectNameList, int totalProject)
 {
-    printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
+    printf("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
     printf("Total Project Found: %d\n", totalProject);
     for (int i = 0; i < totalProject; i++)
     {
@@ -46,6 +74,11 @@ void displayAllProjectAvailable(char **projectNameList, int totalProject)
     printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 }
 
+/* Display all task exist in project from given task's string array
+ * Parameter:
+ *      searchTaskList      - array of all task name
+ *      totalTask           - total task in prject
+ * */
 void displayAllTaskAvailable(char **searchTaskList, int totalTask)
 {
     printf("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
@@ -57,6 +90,10 @@ void displayAllTaskAvailable(char **searchTaskList, int totalTask)
     printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 }
 
+/* Display all task that dependent on given task edge list head
+ * Parameter:
+ *      pEdge   - pointer to edge list head
+ * */
 int displayAllDependentOn(EDGE_T *pEdge)
 {
     VERTEX_T *pAdjVertex = NULL;
@@ -74,7 +111,8 @@ int displayAllDependentOn(EDGE_T *pEdge)
             pTempt = pTempt->pNext;
         }
         pTempt = pEdge;
-        printf("\nDependent on: %d\n", i + 1);
+        printf("\n Total Dependent on: %d\n", i + 1);
+        printf("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
         i = 0;
         while (pTempt)
         {
@@ -86,15 +124,18 @@ int displayAllDependentOn(EDGE_T *pEdge)
             }
             pTempt = pTempt->pNext;
         }
+        printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
     }
     else
         printf("There is no dependent on yet\n");
     return i;
 }
 
+/* Display all available menu option in project's part
+ * */
 void displayProjectMenuOptions()
 {
-    printf("****************************************\n");
+    printf("\n****************************************\n");
     printf("Here's your 4 options:\n");
     printf("\t(1) Add project\n");
     printf("\t(2) Enter existed project\n");
@@ -103,9 +144,15 @@ void displayProjectMenuOptions()
     printf("****************************************\n");
 }
 
+/* Display all available menu option in task's part
+ * Parameter:
+ *      projectName         - name of currently working on project
+ *      projectDescription  - description of currently working on project  
+ *      size                - size of description string
+ * */
 void displayTaskMenuOptions(char *projectName, char *projectDescription, int size)
 {
-    printf("****************************************\n");
+    printf("\n****************************************\n");
     printf("Project Name: \"%s\"\n", projectName);
     printf("Description:\n");
     for (int i = 0; i < size; i++)
@@ -133,9 +180,13 @@ void displayTaskMenuOptions(char *projectName, char *projectDescription, int siz
     printf("****************************************\n");
 }
 
+/* Display all available menu option in modify task's part
+ * Parameter:
+ *      taskName    - name of task that currently working on
+ * */
 void displayModifyTaskMenuOptions(char *taskName)
 {
-    printf("****************************************\n");
+    printf("\n****************************************\n");
     printf("Task name: |%s|\n", taskName);
     printf("There are 5 choices in modify task option :\n");
     printf("\t(1) Modify task information\n");
@@ -146,9 +197,11 @@ void displayModifyTaskMenuOptions(char *taskName)
     printf("****************************************\n");
 }
 
+/* Display all vailable menu option in change task info's part
+ * */
 void displayChangeTaskInfoOptions(char *taskName, char *taskDescription, int dayWork)
 {
-    printf("****************************************\n");
+    printf("\n****************************************\n");
     printf("Task name: |%s|\n", taskName);
     printf("Task description: |%s|\n", taskDescription);
     printf("Task day work: |%d|\n", dayWork);
@@ -160,9 +213,14 @@ void displayChangeTaskInfoOptions(char *taskName, char *taskDescription, int day
     printf("****************************************\n");
 }
 
+/* Display all available menu option in modify working day's part
+ * Parameter:
+ *      weekendStatus   - project's weekend information
+ *      totalDayoff     - project's total day off
+ * */
 void displayModifyWorkingDaysOptions(int weekendStatus, int totalDayoff)
 {
-    printf("****************************************\n");
+    printf("\n****************************************\n");
     printf("Working day %s\n", weekendStatus ? "exclude weekend" : "include weekend");
     printf("Total day off %d\n", totalDayoff);
     printf("There are 5 choices of modify working days option :\n");

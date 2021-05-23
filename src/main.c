@@ -24,6 +24,7 @@
 #include "fileManagement.h"
 #include "userInterface.h"
 #include "dateCalendarManager.h"
+#include "validateDate.h"
 
 char *dataBaseDirectory = NULL;
 char projectDescription[256] = {0};
@@ -735,22 +736,25 @@ void calculateProjectSchedule()
     EDGE_T *pCurrentEdge = pCurrentVertex->adjListHead;
     LongestPath();
     getTerminalInput(projectStartDate, sizeof(projectStartDate), "Enter project's start date: ");
-    printf("\n");
-    while (pCurrentEdge)
+    if (validateDate(projectStartDate))
     {
-        pAdjVertex = pCurrentEdge->pVertex;
-        if (strcmp(pAdjVertex->name, "start") != 0 && strcmp(pAdjVertex->name, "end") != 0)
+        printf("\n");
+        while (pCurrentEdge)
         {
-            calculateEndDate(projectStartDate, pAdjVertex->totalDay, taskStartDate, sizeof(taskStartDate));
-            calculateEndDate(projectStartDate, pAdjVertex->totalDay + pAdjVertex->dayWork - 1, taskEndDate, sizeof(taskEndDate));
-            printf(">>> Task: %s\n", pAdjVertex->name);
-            printf(">>> Work Day: %d\n", pAdjVertex->dayWork);
-            printf(">>> Start: %s\n", taskStartDate);
-            printf(">>> Finished: %s\n", taskEndDate);
-            printf("\n");
-        }
+            pAdjVertex = pCurrentEdge->pVertex;
+            if (strcmp(pAdjVertex->name, "start") != 0 && strcmp(pAdjVertex->name, "end") != 0)
+            {
+                calculateEndDate(projectStartDate, pAdjVertex->totalDay, taskStartDate, sizeof(taskStartDate));
+                calculateEndDate(projectStartDate, pAdjVertex->totalDay + pAdjVertex->dayWork - 1, taskEndDate, sizeof(taskEndDate));
+                printf(">>> Task: %s\n", pAdjVertex->name);
+                printf(">>> Work Day: %d\n", pAdjVertex->dayWork);
+                printf(">>> Start: %s\n", taskStartDate);
+                printf(">>> Finished: %s\n", taskEndDate);
+                printf("\n");
+            }
 
-        pCurrentEdge = pCurrentEdge->pNext;
+            pCurrentEdge = pCurrentEdge->pNext;
+        }
     }
 }
 

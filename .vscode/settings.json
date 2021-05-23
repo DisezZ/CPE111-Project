@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "datecalendarmanager.h": "c"
+        "datecalendarmanager.h": "c",
+        "stdlib.h": "c",
+        "abstractnetwork.h": "c"
     }
 }
