@@ -27,7 +27,7 @@ This program is Capability of:
         - Change Project Description
 
 -> = have sub options
- - = sub option
+\- = sub option
 
  Important !!! Read first.
 =======================================================================
