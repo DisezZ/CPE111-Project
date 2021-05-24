@@ -420,7 +420,7 @@ void indexAssign(VERTEX_T *pCurrentVertex, VERTEX_T **topSortVertices, int *trav
  *      0                   - if sorted vertex array has not been allocated
  *      1                   - if succesfully sorted in topological order
  * */
-int sortTopoligcal(VERTEX_T **topSortVertices, int *traverseIndex)
+int sortTopological(VERTEX_T **topSortVertices, int *traverseIndex)
 {
     int status = 1;
 
@@ -497,7 +497,7 @@ void LongestPath()
     int weight = 0;
 
     topSortVertices = calloc(totalVertex, sizeof(VERTEX_T *));
-    sortTopoligcal(topSortVertices, &traverseIndex);
+    sortTopological(topSortVertices, &traverseIndex);
     resetAllVertex();
     pCurrentVertex = vertexListHead;
     while (pCurrentVertex != NULL)
