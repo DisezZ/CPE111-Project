@@ -67,13 +67,13 @@ typedef struct _vertex
 //#define addressDatabaseDirectory "../CPE_PROJECT/project_list_database"
 
 void printMenu();
-char **findProjectFileDatabase(char *addressFolder, int *totalProject);
-int addNewProjectFile(char projectName[], char *addressFolder);
-int existProjectFileCheck(char projectName[], char *addressFolder);
-int renameProjectFile(char oldFileName[], char newFileName[], char *addressFolder);
-int deleteProjectFile(char projectName[], char *addressFolder);
-int readInformationFile(char projectName[], char *addressFolder);
-char *findProjectDatabaseDirectory();
+char **findProjectFileDatabase(char *addressFolder, int *totalProject);             /*This function will find database file in directory*/
+int addNewProjectFile(char projectName[], char *addressFolder);                     /*This function add new project in database*/
+int existProjectFileCheck(char projectName[], char *addressFolder);                 /*This function will check exist project in databse*/
+int renameProjectFile(char oldFileName[], char newFileName[], char *addressFolder); /*This function will rename exist poject*/
+int deleteProjectFile(char projectName[], char *addressFolder);                     /*This function will read information in databse file*/
+int readInformationFile(char projectName[], char *addressFolder);                   /*This function will write all information in datbase file*/
+char *findProjectDatabaseDirectory();                                               /*This function will find execute program directort*/
 
 /*int main(int argc,char* argv[])
 {
@@ -266,14 +266,14 @@ void printMenu()
 */
 char **findProjectFileDatabase(char *addressFolder, int *totalProject)
 {
-    DIR *directory;
-    struct dirent *projectDatabase;
+    DIR *directory;                 /*Directory struct in dirent.h*/
+    struct dirent *projectDatabase; /*Directory struct in dirent.h*/
 
-    int nameLength = 0;
-    int listIndex = 0;
-    char projectName[128];
-    char *outputName[64] = {0};
-    char **projectNameList = NULL;
+    int nameLength = 0;            /*Length of file name*/
+    int listIndex = 0;             /*List of file in directory*/
+    char projectName[128];         /*Project name*/
+    char *outputName[64] = {0};    /*project name*/
+    char **projectNameList = NULL; /*List of project file in directory*/
     if ((directory = opendir(addressFolder)) == NULL)
     {
         fprintf(stderr, "cannot open directory: %s\n", addressFolder);
@@ -330,11 +330,11 @@ char **findProjectFileDatabase(char *addressFolder, int *totalProject)
 */
 int addNewProjectFile(char projectName[], char *addressFolder)
 {
-    DIR *databasedirectory;
-    char projectFileName[128];
-    int addNew_status = -1;
+    DIR *databasedirectory;    /*Directory struct in dirent.h*/
+    char projectFileName[128]; /*Project file name*/
+    int addNew_status = -1;    /*Function status*/
 
-    FILE *outputFileproject = NULL;
+    FILE *outputFileproject = NULL; /*Database file*/
 
     sscanf(projectName, "%s", projectFileName);
     addNew_status = existProjectFileCheck(projectFileName, addressFolder);
@@ -371,10 +371,10 @@ int addNewProjectFile(char projectName[], char *addressFolder)
 */
 int deleteProjectFile(char projectName[], char *addressFolder)
 {
-    char input[64] = {0};
-    char conditions[64] = {0};
-    char deleteProjectName[64] = {0};
-    char *currentDirectory = NULL;
+    char input[64] = {0};             /*Input from user*/
+    char conditions[64] = {0};        /*Condition in loop*/
+    char deleteProjectName[64] = {0}; /*Project name*/
+    char *currentDirectory = NULL;    /*Directory of execute program*/
 
     int delete_status = 0;
 
@@ -418,11 +418,11 @@ int deleteProjectFile(char projectName[], char *addressFolder)
 */
 int renameProjectFile(char oldProjectName[], char newProjectName[], char *addressFolder)
 {
-    char input[64] = {0};
-    char oldFileName[64] = {0};
-    char newFileName[64] = {0};
+    char input[64] = {0};       /*Input from user*/
+    char oldFileName[64] = {0}; /*Old file name that want to rename*/
+    char newFileName[64] = {0}; /*New file name that want to rename*/
 
-    int rename_status = -2;
+    int rename_status = -2; /*Function status*/
 
     sscanf(oldProjectName, "%s", oldFileName);
     if (existProjectFileCheck(oldFileName, addressFolder) == 0)
@@ -475,8 +475,8 @@ int renameProjectFile(char oldProjectName[], char newProjectName[], char *addres
 */
 int existProjectFileCheck(char projectName[], char *addressFolder)
 {
-    char projectNameTemp[128];
-    FILE *existProjectFileName = NULL;
+    char projectNameTemp[128];         /*Project name*/
+    FILE *existProjectFileName = NULL; /*Exist project in directory*/
 
     chdir(addressFolder);
     memset(projectNameTemp, 0, sizeof(projectNameTemp));
@@ -511,24 +511,24 @@ int existProjectFileCheck(char projectName[], char *addressFolder)
 */
 int readInformationFile(char projectName[], char *addressFolder)
 {
-    char input[64] = {0};
-    char inputLine[256] = {0};
-    char projectFileName[128] = {0};
-    char taskName[64] = {0};
-    char information[128] = {0};
-    char charWeight[8] = {0};
-    char temp[128] = {0};
-    char keyEdgeOne[64] = {0};
-    char keyEdgeTwo[64] = {0};
-    char projectDescription[256] = {0};
-    int weight = 0;
-    int add_edge_status = -4;
-    int add_vertex_status = -2;
-    int status = 1;
-    int weekend = 0;
-    time_t unixTime;
+    char input[64] = {0};               /*Input from user*/
+    char inputLine[256] = {0};          /*Line in file*/
+    char projectFileName[128] = {0};    /*Project file name*/
+    char taskName[64] = {0};            /*Task name*/
+    char information[128] = {0};        /*Task information*/
+    char charWeight[8] = {0};           /*Day work of task*/
+    char temp[128] = {0};               /*Temp text*/
+    char keyEdgeOne[64] = {0};          /*Task name*/
+    char keyEdgeTwo[64] = {0};          /*Task name*/
+    char projectDescription[256] = {0}; /*Description of project*/
+    int weight = 0;                     /*Task weight*/
+    int add_edge_status = -4;           /*Function status*/
+    int add_vertex_status = -2;         /*Function status*/
+    int status = 1;                     /*Function status*/
+    int weekend = 0;                    /*Weekend status*/
+    time_t unixTime;                    /*Time struct in time.h*/
 
-    FILE *databaseFile = NULL;
+    FILE *databaseFile = NULL; /*Database file*/
 
     if (existProjectFileCheck(projectName, addressFolder) == 1)
     {
@@ -541,7 +541,7 @@ int readInformationFile(char projectName[], char *addressFolder)
         {
             if (sscanf(inputLine, "ABOUT:%[^;];", projectDescription) == 1)
             {
-                //printf("projectDescription:%s\n",projectDescription);
+                printf("projectDescription:%s\n", projectDescription);
                 setProjectDescription(projectDescription);
             }
             if (sscanf(inputLine, "NAME:%[^;];INFORMATION:%[^;];WEIGHT:%[^;];", taskName, information, charWeight) == 3)
@@ -593,7 +593,6 @@ int readInformationFile(char projectName[], char *addressFolder)
             }
             if (sscanf(inputLine, "WEEKEND:%d;", &weekend) == 1)
             {
-                printf("weekend = %d\n", weekend);
                 if (weekend == 1)
                 {
                     setWeekendStatus();
@@ -603,10 +602,6 @@ int readInformationFile(char projectName[], char *addressFolder)
             {
                 sscanf(input, "%ld", &unixTime);
                 status = addDateToList(unixTime);
-                if (status == 1)
-                {
-                    printf("good\n");
-                }
             }
         }
         fclose(databaseFile);
@@ -636,27 +631,27 @@ int readInformationFile(char projectName[], char *addressFolder)
 */
 int writeInformationFile(char projectName[], char *addressFolder)
 {
-    char input[64] = {0};
-    char inputLine[128] = {0};
-    char projectFileName[128] = {0};
-    char taskName[64] = {0};
-    char taskInformation[128] = {0};
-    char charWeight[8] = {0};
-    char temp[128] = {0};
-    char keyEdgeOne[64] = {0};
-    char keyEdgeTwo[64] = {0};
-    char projectDescription[256] = {0};
-    int taskWeight = 0;
-    int status = 0;
-    int weekend = 0;
-    time_t wUnixTime;
+    char input[64] = {0};               /*Input from user*/
+    char inputLine[128] = {0};          /*Line in file*/
+    char projectFileName[128] = {0};    /*Project file name*/
+    char taskName[64] = {0};            /*Task name*/
+    char taskInformation[128] = {0};    /*Task information*/
+    char charWeight[8] = {0};           /*Weigth of task*/
+    char temp[128] = {0};               /*Temp text*/
+    char keyEdgeOne[64] = {0};          /*Task name*/
+    char keyEdgeTwo[64] = {0};          /*Task name*/
+    char projectDescription[256] = {0}; /*Description of project*/
+    int taskWeight = 0;                 /*Weight of task*/
+    int status = 0;                     /*Function status*/
+    int weekend = 0;                    /*Weekend status*/
+    time_t wUnixTime;                   /*Time struct in time.h*/
 
-    VERTEX_T *currentVertex = NULL;
-    VERTEX_T *currentAdjacent = NULL;
-    EDGE_T *currentEdge = NULL;
-    DATE_T *timeList = NULL;
+    VERTEX_T *currentVertex = NULL;   /*Current task strcut*/
+    VERTEX_T *currentAdjacent = NULL; /*Current adjacent struct*/
+    EDGE_T *currentEdge = NULL;       /*Current edge struct*/
+    DATE_T *timeList = NULL;          /*List of time*/
 
-    FILE *currentProjectFile = NULL;
+    FILE *currentProjectFile = NULL; /*Project file*/
 
     sscanf(projectName, "%s", projectFileName);
     strcat(projectFileName, "-database.dat");
@@ -730,10 +725,10 @@ int writeInformationFile(char projectName[], char *addressFolder)
 */
 char *findProjectDatabaseDirectory()
 {
-    int findDatabase_status = -2;
-    char cwd[256];
-    char databaseDirectory[128] = {0};
-    char *addressDirectory = NULL;
+    int findDatabase_status = -2;      /*Function status*/
+    char cwd[256];                     /*Directory name*/
+    char databaseDirectory[128] = {0}; /*Database directory*/
+    char *addressDirectory = NULL;     /*address of directory*/
 
     if (getcwd(cwd, sizeof(cwd)) != NULL)
     {

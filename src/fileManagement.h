@@ -115,8 +115,39 @@ int deleteProjectFile(char projectName[], char *addressFolder);
 */
 int readInformationFile(char projectName[], char *addressFolder);
 
+
+/*=========================================================================================
+* This function will write all information of project into the database file.
+*
+*	create by
+*		NAME:Pattaraphum chuamuangphan 
+*		ID:63070503437
+*
+*   Arguments
+*       projectName     -   the project name that user enter
+*       addressFolder   -   the address of the database folder 
+*       vertexStruct    -   the pointer of head vertesx structure 
+* This functino will return 1 if can write the information in file and return 0 if can not
+* open the file;
+*==========================================================================================
+*/
 int writeInformationFile(char projectName[], char *addressFolder);
 
+
+/*=================================================================================================
+* This function will find the working program folder directory.
+*
+* This function is from stack overflow
+* REF:https://stackoverflow.com/questions/298510/how-to-get-the-current-directory-in-a-c-program
+*
+*	modify by
+*		NAME:Pattaraphum chuamuangphan 
+*		ID:63070503437
+*
+*   Arguments
+* This functino will return the database directory.
+*==================================================================================================
+*/
 char *findProjectDatabaseDirectory();
 
 #endif

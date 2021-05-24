@@ -165,7 +165,7 @@ void displayTaskMenuOptions(char *projectName, char *projectDescription, int siz
         }
         printf("%c", projectDescription[i]);
     }
-    printf("\nHere's your 9 options:\n");
+    printf("\nHere's your 11 options:\n");
     printf("\t(1) Add task\n");
     printf("\t(2) Modify task\n");
     printf("\t(3) Delete task\n");

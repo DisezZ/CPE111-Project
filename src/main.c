@@ -15,9 +15,9 @@
 #include <string.h>
 #include <dirent.h>
 #include <unistd.h>
-#define __USE_XOPEN
-#define _GNU_SOURCE
-#define _XOPEN_SOURCE 700
+#define __USE_XOPEN       /* for strftime and strptime */
+#define _GNU_SOURCE       /* for strftime and strptime */
+#define _XOPEN_SOURCE 700 /* for strftime and strptime */
 #include <time.h>
 #include "main.h"
 #include "abstractNetwork.h"
@@ -26,16 +26,24 @@
 #include "dateCalendarManager.h"
 #include "validateDate.h"
 
-char *dataBaseDirectory = NULL;
-char projectDescription[256] = {0};
-char workingProjectName[128] = {0};
+char *dataBaseDirectory = NULL;     /* directory of database */
+char projectDescription[256] = {0}; /* description of project */
+char workingProjectName[128] = {0}; /* name of currently working project */
 
+/* to process the program if there is a command line argument at least 1 
+ * for name of project
+ * Parameter:
+ *      projectNameIn   - name of project to open from command line
+ * Return:
+ *      1 if open project success
+ *      0 if open project failed
+ * */
 int argvOneProcess(char *projectNameIn)
 {
-    int fileOpenStatus = 0;
-    int returnStatus;
-    char printString[256];
-    char choice[8];
+    int fileOpenStatus = 0; /* to track if currently open project or not */
+    int returnStatus;       /* status to receive from function return */
+    char printString[256];  /* string to print to terminal */
+    char choice[8];         /* user's choice */
 
     returnStatus = readInformationFile(projectNameIn, dataBaseDirectory);
     if (returnStatus == -1)
@@ -73,16 +81,20 @@ int argvOneProcess(char *projectNameIn)
     return fileOpenStatus;
 }
 
+/* to handle the task information changing flow
+ * Parameter:
+ *      taskName    - key of task currently process
+ * */
 void changeTaskInfoOptionFlowManager(char *taskName)
 {
-    char choice[8]; /* store choice from user */
-    VERTEX_T *pFound = NULL;
+    char choice[8];          /* store choice from user */
+    VERTEX_T *pFound = NULL; /* pointer to task found */
 
     while (1)
     {
         pFound = findVertex(taskName);
         displayChangeTaskInfoOptions(pFound->name, pFound->description, pFound->dayWork);
-        getTerminalInput(choice, sizeof(choice), "Enter tour option: ");
+        getTerminalInput(choice, sizeof(choice), "Enter your option: ");
         if (strcmp(choice, "1") == 0)
         {
             changeTaskName(taskName);
@@ -106,12 +118,19 @@ void changeTaskInfoOptionFlowManager(char *taskName)
     }
 }
 
+/* to process when user choose to add new project
+ * Parameter:
+ *      projectNameIn   - name of project to open from command line
+ * Return:
+ *      1 if open project success
+ *      0 if open project failed
+ * */
 void addNewProject(int *fileOpenStatus)
 {
-    char printString[256];
-    char projectNameIn[128];
-    char choice[8];
-    int returnStatus;
+    char printString[256];   /* string to print to terminal */
+    char projectNameIn[128]; /* name of project to add */
+    char choice[8];          /* user's choice */
+    int returnStatus;        /* status to receive from function return */
 
     getTerminalInput(projectNameIn, sizeof(projectNameIn), "Enter new project name : ");
     if (!strlen(projectNameIn))
@@ -159,15 +178,19 @@ void addNewProject(int *fileOpenStatus)
         taskOptionFlowManager(fileOpenStatus);
 }
 
+/* to process when user choose to enter
+ * Parameter:
+ *      fileOpenStatus  - 1 if currently open project, 0 if no project is open
+ * */
 void enterExistProject(int *fileOpenStatus)
 {
-    char choice[8];
-    char projectNameIn[128];
-    char printString[256];
-    char **projectNameList;
-    int totalProject = 0;
-    int returnStatus;
-    int searchStatus;
+    char choice[8];          /* user's choice */
+    char projectNameIn[128]; /* project name to  */
+    char printString[256];   /* string to print to terminal */
+    char **projectNameList;  /* list of project name in database */
+    int totalProject = 0;    /* total project in database */
+    int returnStatus;        /* status to receive from function return */
+    int searchStatus;        /* status of searching, 1 if dound, 0 not found */
 
     projectNameList = findProjectFileDatabase(dataBaseDirectory, &totalProject);
     displayAllProjectAvailable(projectNameList, totalProject);
@@ -212,9 +235,13 @@ void enterExistProject(int *fileOpenStatus)
         taskOptionFlowManager(fileOpenStatus);
 }
 
+/* to process when user choose to delete an existing project
+ * Parameter:
+ *      fileOpenStatus  - 1 if currently open project, 0 if no project is open
+ * */
 void deleteExistProject(int *fileOpenStatus)
 {
-    char printString[256];
+    char printString[256];         /* string to print to terminal */
     char projectNameDelete[128];   /*project file name that want to delete*/
     char **projectNameList = NULL; /*list of project name*/
     int totalProject = 0;          /*total file in database*/
@@ -244,9 +271,23 @@ void deleteExistProject(int *fileOpenStatus)
     freeStringArray(totalProject, projectNameList);
 }
 
+/*
+--> projectOptionFlowManager
+This function is the project options for user choices together with display the UI.
+    (1) add new project
+    (2) enter the project
+    (3) delete the project
+    (4) exit the program
+
+Parameter :
+    fileOpenStatus  ;   The currently status of open project.
+                        (0) == not open the project.
+                        (1) == currently open the project.
+*/
 void projectOptionFlowManager(int *fileOpenStatus)
 {
-    char choice[8];
+    char choice[8]; /* user's choice */
+
     if (*fileOpenStatus)
     {
         taskOptionFlowManager(fileOpenStatus);
@@ -279,9 +320,11 @@ void projectOptionFlowManager(int *fileOpenStatus)
     }
 }
 
+/* to process when user's choose to rename project
+ * */
 void renameProject()
 {
-    char printString[384];
+    char printString[384];       /* string to print to terminal */
     char projectNameRename[128]; /* new file name to be raname into */
     int returnStatus;            /* store return value from function */
 
@@ -317,9 +360,11 @@ void renameProject()
     }
 }
 
+/*  to process when user choose to add task
+ * */
 void addTask()
 {
-    char printString[256];
+    char printString[256];      /* string to print to terminal */
     char taskName[128];         /* sore task name */
     char taskDescription[128];  /* store task information */
     char taskWeightString[128]; /* store task weight in string */
@@ -367,13 +412,20 @@ void addTask()
     }
 }
 
+/* get all task name and store in array of string
+ * Parameter:
+ *      searchResultList    - array of sting of all task name
+ * Return:
+ *      total vertex found in network
+ * */
 int getAllTask(char **searchResultList)
 {
-    VERTEX_T *pAdjVertex = NULL;
-    VERTEX_T *pCurrentVertex = getStartVertex();
-    EDGE_T *pCurrentEdge = pCurrentVertex->adjListHead;
-    int totalVertex = getTotalVertex();
-    int i = 0;
+    VERTEX_T *pAdjVertex = NULL;                        /* to store adjacent vertex */
+    VERTEX_T *pCurrentVertex = getStartVertex();        /* to iterate through vertex list */
+    EDGE_T *pCurrentEdge = pCurrentVertex->adjListHead; /* to iterate through adjacency */
+    int totalVertex = getTotalVertex();                 /* total vertex in network */
+    int i = 0;                                          /* to use to keep track of size */
+
     while (pCurrentEdge && i < totalVertex)
     {
         pAdjVertex = pCurrentEdge->pVertex;
@@ -388,13 +440,21 @@ int getAllTask(char **searchResultList)
     return i;
 }
 
+/* to proecess when user choose option that need searching for task first
+ * Parameter:
+ *      searchTask  - string to keep track what user's search/find
+ *      size        - size of searchTask
+ * Return:
+ *      1 - if searching vertex is found and user's select that task
+ *      0 - if something went wrong
+ * */
 int findTask(char *searchTask, size_t size)
 {
-    char printString[256];
-    char **searchTaskList = NULL;
-    char choice[8];
-    int totalTask = 0;
-    int returnStatus = 0;
+    char printString[256];        /* string to print to terminal */
+    char **searchTaskList = NULL; /* array of string of all task name */
+    char choice[8];               /* keep user's choice */
+    int totalTask = 0;            /* total task in network */
+    int returnStatus = 0;         /* get return status from function calling */
 
     totalTask = getTotalVertex();
     searchTaskList = calloc(totalTask, sizeof(char *));
@@ -427,11 +487,15 @@ int findTask(char *searchTask, size_t size)
     return returnStatus;
 }
 
+/* to process when user choose to change task name
+ * Parameter:
+ *      taskName    - name of task that going to be changed
+ * */
 void changeTaskName(char *taskName)
 {
-    char printString[256];
-    char newTaskName[128];
-    int returnStatus;
+    char printString[256]; /* string to print to therminal */
+    char newTaskName[128]; /* new task name */
+    int returnStatus;      /* keep return stataus from function calling */
 
     getTerminalInput(newTaskName, sizeof(newTaskName), "Enter new task name : ");
     if (strlen(newTaskName) == 0)
@@ -468,11 +532,15 @@ void changeTaskName(char *taskName)
     }
 }
 
+/* to process when user choose to change task description
+ * Parameter:
+ *      taskName    - name of task that going to be changed
+ * */
 void changeTaskDescription(char *taskName)
 {
-    char printString[256];
-    char newTaskDescription[128];
-    int returnStatus;
+    char printString[256];        /* string to print to terminal */
+    char newTaskDescription[128]; /* new description of task */
+    int returnStatus;             /* return status from function calling */
 
     getTerminalInput(newTaskDescription, sizeof(newTaskDescription), "Enter new task description : ");
     if (strlen(newTaskDescription) == 0)
@@ -503,12 +571,16 @@ void changeTaskDescription(char *taskName)
     }
 }
 
+/* to process when user choose to change task weight
+ * Parameter:
+ *      taskName    - name of task that going to be changed
+ * */
 void changeTaskWeight(char *taskName)
 {
-    char printString[256];
-    char newTaskWeightString[8];
-    int newTaskWeight = 0;
-    int returnStatus;
+    char printString[256];       /* string to print to terminal */
+    char newTaskWeightString[8]; /* new task weight in string */
+    int newTaskWeight = 0;       /* new task weight in integer */
+    int returnStatus;            /* return status from function calling */
 
     getTerminalInput(newTaskWeightString, sizeof(newTaskWeightString), "Enter new task work days : ");
     sscanf(newTaskWeightString, "%d", &newTaskWeight);
@@ -533,6 +605,10 @@ void changeTaskWeight(char *taskName)
     }
 }
 
+/* to process when user choose to add dependent on to vertex
+ * Parameter:
+ *      taskName    - name of task that will be add dependent to
+ * */
 void addDependency(char *taskName)
 {
     char toTaskName[128]; /*name of task*/
@@ -570,6 +646,10 @@ void addDependency(char *taskName)
     }
 }
 
+/* to process when user choose to change dependent from one to another
+ * Parameter:
+ *      taskName    - name of task that will be changing dependent destination
+ * */
 void changeDependency(char *taskName)
 {
     char fromTaskName[128]; /*vertex that direct to other*/
@@ -596,11 +676,11 @@ void changeDependency(char *taskName)
         }
         else if (returnStatus == -2)
         {
-            printf("Oops, The name of each key must be unique. Can't be the same.\n");
+            printf("Oops, The name of each key must be unique. Can'tbae the same.\n");
         }
         else if (returnStatus == -3)
         {
-            printf("Oops, The name of new dependency destination already exist.\n");
+            printf("The name of new dependency destination already exist.\n ");
         }
         else
         {
@@ -609,6 +689,10 @@ void changeDependency(char *taskName)
     }
 }
 
+/* to process when user choose to delete dependency
+ * Parameter:
+ *      taskName    - name of task that will be changing dependent destination
+ * */
 void deleteDependency(char *taskName)
 {
     char toTaskName[128]; /* store task name to */
@@ -638,14 +722,26 @@ void deleteDependency(char *taskName)
     }
 }
 
+/*
+--> modifyTaskOptionFlowManger
+This function is modify task options for user choice
+    (1) go to changeTaskInfoOptionFlowManager ( to change task inforamtion )
+    (2) add dependency
+    (3) change dependency
+    (4) delete dependency
+    (5) delete dependency
+
+Parameter :
+    taskName    ;   the task which user want to modify
+*/
 void modifyTaskOptionFlowManager(char *taskName)
 {
-    char choice[8]; /* store choice from user */
-    VERTEX_T *pVertex = findVertex(taskName);
+    char choice[8];                           /* store choice from user */
+    VERTEX_T *pVertex = findVertex(taskName); /* vertex of task with given taskName */
     while (1)
     {
         displayModifyTaskMenuOptions(taskName);
-        getTerminalInput(choice, sizeof(choice), "Enter tour option: ");
+        getTerminalInput(choice, sizeof(choice), "Enter your option: ");
         if (strcmp(choice, "1") == 0)
         {
             changeTaskInfoOptionFlowManager(taskName);
@@ -679,6 +775,10 @@ void modifyTaskOptionFlowManager(char *taskName)
     }
 }
 
+/* to process when user choose to display task
+ * Parameter:
+ *      taskName    - name of task that will be display information
+ * */
 void displayTask(char *taskName)
 {
     VERTEX_T *pFound = NULL;  /* find vertex struct */
@@ -702,6 +802,10 @@ void displayTask(char *taskName)
     printf("\n");
 }
 
+/* to process when user choose to delete task
+ * Parameter:
+ *      taskName    - name of task that going to be delete
+ * */
 void deleteTask(char *taskName)
 {
     int returnStatus; /* store function return value */
@@ -711,26 +815,33 @@ void deleteTask(char *taskName)
     printf("Success to delete task.\n");
 }
 
-void dispalyAllTask()
+/* to process when user's choose to display all task by display all task name
+ * */
+void displayAllTask()
 {
-    VERTEX_T *pCurrentVertex = NULL; /* loop through vertex list */
-    VERTEX_T *pAdjVertex = NULL;     /* store adjacent vertex */
-    VERTEX_T *pCurrentEdge = NULL;   /* loop through edge list */
-
-    pCurrentVertex = getVertexListHead();
-    while (pCurrentVertex != NULL)
+    char **taskList = NULL; /* array of string of task name */
+    int totalTask;          /* total task in network */
+    totalTask = getTotalVertex();
+    taskList = calloc(totalTask, sizeof(char *));
+    if (taskList != NULL)
     {
-        displayTask(pCurrentVertex->name);
-        pCurrentVertex = pCurrentVertex->pNext;
+        getAllTask(taskList);
+        displayAllTaskAvailable(taskList, totalTask); /* code */
+        freeStringArray(totalTask, taskList);
+    }
+    else
+    {
+        displayErrorMessage("While allocating memory");
     }
 }
 
+/* calculate start and end date for each task and then display it
+ * */
 void calculateProjectSchedule()
 {
-    char projectStartDate[16];
-    char taskStartDate[16];
-    char taskEndDate[16];
-    int date;
+    char projectStartDate[16]; /* start date of project in string */
+    char taskStartDate[16];    /* start date of task in string */
+    char taskEndDate[16];      /* end date of task in string */
     VERTEX_T *pAdjVertex = NULL;
     VERTEX_T *pCurrentVertex = getStartVertex();
     EDGE_T *pCurrentEdge = pCurrentVertex->adjListHead;
@@ -758,9 +869,11 @@ void calculateProjectSchedule()
     }
 }
 
+/* to change project description when user's choose to change project description
+ * */
 void changeProjectDescription()
 {
-    char newDescription[256];
+    char newDescription[256]; /* new description of project */
     if (strlen(projectDescription))
         printf("About Project:\n\t%s\n", projectDescription);
     else
@@ -776,13 +889,31 @@ void changeProjectDescription()
     }
 }
 
+/*
+--> taskOptionFlowManager
+This function is the task options for user choices together with display the UI.
+    (1) add new task
+    (2) modify the task
+    (3) delete the task
+    (4) display specific task
+    (5) display all task information
+    (6) calculate project schedule
+    (7) modify working day
+    (8) change project name
+    (9) change project sedcription
+    (10) back to project option
+
+Parameter :
+    fileOpenStatus  ;   The currently status of open project.
+                        (0) == not open the project.
+                        (1) == currently open the project.
+*/
 void taskOptionFlowManager(int *fileOpenStatus)
 {
-    char **searchResultList = NULL;
-    char choice[8];
-    char searchString[128];
-    int totalResult;
-    int returnStatus;
+    char **searchResultList = NULL; /* array of string of task name in database */
+    char choice[8];                 /* keep user's choice */
+    char searchString[128];         /* string that user search */
+    int returnStatus;               /* return status from function calling */
 
     while (1)
     {
@@ -814,7 +945,7 @@ void taskOptionFlowManager(int *fileOpenStatus)
         }
         else if (strcmp(choice, "5") == 0) // display all task info
         {
-            dispalyAllTask();
+            displayAllTask();
         }
         else if (strcmp(choice, "6") == 0) // calcluate project schedule
         {
@@ -852,13 +983,15 @@ void taskOptionFlowManager(int *fileOpenStatus)
     }
 }
 
+/* to process when user choose to add day off to database, get day off and add to database
+ * */
 void addDayOff()
 {
-    char printString[256];
-    char dateString[16];
-    int returnStatus;
-    struct tm tm = {0};
-    time_t unixTime;
+    char printString[256]; /* string to print to terminal */
+    char dateString[16];   /* date string to receive from user */
+    int returnStatus;      /* return status from function calling */
+    struct tm tm = {0};    /* struct time of that date */
+    time_t unixTime;       /* epoch time of that date */
 
     getTerminalInput(dateString, sizeof(dateString), "Enter date ex. 01/01/2021: ");
     if (!strlen(dateString))
@@ -883,13 +1016,15 @@ void addDayOff()
     }
 }
 
+/* to remove day off from database
+ * */
 void removeDayOff()
 {
-    char printString[256];
-    char dateString[16];
-    int returnStatus;
-    struct tm tm = {0};
-    time_t unixTime;
+    char printString[256]; /* string to print to terminal */
+    char dateString[16];   /* date string to receive from user */
+    int returnStatus;      /* return status from function calling */
+    struct tm tm = {0};    /* struct time of that date */
+    time_t unixTime;       /* epoch time of that date */
 
     getTerminalInput(dateString, sizeof(dateString), "Enter date ex. 01/01/2021: ");
     if (!strlen(dateString))
@@ -914,14 +1049,19 @@ void removeDayOff()
     }
 }
 
+/* to display every day off of that project in database
+ * Return:
+ *      0 - if no day off in database
+ *      1 - if at least 1 day off in database
+ * */
 int displayEveryDayOff()
 {
-    char dateString[16];
-    DATE_T *pCurrent = NULL;
-    struct tm *tm = NULL;
-    int totalDate;
-    int status = 0;
-    int i = 1;
+    char dateString[16];     /* date string to receive from user */
+    DATE_T *pCurrent = NULL; /* to iterate through date list */
+    struct tm *tm = NULL;    /* struct time of that date */
+    int totalDate;           /* total day off in day off list in database */
+    int status = 0;          /* status to return */
+    int i = 0;               /* keep track of current number */
 
     totalDate = getTotalDayOff();
     if (!totalDate)
@@ -940,13 +1080,23 @@ int displayEveryDayOff()
         }
     }
     printf("\n");
+    return status;
 }
 
+/*
+--> modifyWorkingDayOptionFlowManager
+This function is the options to modify working days by user choice
+    (1) change weekend
+    (2) add day off
+    (3) remove day off
+    (4) display every day off
+    (5) exit the options
+*/
 void modifyWorkingDayOptionFlowManager()
 {
-    char choice[8];
-    int weekendStatus;
-    int totalDayOff;
+    char choice[8];    /* user's choice */
+    int weekendStatus; /* 1 work day exclude weekend, 0 work day include weekend */
+    int totalDayOff;   /* total day off of project */
 
     while (1)
     {
@@ -986,6 +1136,14 @@ void modifyWorkingDayOptionFlowManager()
     }
 }
 
+/*
+--> freeStringArray
+    To free all element in string
+
+Paramter :
+    size            ;   array size of stringToFree
+    stringToFree    ;   the string to be free 
+*/
 void freeStringArray(int size, char **stringToFree)
 {
     for (int i = 0; i < size; i++)
@@ -997,16 +1155,22 @@ void freeStringArray(int size, char **stringToFree)
     stringToFree = NULL;
 }
 
+/* get project description from main
+ * */
 void getProjectDescription(char *string)
 {
     sscanf(projectDescription, "%s", string);
 }
 
+/* set project description in main to given string
+ * */
 void setProjectDescription(char *string)
 {
-    sscanf(string, "%s", projectDescription);
+    sscanf(string, "%[^\n]", projectDescription);
 }
 
+/* main function of project scheduling system program
+ * */
 int main(int argc, char *argv[])
 {
     char fileNameIn[128];           /*input file name*/

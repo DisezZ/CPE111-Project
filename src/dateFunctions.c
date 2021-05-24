@@ -24,7 +24,7 @@
  */
 
 /* Number of days in each month. */
-int monthDays[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
+int monthDays[12] = {31,28,31,30,31,30,31,31,30,31,30,31};     /*day in a month*/
 
 
 /* Local function. , not exposed in the header file.
@@ -44,8 +44,8 @@ int isLeapYear(int year)
  */ 
 long yearDayDifference(int year1, int year2)
 {
-    int y1, y2, yr;
-    long totalDays = 0;
+    int y1, y2, yr;        /*year variable*/
+    long totalDays = 0;    /*total day*/
     if (year1 > year2) 
        {
        y1 = year2;
@@ -72,8 +72,8 @@ long yearDayDifference(int year1, int year2)
  */
 int yearDay(int day, int month, int year)
 {
-    int days = 0;
-    int m = 0; /* month counter */
+    int days = 0; /*day*/
+    int m = 0;    /* month counter */
      for (m = 0; m < (month - 1); m++)
        {
        days += monthDays[m]; 
@@ -163,7 +163,7 @@ DATE_STATUS checkDate(char* dateString, int* pDay, int *pMonth, int* pYear)
 long dateDifference(int day1,int month1,int year1, 
                     int day2,int month2,int year2)
 {
-    long difference = 0;
+    long difference = 0;   /*time difference*/
     int compareResult = dateCompare(day1,month1,year1,day2,month2,year2);
     if (compareResult > 0)
        {
@@ -183,8 +183,8 @@ long dateDifference(int day1,int month1,int year1,
  * to the correct values for today. */
 void dateToday(int* pDay, int *pMonth, int* pYear)
 {
-    time_t seconds = 0;    
-    struct tm * pTimeStruct;
+    time_t seconds = 0;          /*struct from time.h declare for seconds*/
+    struct tm * pTimeStruct;     /*time struct from time.h*/
 
     seconds = time(&seconds);
     pTimeStruct = localtime(&seconds);

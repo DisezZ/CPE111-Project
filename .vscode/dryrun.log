@@ -1,13 +1,5 @@
-make all --dry-run --always-make --keep-going --print-directory
+make all --dry-run --keep-going --print-directory
 make: Entering directory '/home/lutfee/CPE111 - Project'
-gcc -c -g -std=c99 src/main.c -o bin/main.o
-gcc -c -g -std=c99 src/linkedListQueue.c -o bin/linkedListQueue.o
-gcc -c -g -std=c99 src/linkedListNetworkMod.c -o bin/linkedListNetworkMod.o
-gcc -c -g -std=c99 src/fileHandler.c -o bin/fileHandler.o
-gcc -c -g -std=c99 src/userInterface.c -o bin/userInterface.o
-gcc -c -g -std=c99 src/dateCalendarManager.c -o bin/dateCalendarManager.o
-gcc -c -g -std=c99 src/validateDate.c -o bin/validateDate.o
-gcc -c -g -std=c99 src/dateFunctions.c -o bin/dateFunctions.o
-gcc -o src/main bin/main.o bin/linkedListQueue.o bin/linkedListNetworkMod.o bin/fileHandler.o bin/userInterface.o bin/dateCalendarManager.o bin/validateDate.o bin/dateFunctions.o
+gcc -o projectSchedule bin/main.o bin/linkedListQueue.o bin/linkedListNetworkMod.o bin/fileHandler.o bin/userInterface.o bin/dateCalendarManager.o bin/validateDate.o bin/dateFunctions.o
 make: Leaving directory '/home/lutfee/CPE111 - Project'
  

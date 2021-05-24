@@ -24,9 +24,9 @@
 #include "dateCalendarManager.h"
 #include "validateDate.h"
 
-DATE_T *pHead = NULL;
-DATE_T *pTail = NULL;
-DATE_T *pCurrent = NULL;
+DATE_T *pHead = NULL;       /*head of date list*/
+DATE_T *pTail = NULL;       /*tail of date list*/
+DATE_T *pCurrent = NULL;    /*current date struct*/
 int dateSize = 0;
 int weekendStatus = 0; /* 0 means work on weekend, 1 means no work on weekend */
 
@@ -75,11 +75,11 @@ DATE_T *getDateListHead()
  * */
 int addDateToList(time_t unixTime)
 {
-    struct tm tm = {0};
-    DATE_T *pPrev = NULL;
-    DATE_T *pDateTime = NULL;
-    int i;
-    int status = 0;
+    struct tm tm = {0};         /*time struct from time.h*/
+    DATE_T *pPrev = NULL;       /*previous date struct*/
+    DATE_T *pDateTime = NULL;   /*date struct*/
+    int i;                      /*count number*/
+    int status = 0;             /*status of function*/
 
     pDateTime = calloc(1, sizeof(DATE_T));
     if (pDateTime)
@@ -140,8 +140,8 @@ int addDateToList(time_t unixTime)
  * */
 int removeDateFromList(time_t unixTime)
 {
-    DATE_T *pPrev = NULL;
-    DATE_T *pFound = NULL;
+    DATE_T *pPrev = NULL;   /*previous date struct*/
+    DATE_T *pFound = NULL;  /*date struct that found by search*/
     int status = 0;
 
     if (pHead)
@@ -191,8 +191,8 @@ int removeDateFromList(time_t unixTime)
  * */
 void freeDateList()
 {
-    DATE_T *pCurrent = pHead;
-    DATE_T *pPrev = NULL;
+    DATE_T *pCurrent = pHead;   /*head of date list*/
+    DATE_T *pPrev = NULL;       /*previous date struct*/
     while (pCurrent)
     {
         pPrev = pCurrent;
@@ -213,12 +213,12 @@ void freeDateList()
  * */
 void calculateEndDate(char *startDate, int dayWork, char *endDate, size_t size)
 {
-    int status = 0;
-    int one_day = 86400;
-    char dateCheck[16];
-    struct tm tm = {0};
-    struct tm *ptm = NULL;
-    time_t unixTime;
+    int status = 0;                             /*function status*/
+    int one_day = 86400;                        /*sec in one day*/
+    char dateCheck[16];                         /*name of day*/
+    struct tm tm = {0};                         /*time struct from time.h*/
+    struct tm *ptm = NULL;                      /*time struct from time.h*/
+    time_t unixTime;                            /*time struct from time.h*/
     strptime(startDate, "%d/%m/%Y ", &tm);
     unixTime = mktime(&tm);
     for (int i = 0; i <= dayWork; i++)

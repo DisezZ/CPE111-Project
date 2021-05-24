@@ -51,8 +51,8 @@ int totalVertex = 0;             /* total vertex in the graph including special 
  */
 VERTEX_T *findVertexByKey(char *key, VERTEX_T **pPrev)
 {
-    VERTEX_T *pFound = NULL;
-    VERTEX_T *pCurrent = NULL;
+    VERTEX_T *pFound = NULL;   /*Address of VERTEX_T that found from function*/
+    VERTEX_T *pCurrent = NULL; /*Address of current VERTEX_T*/
 
     pCurrent = vertexListHead;
     while (pCurrent != NULL)
@@ -77,7 +77,7 @@ VERTEX_T *findVertexByKey(char *key, VERTEX_T **pPrev)
  * */
 EDGE_T *addEdgeByStruct(VERTEX_T *pFrom, VERTEX_T *pTo)
 {
-    EDGE_T *pEdge = NULL;
+    EDGE_T *pEdge = NULL; /* Address of edge*/
 
     pEdge = calloc(sizeof(EDGE_T), 1);
     if (pEdge != NULL)
@@ -103,9 +103,9 @@ EDGE_T *addEdgeByStruct(VERTEX_T *pFrom, VERTEX_T *pTo)
  * */
 void deleteEdgeByStruct(VERTEX_T *pFrom, VERTEX_T *pTo)
 {
-    VERTEX_T *pAdjVertex = NULL;
-    EDGE_T *pCurrentEdge = NULL;
-    EDGE_T *pPrevEdge = NULL;
+    VERTEX_T *pAdjVertex = NULL; /*Vertex  adjacent*/
+    EDGE_T *pCurrentEdge = NULL; /*Address of current  adjacent*/
+    EDGE_T *pPrevEdge = NULL;    /*Address of previous  edge*/
 
     pCurrentEdge = pFrom->adjListHead;
     while (pCurrentEdge)
@@ -146,13 +146,13 @@ void deleteEdgeByStruct(VERTEX_T *pFrom, VERTEX_T *pTo)
  * */
 void deleteEdgesOfVertex(VERTEX_T *pTargetVertex)
 {
-    VERTEX_T *pTemptTail = NULL;
-    VERTEX_T *pTemptPrev = NULL;
-    VERTEX_T *pTemptCurrent = NULL;
-    VERTEX_T *pAdjVertex = NULL;
-    VERTEX_T *pCurrentVertex = NULL;
-    EDGE_T *pCurrentEdge = NULL;
-    EDGE_T *pPrevEdge = NULL;
+    VERTEX_T *pTemptTail = NULL;     /*Address of tail vertex struct*/
+    VERTEX_T *pTemptPrev = NULL;     /*Address of previous vertex struct*/
+    VERTEX_T *pTemptCurrent = NULL;  /*Address of current vertex*/
+    VERTEX_T *pAdjVertex = NULL;     /*Address of vertex adjacent*/
+    VERTEX_T *pCurrentVertex = NULL; /*Address of current vertex struct*/
+    EDGE_T *pCurrentEdge = NULL;     /*Address of current edge*/
+    EDGE_T *pPrevEdge = NULL;        /*Address of previous edge*/
 
     pCurrentVertex = vertexListHead;
     while (pCurrentVertex != NULL)
@@ -270,7 +270,7 @@ void colorAllVertex(int color)
  * */
 void resetAllVertex()
 {
-    VERTEX_T *pCurrentVertex = vertexListHead;
+    VERTEX_T *pCurrentVertex = vertexListHead; /*Address of current vertex*/
 
     startVertex->pParentVertex = NULL;
     endVertex->pParentVertex = startVertex;
@@ -294,9 +294,9 @@ void resetAllVertex()
  */
 void traverseBreadthFirst(VERTEX_T *pVertex, void (*function)(VERTEX_T *pCurrenVertex))
 {
-    VERTEX_T *pCurrentVertex = NULL;
-    VERTEX_T *pAdjVertex = NULL;
-    EDGE_T *pCurrentEdge = NULL;
+    VERTEX_T *pCurrentVertex = NULL; /*Address of current vertex*/
+    VERTEX_T *pAdjVertex = NULL;     /*Address of vertex adjacent*/
+    EDGE_T *pCurrentEdge = NULL;     /*Address of current edge*/
 
     queueClear();
     colorAllVertex(WHITE);
@@ -334,8 +334,8 @@ void traverseBreadthFirst(VERTEX_T *pVertex, void (*function)(VERTEX_T *pCurrenV
  */
 void traverseDepthFirst(VERTEX_T *pCurrentVertex, void (*function)(VERTEX_T *))
 {
-    VERTEX_T *pAdjVertex = NULL;
-    EDGE_T *pCurrentEdge = NULL;
+    VERTEX_T *pAdjVertex = NULL; /*Address of vertex adjacent*/
+    EDGE_T *pCurrentEdge = NULL; /*Address of current edge*/
 
     pCurrentVertex->color = GRAY;
     pCurrentEdge = pCurrentVertex->adjListHead;
@@ -363,8 +363,8 @@ void traverseDepthFirst(VERTEX_T *pCurrentVertex, void (*function)(VERTEX_T *))
  * */
 EDGE_T *findEdgeByStruct(VERTEX_T *pFrom, VERTEX_T *pTo, EDGE_T **pPrevEdge)
 {
-    EDGE_T *pCurrentEdge = NULL;
-    EDGE_T *pFound = NULL;
+    EDGE_T *pCurrentEdge = NULL; /*Address of current edge*/
+    EDGE_T *pFound = NULL;       /*Address of edge that found from function*/
 
     pCurrentEdge = pFrom->adjListHead;
     while (pCurrentEdge != NULL)
@@ -391,8 +391,8 @@ EDGE_T *findEdgeByStruct(VERTEX_T *pFrom, VERTEX_T *pTo, EDGE_T **pPrevEdge)
  * */
 void indexAssign(VERTEX_T *pCurrentVertex, VERTEX_T **topSortVertices, int *traverseIndex)
 {
-    VERTEX_T *pAdjVertex = NULL;
-    EDGE_T *pCurrentEdge = NULL;
+    VERTEX_T *pAdjVertex = NULL; /*Address of vertex adjacent*/
+    EDGE_T *pCurrentEdge = NULL; /*Address of current edge*/
 
     pCurrentVertex->color = GRAY;
     pCurrentEdge = pCurrentVertex->adjListHead;
@@ -422,7 +422,7 @@ void indexAssign(VERTEX_T *pCurrentVertex, VERTEX_T **topSortVertices, int *trav
  * */
 int sortTopological(VERTEX_T **topSortVertices, int *traverseIndex)
 {
-    int status = 1;
+    int status = 1; /*Function status*/
 
     if (topSortVertices == NULL)
     {
@@ -489,10 +489,10 @@ int getTotalVertex()
  * */
 void LongestPath()
 {
-    VERTEX_T **topSortVertices = NULL;
-    VERTEX_T *pCurrentVertex = NULL;
-    VERTEX_T *pAdjVertex = NULL;
-    EDGE_T *pCurrentEdge = NULL;
+    VERTEX_T **topSortVertices = NULL; /*Array of address of vertex in topological order*/
+    VERTEX_T *pCurrentVertex = NULL;   /*Address of current vertex*/
+    VERTEX_T *pAdjVertex = NULL;       /*Address of vertex adjacent*/
+    EDGE_T *pCurrentEdge = NULL;       /*Address of current edge*/
     int traverseIndex;
     int weight = 0;
 
@@ -530,9 +530,9 @@ void LongestPath()
  * */
 int initNetwork()
 {
-    EDGE_T *pTemptEdge = NULL;
-    char endName[] = "end";
-    int status = 1;
+    EDGE_T *pTemptEdge = NULL; /*Address of edge*/
+    char endName[] = "end";    /*Nmae of end vertex*/
+    int status = 1;            /*Function status*/
 
     startVertex = calloc(1, sizeof(VERTEX_T));
     endVertex = calloc(1, sizeof(VERTEX_T));
@@ -568,16 +568,16 @@ int initNetwork()
  * */
 int addVertex(char *key, char *description, int weight)
 {
-    int status = 1;
-    int addStatus1;
-    int addStatus2;
-    char *pKey;
-    char *pDescription;
-    VERTEX_T *pFound = NULL;
-    VERTEX_T *pNewVertex = NULL;
-    VERTEX_T *pPrev = NULL;
-    EDGE_T *pEdgeStart = NULL;
-    EDGE_T *pEdgeEnd = NULL;
+    int status = 1;              /*Function status*/
+    int addStatus1;              /*Function status*/
+    int addStatus2;              /*Function status*/
+    char *pKey;                  /*pointer to name of key*/
+    char *pDescription;          /*pointer to description of */
+    VERTEX_T *pFound = NULL;     /*Address of vertex that found from fuction*/
+    VERTEX_T *pNewVertex = NULL; /*Address of new vertex*/
+    VERTEX_T *pPrev = NULL;      /*Address of previous vertex*/
+    EDGE_T *pEdgeStart = NULL;   /*Address of start edge*/
+    EDGE_T *pEdgeEnd = NULL;     /*Address of end edge*/
 
     pFound = findVertexByKey(key, &pPrev);
     if (pFound != NULL)
@@ -640,12 +640,12 @@ int addVertex(char *key, char *description, int weight)
  * */
 int modifyVertexName(char *key, char *newKey)
 {
-    int status = 0;
-    char *stringTempt = NULL;
-    VERTEX_T *pFound1 = NULL;
-    VERTEX_T *pFound2 = NULL;
-    VERTEX_T *pPrev1 = NULL;
-    VERTEX_T *pPrev2 = NULL;
+    int status = 0;           /*Function status*/
+    char *stringTempt = NULL; /*pointer to string*/
+    VERTEX_T *pFound1 = NULL; /*Vertex that found from function*/
+    VERTEX_T *pFound2 = NULL; /*Vertex that found from function*/
+    VERTEX_T *pPrev1 = NULL;  /*Previous vertex that found from function*/
+    VERTEX_T *pPrev2 = NULL;  /*Previous vertex that found from function*/
 
     pFound1 = findVertexByKey(key, &pPrev1);
     pFound2 = findVertexByKey(newKey, &pPrev2);
@@ -684,11 +684,11 @@ int modifyVertexName(char *key, char *newKey)
  * */
 int modifyVertexDescription(char *key, char *newDescription)
 {
-    int status = 0;
-    char *stringTempt = NULL;
-    VERTEX_T *pFound = NULL;
-    VERTEX_T *pPrev = NULL;
-    EDGE_T *pCurrentEdge = NULL;
+    int status = 0;              /*Function status*/
+    char *stringTempt = NULL;    /*pointer to string*/
+    VERTEX_T *pFound = NULL;     /*Vertex that found from function*/
+    VERTEX_T *pPrev = NULL;      /*Previous vertex that found from function*/
+    EDGE_T *pCurrentEdge = NULL; /*Address  of current edge*/
 
     pFound = findVertexByKey(key, &pPrev);
     if (pFound == NULL)
@@ -722,10 +722,10 @@ int modifyVertexDescription(char *key, char *newDescription)
  * */
 int modifyVertexWeight(char *key, int newWeight)
 {
-    int status = 0;
-    VERTEX_T *pFound = NULL;
-    VERTEX_T *pPrev = NULL;
-    EDGE_T *pCurrentEdge = NULL;
+    int status = 0;              /*Function status*/
+    VERTEX_T *pFound = NULL;     /*Vertex that found from function*/
+    VERTEX_T *pPrev = NULL;      /*Previous vertex that found from function*/
+    EDGE_T *pCurrentEdge = NULL; /*Address of current edge*/
 
     pFound = findVertexByKey(key, &pPrev);
     if (pFound == NULL)
@@ -750,12 +750,12 @@ int modifyVertexWeight(char *key, int newWeight)
  * */
 int deleteVertex(char *key)
 {
-    int status = 1;
-    EDGE_T *pCurrentEdge = NULL;
-    EDGE_T *pPrevEdge = NULL;
-    VERTEX_T *pAdjVertex = NULL;
-    VERTEX_T *pFound = NULL;
-    VERTEX_T *pPrev = NULL;
+    int status = 1;              /*Function status*/
+    EDGE_T *pCurrentEdge = NULL; /*Address of current edge*/
+    EDGE_T *pPrevEdge = NULL;    /*Address of previous edge*/
+    VERTEX_T *pAdjVertex = NULL; /*Address of vertex adjacent*/
+    VERTEX_T *pFound = NULL;     /*Vertex that found from fuction*/
+    VERTEX_T *pPrev = NULL;      /*Previous vertex that found from fuction*/
     pFound = findVertexByKey(key, &pPrev);
     if (pFound == NULL)
     {
@@ -781,11 +781,10 @@ int deleteVertex(char *key)
         {
             pPrev->pNext = pFound->pNext;
         }
-        deleteEdgeByStruct(startVertex, startVertex);
+        deleteEdgeByStruct(startVertex, pFound);
         free(pFound->name);
         free(pFound->description);
         free(pFound);
-        printf("%s\n", pFound->name);
         --totalVertex;
         pFound = NULL;
     }
@@ -801,8 +800,8 @@ int deleteVertex(char *key)
  * */
 void *findVertex(char *key)
 {
-    VERTEX_T *pFound = NULL;
-    VERTEX_T *pPrev = NULL;
+    VERTEX_T *pFound = NULL; /*Vertex that found from fuction*/
+    VERTEX_T *pPrev = NULL;  /*Previous vertex that found from fuction*/
 
     pFound = findVertexByKey(key, &pPrev);
     return pFound;
@@ -821,15 +820,15 @@ void *findVertex(char *key)
  * */
 int addEdge(char *fromKey, char *toKey)
 {
-    int status = 1;
-    int reachable;
-    VERTEX_T *pFound1 = NULL;
-    VERTEX_T *pFound2 = NULL;
-    VERTEX_T *pPrev1 = NULL;
-    VERTEX_T *pPrev2 = NULL;
-    EDGE_T *pEdge = NULL;
-    EDGE_T *pEdgeList = NULL;
-    EDGE_T *pPrevEdge = NULL;
+    int status = 1;           /*Function status*/
+    int reachable;            /*Reachable status*/
+    VERTEX_T *pFound1 = NULL; /*Vertex that found from fuction*/
+    VERTEX_T *pFound2 = NULL; /*Vertex that found from fuction*/
+    VERTEX_T *pPrev1 = NULL;  /*Previous vertex that found from fuction*/
+    VERTEX_T *pPrev2 = NULL;  /*Previous vertex that found from fuction*/
+    EDGE_T *pEdge = NULL;     /*Edge that found from function*/
+    EDGE_T *pEdgeList = NULL; /*Address of list edge*/
+    EDGE_T *pPrevEdge = NULL; /*Address of previous edge*/
 
     //printf("before\n");
     pFound1 = findVertexByKey(fromKey, &pPrev1);
@@ -848,7 +847,7 @@ int addEdge(char *fromKey, char *toKey)
         {
             colorAllVertex(WHITE);
             traverseBreadthFirst(pFound2, NULL);
-            if (pFound1->color == BLACK)
+            if (pFound1->color == BLACK) /* check loop */
             {
                 status = -3;
             }
@@ -893,15 +892,15 @@ int addEdge(char *fromKey, char *toKey)
  * */
 int modifyEdge(char *fromKey, char *oldToKey, char *newToKey)
 {
-    int status = -4;
-    VERTEX_T *pFound1 = NULL;
-    VERTEX_T *pFound2 = NULL;
-    VERTEX_T *pFound3 = NULL;
-    VERTEX_T *pPrev1 = NULL;
-    VERTEX_T *pPrev2 = NULL;
-    VERTEX_T *pPrev3 = NULL;
-    VERTEX_T *pAdjVertex = NULL;
-    EDGE_T *pCurrentEdge = NULL;
+    int status = -4;             /*Function status*/
+    VERTEX_T *pFound1 = NULL;    /*Vertex that found from fuction*/
+    VERTEX_T *pFound2 = NULL;    /*Vertex that found from fuction*/
+    VERTEX_T *pFound3 = NULL;    /*Vertex that found from fuction*/
+    VERTEX_T *pPrev1 = NULL;     /*Previous vertex that found from fuction*/
+    VERTEX_T *pPrev2 = NULL;     /*Previous vertex that found from fuction*/
+    VERTEX_T *pPrev3 = NULL;     /*Previous vertex that found from fuction*/
+    VERTEX_T *pAdjVertex = NULL; /*Address of vertex adjacent*/
+    EDGE_T *pCurrentEdge = NULL; /*Adddress of current edge*/
 
     pFound1 = findVertexByKey(fromKey, &pPrev1);
     pFound2 = findVertexByKey(oldToKey, &pPrev2);
@@ -952,14 +951,14 @@ int modifyEdge(char *fromKey, char *oldToKey, char *newToKey)
  * */
 int deleteEdge(char *fromKey, char *toKey)
 {
-    int status = 1;
-    VERTEX_T *pFound1 = NULL;
-    VERTEX_T *pFound2 = NULL;
-    VERTEX_T *pVertexPrev1 = NULL;
-    VERTEX_T *pVertexPrev2 = NULL;
-    EDGE_T *pEdge = NULL;
-    EDGE_T *pPrevEdge = NULL;
-    EDGE_T *pEdgeList = NULL;
+    int status = 1;                /*Function status*/
+    VERTEX_T *pFound1 = NULL;      /*Vertex that found from fuction*/
+    VERTEX_T *pFound2 = NULL;      /*Vertex that found from fuction*/
+    VERTEX_T *pVertexPrev1 = NULL; /*Previous vertex that found from fuction*/
+    VERTEX_T *pVertexPrev2 = NULL; /*Previous vertex that found from fuction*/
+    EDGE_T *pEdge = NULL;          /*Address of edge that found from function*/
+    EDGE_T *pPrevEdge = NULL;      /*Address of previous edge*/
+    EDGE_T *pEdgeList = NULL;      /*Address of edge list*/
 
     pFound1 = findVertexByKey(fromKey, &pVertexPrev1);
     pFound2 = findVertexByKey(toKey, &pVertexPrev2);
@@ -1005,10 +1004,10 @@ int deleteEdge(char *fromKey, char *toKey)
  * */
 void freeNetwork()
 {
-    VERTEX_T *pCurrentVertex = NULL;
-    VERTEX_T *pPrevVertex = NULL;
-    EDGE_T *pCurrentEdge = NULL;
-    EDGE_T *pPrevEdge = NULL;
+    VERTEX_T *pCurrentVertex = NULL;    /*Address of current vertex*/
+    VERTEX_T *pPrevVertex = NULL;       /*Address of previous vertex*/
+    EDGE_T *pCurrentEdge = NULL;        /*Address of current edge*/
+    EDGE_T *pPrevEdge = NULL;           /*Address of previous edge */
 
     pCurrentVertex = vertexListHead;
     while (pCurrentVertex != NULL)

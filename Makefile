@@ -1,11 +1,11 @@
 #	Aplusplus CPE111 Final Project Makefile
 #	From KMUTT	
 #
-#	Contributors:
-#		
-#
-#	missing validation
-#
+#	Members:
+#		Pataraphum	Chumaungphan	63070503437
+#		Lutfee		Deemae			63070503448
+#		Jidapa		Thongnirun		63070503462	
+#		Purachet	Phanpuk			63070503466
 
 CC = gcc
 STD = -std=c99
@@ -24,7 +24,7 @@ OBJECT = $(addsuffix .o,$(PROGRAM))
 SRCPATH = $(addprefix src/,$(SOURCE))
 OBJPATH = $(addprefix bin/,$(OBJECT))
 
-EXECUTABLES = src/main
+EXECUTABLES = projectSchedule
 
 .PHONY: clean all run
 
