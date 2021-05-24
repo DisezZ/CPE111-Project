@@ -3,6 +3,10 @@ CPE111 - Project Scheduling System Project
 
 This program is Scheduling System Program.
 
+This program will manage project schedule by manage the task in project and
+
+can find day work of the project by caculate from day work of every task.
+
 This program is Capability of:
 
     - Create New Project
@@ -46,7 +50,7 @@ This program is Capability of:
             - Display Every Day off
 
         - Change Project Name
-        
+
         - Change Project Description
 
 -> = have sub options

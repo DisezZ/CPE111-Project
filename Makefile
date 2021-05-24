@@ -26,8 +26,6 @@ OBJPATH = $(addprefix bin/,$(OBJECT))
 
 EXECUTABLES = projectSchedule
 
-.PHONY: clean all run
-
 run: $(EXECUTABLES)
 	./$(EXECUTABLES)
 
