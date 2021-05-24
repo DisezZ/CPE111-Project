@@ -2,28 +2,51 @@
 CPE111 - Project Scheduling System Project
 
 This program is Scheduling System Program.
+
 This program is Capability of:
+
     - Create New Project
+
     - Delete Project
+
     -> Open Project
+
         - Add Task
+
         -> Modify Task
+
             -> Modify Task Information
+
                 - Change Task Name
+
                 - Change Task Description
+
                 - Change Task Weight
+
             - Add Dependent
+
             - Change Dependent
+
             - Delete Dependent
+
         - Display Task Information
+
         - Display All Task
+
         - Calculate Project Schedule
+
         -> Modify Working Day
+
             - Invert Weekend Status
+
             - Add Day off
+
             - Remove Day off
+
             - Display Every Day off
+
         - Change Project Name
+        
         - Change Project Description
 
 -> = have sub options
