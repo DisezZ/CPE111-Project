@@ -7,12 +7,16 @@
 #include "dateFunctions.h"
 
 /*
- to remove if input data has terminator
+--> removeTerminator
+This function is for removing the terminator '\n' or '\r'
+if input data has terminator in the last element.
+Parameter   :
+    inputString ; the input string to remove the terminator in the last element
 */
 void removeTerminator(char inputString[])
 {
     int i = strlen(inputString) - 1;
-    while ((inputString[i] == '\n') || (inputString[i] == '\r')) /*remove terminator*/
+    while ((inputString[i] == '\n') || (inputString[i] == '\r')) /*remove terminator 'n' or 'r'*/
     {
         inputString[i] = 0;
         i--;
@@ -20,8 +24,14 @@ void removeTerminator(char inputString[])
 }
 
 /*
- format is valid      return 1
- format is not valid  return 0
+--> checkDateFormat
+This function is for checking the format of date that it must be in dd/mm/yyyy form.
+
+Parameter   :
+    inputDate ; The string input of date to check date format
+Return  :
+    if date form is correct     ;  valid   return 1
+    if date form is incorrecnt  ;  valid   return 0
 */
 int checkDateFormat(char inputDate[])
 {
@@ -76,9 +86,17 @@ int checkDateFormat(char inputDate[])
     return valid;
 }
 
-/* check date is in the past 
-    today or future      return 1
-    in the past          return 0
+/* 
+--> checkDatePast
+This function calls dateToday and dateCompare function to check if the input date is in the past or not.
+
+Parameter   :
+    day     ;   the day digit from user input
+    month   ;   the month digit from user input
+    year    ;   the year digit from user input
+Return  :
+    if date is today or future (difference == 1 is furture , 0 is today)    ; valid  return 1
+    if date is in the past (diffence == -1 is the past)                     ; valid  return 0
 */
 int checkDatePast(int day, int month, int year)
 {
@@ -86,7 +104,7 @@ int checkDatePast(int day, int month, int year)
     int pDay = 0;
     int pMonth = 0;
     int pYear = 0;
-    int difference = 0;
+    int difference = 0; /*return value of dateCompare function*/
 
     dateToday(&pDay, &pMonth, &pYear);                               /*receive date today data*/
     difference = dateCompare(day, month, year, pDay, pMonth, pYear); /*Compare date*/
@@ -99,8 +117,17 @@ int checkDatePast(int day, int month, int year)
 }
 
 /*
- valid      return 1
- not valid  return 0
+--> validateDate
+This function call checkDateFormat and checkDatePast function to check
+that the input date form is in dd/mm/yyyy and input date is not the date
+that has passed, Then it check that number of day of each month in each
+year (check leap year) is correct.
+
+Paramter    :
+    date ; The string input of date to validate
+Return  :
+    if everything is correct     ; valid return 1
+    if incorrect                 ; valid return 0
 */
 int validateDate(char date[])
 {
@@ -108,8 +135,8 @@ int validateDate(char date[])
     int checkMonth = 0;
     int checkDay = 0;
     int checkYear = 0;
-    int statusDateFormat = -1;
-    int statusDatePast = -1;
+    int statusDateFormat = -1; /*return value after call checkDateFormat function*/
+    int statusDatePast = -1; /*return value after call checkDatePast function*/
     int valid = 0;
 
     statusDateFormat = checkDateFormat(date);
@@ -132,18 +159,18 @@ int validateDate(char date[])
             //check year
             if ((checkYear >= 1900) && (checkYear <= 9999))
             {
-                valid = 1; //check month
-                if (checkMonth >= 1 && checkMonth <= 12)
+                valid = 1;
+                if (checkMonth >= 1 && checkMonth <= 12) //check month that is digit between 1 to 12
                 {
-                    valid = 1; //check days
+                    valid = 1; 
                     if ((checkDay >= 1 && checkDay <= 31) && (checkMonth == 1 || checkMonth == 3 || checkMonth == 5 || checkMonth == 7 || checkMonth == 8 || checkMonth == 10 || checkMonth == 12))
-                        valid = 1;
+                        valid = 1; //Verify the days of the 30-day month.
                     else if ((checkDay >= 1 && checkDay <= 30) && (checkMonth == 4 || checkMonth == 6 || checkMonth == 9 || checkMonth == 11))
-                        valid = 1;
+                        valid = 1; //Verify the days of the 31-day month.
                     else if ((checkDay >= 1 && checkDay <= 28) && (checkMonth == 2))
-                        valid = 1;
+                        valid = 1; //Verify the days of the 28-day month.
                     else if (checkDay == 29 && checkMonth == 2 && (checkYear % 400 == 0 || (checkYear % 4 == 0 && checkYear % 100 != 0)))
-                        valid = 1;
+                        valid = 1; //Verify the days of the 29-day month.
                     else
 					{
                         displayInvalidMessage("Day is invalid");

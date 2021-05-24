@@ -30,26 +30,49 @@ DATE_T *pCurrent = NULL;
 int dateSize = 0;
 int weekendStatus = 0; /* 0 means work on weekend, 1 means no work on weekend */
 
+/* Get weekend status 
+ * Return:
+ *      0 - if working day include weekend
+ *      1 - if working day exclude weekend
+ * */
 int getWeekendStatus()
 {
     return weekendStatus;
 }
 
+/* Set weekend status to opposite of current weekend status value
+ * */
 void setWeekendStatus()
 {
     weekendStatus = !weekendStatus;
 }
 
+/* Get total day off of project
+ * Return:
+ *      total day off in list of project
+ * */
 int getTotalDayOff()
 {
     return dateSize;
 }
 
+/* Get pointer to head of 
+ * Return:
+ *      0 - if working day include weekend
+ *      1 - if working day exclude weekend
+ * */
 DATE_T *getDateListHead()
 {
     return pHead;
 }
 
+/* Add day off to list by unix timestamp
+ * Parameter:
+ *      unixTime    - day off in form of unix timestamp at 00:00:00 of that day
+ * Return:
+ *      0 - memory allocation failed
+ *      1 - succesfully added day off to list
+ * */
 int addDateToList(time_t unixTime)
 {
     struct tm tm = {0};
@@ -108,6 +131,13 @@ int addDateToList(time_t unixTime)
     return status;
 }
 
+/* Remove day off from list by unix timestamp
+ * Parameter:
+ *      unixTime    - day off in form of unix timestamp at 00:00:00 of that day
+ * Return:
+ *      0 - not found day off with given unix timestamp
+ *      1 - succesfully remove day off to list
+ * */
 int removeDateFromList(time_t unixTime)
 {
     DATE_T *pPrev = NULL;
@@ -157,6 +187,30 @@ int removeDateFromList(time_t unixTime)
     return status;
 }
 
+/* Free all element of day off list and set weekend status to 0
+ * */
+void freeDateList()
+{
+    DATE_T *pCurrent = pHead;
+    DATE_T *pPrev = NULL;
+    while (pCurrent)
+    {
+        pPrev = pCurrent;
+        pCurrent = pCurrent->pNext;
+        free(pPrev);
+    }
+    weekendStatus = 0;
+    pHead = NULL;
+    pTail = NULL;
+}
+
+/* Calculate end date from given starting date by considering day off and weekend
+ * Parameter:
+ *      startDate   - string of starting date
+ *      dayWork     - how many working days
+ *      endDate     - string to recieve end date from calculating
+ *      size        - size of endDate string
+ * */
 void calculateEndDate(char *startDate, int dayWork, char *endDate, size_t size)
 {
     int status = 0;

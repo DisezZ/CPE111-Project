@@ -1,12 +1,15 @@
 make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # GNU Make 4.2.1
+ 
 # Built for x86_64-pc-linux-gnu
+ 
 # Copyright (C) 1988-2016 Free Software Foundation, Inc.
+ 
 # License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sun May 23 18:10:34 2021
+# Make data base, printed on Mon May 24 18:36:42 2021
 
 # Variables
 
@@ -121,7 +124,7 @@ XDG_SESSION_DESKTOP = ubuntu
 # environment
 SSH_AUTH_SOCK = /run/user/1000/keyring/ssh
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 175801
+GIO_LAUNCHED_DESKTOP_FILE_PID = 239543
 # automatic
 %F = $(notdir $%)
 # environment
@@ -189,7 +192,7 @@ GNOME_SHELL_SESSION_MODE = ubuntu
 # makefile (from 'Makefile', line 12)
 ODIR = bin
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-5fcb88c6-cbdd-4bec-845f-fab855180dde.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-ded05691-3705-46fe-b4cd-11712c7b9925.sock
 # makefile (from 'Makefile', line 22)
 SOURCE = $(addsuffix .c,$(PROGRAM))
 # default
@@ -273,14 +276,14 @@ GJS_DEBUG_OUTPUT = stderr
 # environment
 LANG = C
 # environment
-VSCODE_PID = 175843
+VSCODE_PID = 239601
 # variable set hash-table stats:
 # Load=132/1024=13%, Rehash=0, Collisions=24/186=13%
 
- 
 # Pattern-specific Variable Values
 
 # No pattern-specific variable values.
+ 
 
 # Directories
 
@@ -297,7 +300,7 @@ VSCODE_PID = 175843
 # Not a target:
 src/linkedListNetworkMod.c:
 #  Implicit rule search has been done.
-#  Last modified 2021-05-22 12:17:30.645837701
+#  Last modified 2021-05-23 20:29:12.053481778
 #  File has been updated.
 #  Successfully updated.
 
@@ -332,7 +335,7 @@ all: src/main
 
 src/main: bin/main.o bin/linkedListQueue.o bin/linkedListNetworkMod.o bin/fileHandler.o bin/userInterface.o bin/dateCalendarManager.o bin/validateDate.o bin/dateFunctions.o
 #  Implicit rule search has not been done.
-#  Last modified 2021-05-22 12:18:07.573677096
+#  Last modified 2021-05-24 00:11:45.103425001
 #  File has been updated.
 #  Needs to be updated (-q is set).
 # variable set hash-table stats:
@@ -355,7 +358,7 @@ Makefile:
 
 bin/fileHandler.o: src/fileHandler.c
 #  Implicit rule search has not been done.
-#  Last modified 2021-05-22 12:18:07.329678181
+#  Last modified 2021-05-24 00:10:13.668159411
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 43):
@@ -363,7 +366,7 @@ bin/fileHandler.o: src/fileHandler.c
 
 bin/linkedListNetworkMod.o: src/linkedListNetworkMod.c
 #  Implicit rule search has not been done.
-#  Last modified 2021-05-22 12:18:07.225678643
+#  Last modified 2021-05-24 00:10:13.576160152
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 40):
@@ -371,43 +374,25 @@ bin/linkedListNetworkMod.o: src/linkedListNetworkMod.c
 
 bin/userInterface.o: src/userInterface.c
 #  Implicit rule search has not been done.
-#  Implicit/static pattern stem: ''
-#  Last modified 2021-05-22 12:18:07.401677861
+#  Last modified 2021-05-24 00:10:13.700159153
 #  File has been updated.
-#  Needs to be updated (-q is set).
-# automatic
-# @ := bin/userInterface.o
-# automatic
-# % := 
-# automatic
-# * := 
-# automatic
-# + := src/userInterface.c
-# automatic
-# | := 
-# automatic
-# < := src/userInterface.c
-# automatic
-# ^ := src/userInterface.c
-# automatic
-# ? := src/userInterface.c
-# variable set hash-table stats:
-# Load=8/32=25%, Rehash=0, Collisions=1/15=7%
+#  Successfully updated.
 #  recipe to execute (from 'Makefile', line 46):
 	$(CC) -c -g $(STD) $(SDIR)/userInterface.c -o $(ODIR)/userInterface.o
 
 # Not a target:
 src/main.c:
 #  Implicit rule search has been done.
-#  Last modified 2021-05-22 09:42:44.865047986
+#  Last modified 2021-05-24 00:11:23.6875965
 #  File has been updated.
 #  Successfully updated.
 
 # Not a target:
 src/dateCalendarManager.c:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+#  Implicit rule search has been done.
+#  Last modified 2021-05-24 00:22:05.222548082
+#  File has been updated.
+#  Successfully updated.
 
 # Not a target:
 src/linkedListQueue.c:
@@ -460,7 +445,7 @@ src/validateDate.c:
 
 bin/main.o: src/main.c
 #  Implicit rule search has not been done.
-#  Last modified 2021-05-22 12:18:07.089679248
+#  Last modified 2021-05-24 00:11:45.075425225
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 58):
@@ -468,14 +453,34 @@ bin/main.o: src/main.c
 
 bin/dateCalendarManager.o: src/dateCalendarManager.c
 #  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+#  Implicit/static pattern stem: ''
+#  Last modified 2021-05-24 00:10:13.732158895
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# automatic
+# @ := bin/dateCalendarManager.o
+# automatic
+# % := 
+# automatic
+# * := 
+# automatic
+# + := src/dateCalendarManager.c
+# automatic
+# | := 
+# automatic
+# < := src/dateCalendarManager.c
+# automatic
+# ^ := src/dateCalendarManager.c
+# automatic
+# ? := src/dateCalendarManager.c
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=1/15=7%
 #  recipe to execute (from 'Makefile', line 49):
 	$(CC) -c -g $(STD) $(SDIR)/dateCalendarManager.c -o $(ODIR)/dateCalendarManager.o
 
 bin/linkedListQueue.o: src/linkedListQueue.c
 #  Implicit rule search has not been done.
-#  Last modified 2021-05-22 12:18:07.12967907
+#  Last modified 2021-05-24 00:10:13.512160669
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 37):
@@ -509,6 +514,6 @@ src/fileHandler.c:
 # strcache performance: lookups = 69 / hit rate = 47%
 # hash-table stats:
 # Load=36/8192=0%, Rehash=0, Collisions=1/69=1%
-# Finished Make data base on Sun May 23 18:10:34 2021
+# Finished Make data base on Mon May 24 18:36:42 2021
 
  

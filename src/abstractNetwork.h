@@ -131,17 +131,6 @@ int deleteVertex(char *key);
  * */
 void *findVertex(char *key);
 
-/*  This function will find the vertex that have substring or whole of a given key
- *  Parameter:
- *      key     - task name as key of a vertex to search
- *      *total  - interger to count total number of vertex that contain
- *                  substring with given key to search
- *  Return:
- *      NULL    - if there is no vertex that containg key as substring
- *      char**  - if there exist a vertex with given key as substring
- * */
-char **searchVertex(char *key, int *status);
-
 /*  This function will add a edge into network from given key
  *  Parameter:
  *      fromKey     - key of vertex that will be outdegree of added edge

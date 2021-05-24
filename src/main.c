@@ -836,6 +836,8 @@ void taskOptionFlowManager(int *fileOpenStatus)
         {
             *fileOpenStatus = 0;
             freeNetwork();
+            freeDateList();
+            memset(projectDescription, 0, sizeof(projectDescription));
             break;
         }
         else if (strcmp(choice, "11") == 0) // exit
@@ -863,11 +865,7 @@ void addDayOff()
     {
         displayInvalidMessage("Date can't be empty");
     }
-    /*else if (1) //call validate and unsuccess
-    {
-        displayInvalidMessage("Date uncorrent");
-    }*/
-    else
+    else if (validateDate(dateString))
     {
         strptime(dateString, "%d/%m/%Y", &tm);
         unixTime = mktime(&tm);
@@ -898,11 +896,7 @@ void removeDayOff()
     {
         displayInvalidMessage("Date can't be empty");
     }
-    /*else if (1) //validate unsuccess
-    {
-        displayInvalidMessage("Date uncorrent");
-    }*/
-    else
+    else if (validateDate(dateString))
     {
         strptime(dateString, "%d/%m/%Y", &tm);
         unixTime = mktime(&tm);

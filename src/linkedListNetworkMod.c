@@ -353,24 +353,6 @@ void traverseDepthFirst(VERTEX_T *pCurrentVertex, void (*function)(VERTEX_T *))
     (*function)(pCurrentVertex);
 }
 
-/**  Function to print the information about a vertex
- * @param pVertex Vertex we want to print
- */
-void printVertexData(char *key)
-{
-    VERTEX_T *pFound = NULL;
-    VERTEX_T *pPrev = NULL;
-    pFound = findVertexByKey(key, &pPrev);
-    if (pFound != NULL)
-    {
-        printf("\tKey = %s\n\tDescription = %s\n\tdayWork = %d\n", pFound->name, pFound->description, pFound->dayWork);
-    }
-    else
-    {
-        printf("\tSorry - not found node according to provided key\n");
-    }
-}
-
 /* Find edge by two given vertex struct
  * Parameter:
  *      pFrom       - vertex struct that has outdegree of edge
@@ -824,40 +806,6 @@ void *findVertex(char *key)
 
     pFound = findVertexByKey(key, &pPrev);
     return pFound;
-}
-
-/*  This function will find the vertex that have substring or whole of a given key
- *  Parameter:
- *      key     - task name as key of a vertex to search
- *      *total  - interger to count total number of vertex that contain
- *                  substring with given key to search
- *  Return:
- *      NULL    - if there is no vertex that containg key as substring
- *      char**  - if there exist a vertex with given key as substring
- * */
-char **searchVertex(char *key, int *status)
-{
-    VERTEX_T *pCurrentVertex = NULL;
-    char **resultList = calloc(totalVertex, sizeof(char *));
-    char *result = NULL;
-    int i = 0;
-
-    pCurrentVertex = vertexListHead;
-    while (pCurrentVertex != NULL)
-    {
-        result = strstr(pCurrentVertex->name, key);
-        if (result != NULL)
-        {
-            //resultList[i] = strdup(pCurrentVertex->name);
-            //printf("%s\n", searchResultList[i]);
-            resultList[i] = calloc(strlen(pCurrentVertex->name), sizeof(char));
-            strcpy(resultList[i], pCurrentVertex->name);
-            ++i;
-        }
-        pCurrentVertex = pCurrentVertex->pNext;
-    }
-    *status = i;
-    return resultList;
 }
 
 /*  This function will add a edge into network from given key
