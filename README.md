@@ -1,7 +1,7 @@
 # CPE111-Project
 CPE111 - Project Scheduling System Project
 
-This program is Scheduling System Project.
+This program is Scheduling System Program.
 This program is Capability of:
     - Create New Project
     - Delete Project
@@ -27,7 +27,7 @@ This program is Capability of:
         - Change Project Description
 
 -> = have sub options
-\- = sub option
+-- = sub option
 
  Important !!! Read first.
 =======================================================================
