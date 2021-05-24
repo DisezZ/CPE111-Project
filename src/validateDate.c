@@ -100,10 +100,10 @@ Return  :
 */
 int checkDatePast(int day, int month, int year)
 {
-    int valid = 0;
-    int pDay = 0;
-    int pMonth = 0;
-    int pYear = 0;
+    int valid = 0;      /*Function status*/
+    int pDay = 0;       /*day for check difference*/
+    int pMonth = 0;     /*month for check difference*/
+    int pYear = 0;      /*year for check difference*/
     int difference = 0; /*return value of dateCompare function*/
 
     dateToday(&pDay, &pMonth, &pYear);                               /*receive date today data*/
@@ -132,12 +132,12 @@ Return  :
 int validateDate(char date[])
 {
 
-    int checkMonth = 0;
-    int checkDay = 0;
-    int checkYear = 0;
+    int checkMonth = 0;        /*Check validation of month*/
+    int checkDay = 0;          /*Check validation of day*/
+    int checkYear = 0;         /*Check validation of year*/
     int statusDateFormat = -1; /*return value after call checkDateFormat function*/
-    int statusDatePast = -1; /*return value after call checkDatePast function*/
-    int valid = 0;
+    int statusDatePast = -1;   /*return value after call checkDatePast function*/
+    int valid = 0;             /*Function status*/
 
     statusDateFormat = checkDateFormat(date);
     if (statusDateFormat == 0)
@@ -162,7 +162,7 @@ int validateDate(char date[])
                 valid = 1;
                 if (checkMonth >= 1 && checkMonth <= 12) //check month that is digit between 1 to 12
                 {
-                    valid = 1; 
+                    valid = 1;
                     if ((checkDay >= 1 && checkDay <= 31) && (checkMonth == 1 || checkMonth == 3 || checkMonth == 5 || checkMonth == 7 || checkMonth == 8 || checkMonth == 10 || checkMonth == 12))
                         valid = 1; //Verify the days of the 30-day month.
                     else if ((checkDay >= 1 && checkDay <= 30) && (checkMonth == 4 || checkMonth == 6 || checkMonth == 9 || checkMonth == 11))
@@ -172,11 +172,11 @@ int validateDate(char date[])
                     else if (checkDay == 29 && checkMonth == 2 && (checkYear % 400 == 0 || (checkYear % 4 == 0 && checkYear % 100 != 0)))
                         valid = 1; //Verify the days of the 29-day month.
                     else
-					{
+                    {
                         displayInvalidMessage("Day is invalid");
-                    	valid = 0;
-					}
-				}
+                        valid = 0;
+                    }
+                }
                 else
                 {
                     displayInvalidMessage("Month is invalid");

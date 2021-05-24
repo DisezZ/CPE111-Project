@@ -96,8 +96,8 @@ void displayAllTaskAvailable(char **searchTaskList, int totalTask)
  * */
 int displayAllDependentOn(EDGE_T *pEdge)
 {
-    VERTEX_T *pAdjVertex = NULL;
-    EDGE_T *pTempt = pEdge;
+    VERTEX_T *pAdjVertex = NULL; /*Address of vertex adjacent*/
+    EDGE_T *pTempt = pEdge;      /*pointer of edge*/
     int i = 0;
     if (pTempt)
     {

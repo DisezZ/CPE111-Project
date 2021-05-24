@@ -26,10 +26,10 @@ OBJPATH = $(addprefix bin/,$(OBJECT))
 
 EXECUTABLES = projectSchedule
 
+all: $(EXECUTABLES)
+
 run: $(EXECUTABLES)
 	./$(EXECUTABLES)
-
-all: $(EXECUTABLES)
 
 $(ODIR)/linkedListQueue.o :	$(SDIR)/linkedListQueue.c
 	$(CC) -c -g $(STD) $(SDIR)/linkedListQueue.c -o $(ODIR)/linkedListQueue.o
