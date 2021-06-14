@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Fri May 28 15:23:12 2021
+# Make data base, printed on Mon Jun 14 07:15:24 2021
 
 # Variables
 
@@ -45,11 +45,11 @@ CURDIR := /home/lutfee/CPE111 - Project
 # makefile
 SHELL = /bin/sh
 # environment
-SNAP_DATA = /var/snap/code/65
+SNAP_DATA = /var/snap/code/66
 # environment
 VSCODE_NLS_CONFIG = {"locale":"en-us","availableLanguages":{},"_languagePackSupport":true}
 # environment
-JOURNAL_STREAM = 8:80362
+JOURNAL_STREAM = 8:86958
 # environment
 XDG_CONFIG_DIRS = /etc/xdg/xdg-ubuntu:/etc/xdg
 # environment
@@ -71,15 +71,15 @@ DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-_ = /snap/code/65/usr/share/code/code
+_ = /snap/code/66/usr/share/code/code
 # environment
-MANAGERPID = 1574
+MANAGERPID = 2550
 # environment
 LESSOPEN = | /usr/bin/lesspipe %s
 # environment
 VSCODE_CWD = /home/lutfee
 # environment
-GSETTINGS_SCHEMA_DIR = /snap/code/65/usr/share/glib-2.0/schemas
+GSETTINGS_SCHEMA_DIR = /snap/code/66/usr/share/glib-2.0/schemas
 # default
 MAKE_HOST := x86_64-pc-linux-gnu
 # environment
@@ -89,7 +89,7 @@ GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
 # makefile (from 'Makefile', line 24)
 SRCPATH = $(addprefix src/,$(SOURCE))
 # environment
-SESSION_MANAGER = local/ubuntu:@/tmp/.ICE-unix/1810,unix/ubuntu:/tmp/.ICE-unix/1810
+SESSION_MANAGER = local/ubuntu:@/tmp/.ICE-unix/2791,unix/ubuntu:/tmp/.ICE-unix/2791
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # environment
@@ -97,9 +97,9 @@ GDK_PIXBUF_MODULE_FILE = /home/lutfee/snap/code/common/.cache/gdk-pixbuf-loaders
 # makefile (from 'Makefile', line 23)
 OBJECT = $(addsuffix .o,$(PROGRAM))
 # environment
-SNAP = /snap/code/65
+SNAP = /snap/code/66
 # environment
-SNAP_VERSION = 054a9295
+SNAP_VERSION = b4c1bd0a
 # environment
 XDG_MENU_PREFIX = gnome-
 # environment
@@ -109,9 +109,9 @@ DISABLE_WAYLAND = 1
 # environment
 VSCODE_CRASH_REPORTER_START_OPTIONS = {"companyName":"Microsoft","productName":"VSCode","submitURL":"appcenter://code?aid=fba07a4d-84bd-4fc8-a125-9640fc8ce171&uid=68f9bf43-54a1-417b-b9d2-f703f7802af7&iid=68f9bf43-54a1-417b-b9d2-f703f7802af7&sid=68f9bf43-54a1-417b-b9d2-f703f7802af7","uploadToServer":true}
 # environment
-INVOCATION_ID = 7b1598f9dd3649a09f54951b123d885f
+INVOCATION_ID = b075d060514a49c9b485bb93f6f7cbdf
 # environment
-GDK_PIXBUF_MODULEDIR = /snap/code/65/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders
+GDK_PIXBUF_MODULEDIR = /snap/code/66/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -121,7 +121,7 @@ XDG_SESSION_DESKTOP = ubuntu
 # environment
 SSH_AUTH_SOCK = /run/user/1000/keyring/ssh
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 4183
+GIO_LAUNCHED_DESKTOP_FILE_PID = 31945
 # automatic
 %F = $(notdir $%)
 # environment
@@ -135,7 +135,7 @@ PWD = /home/lutfee/CPE111 - Project
 # default
 .LOADED := 
 # environment
-SSH_AGENT_PID = 1772
+SSH_AGENT_PID = 2750
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = ubuntu:GNOME
 # environment
@@ -177,7 +177,7 @@ MAKECMDGOALS := all
 # environment
 QT_IM_MODULE = ibus
 # environment
-SNAP_USER_DATA = /home/lutfee/snap/code/65
+SNAP_USER_DATA = /home/lutfee/snap/code/66
 # environment
 SHLVL = 0
 # makefile (from 'Makefile', line 10)
@@ -189,7 +189,7 @@ GNOME_SHELL_SESSION_MODE = ubuntu
 # makefile (from 'Makefile', line 12)
 ODIR = bin
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-2a9d5e3a-0572-4f53-a795-d94fe49a1e24.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-c9e4c0fe-c57e-40bc-86ff-d6b7ea2ae6fe.sock
 # makefile (from 'Makefile', line 22)
 SOURCE = $(addsuffix .c,$(PROGRAM))
 # default
@@ -197,7 +197,7 @@ MAKE_VERSION := 4.2.1
 # environment
 USER = lutfee
 # environment
-SNAP_REVISION = 65
+SNAP_REVISION = 66
 # makefile
 .DEFAULT_GOAL := all
 # environment
@@ -211,7 +211,7 @@ SDIR = src
 # default
 MAKE_COMMAND := make
 # environment
-VSCODE_NODE_CACHED_DATA_DIR = /home/lutfee/.config/Code/CachedData/054a9295330880ed74ceaedda236253b4f39a335
+VSCODE_NODE_CACHED_DATA_DIR = /home/lutfee/.config/Code/CachedData/b4c1bd0a9b03c749ea011b06c6d2676c8091a70c
 # makefile (from 'Makefile', line 11)
 STD = -std=c99
 # default
@@ -219,7 +219,7 @@ STD = -std=c99
 # automatic
 *F = $(notdir $*)
 # environment
-VSCODE_IPC_HOOK = /run/user/1000/vscode-a7cc1097-1.56.2-main.sock
+VSCODE_IPC_HOOK = /run/user/1000/vscode-a7cc1097-1.57.0-main.sock
 # makefile (from 'Makefile', line 14)
 PROGRAM = main linkedListQueue linkedListNetworkMod fileHandler userInterface dateCalendarManager validateDate dateFunctions
 # environment
@@ -273,7 +273,7 @@ GJS_DEBUG_OUTPUT = stderr
 # environment
 LANG = C
 # environment
-VSCODE_PID = 4224
+VSCODE_PID = 31990
 # variable set hash-table stats:
 # Load=132/1024=13%, Rehash=0, Collisions=24/186=13%
 
@@ -493,6 +493,6 @@ src/fileHandler.c:
 # strcache performance: lookups = 64 / hit rate = 45%
 # hash-table stats:
 # Load=35/8192=0%, Rehash=0, Collisions=1/64=2%
-# Finished Make data base on Fri May 28 15:23:12 2021
+# Finished Make data base on Mon Jun 14 07:15:24 2021
 
  
