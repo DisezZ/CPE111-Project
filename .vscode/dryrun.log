@@ -1,4 +1,4 @@
-make all --dry-run --keep-going --print-directory
+make all --dry-run --always-make --keep-going --print-directory
 make: Entering directory '/home/lutfee/CPE111 - Project'
 gcc -c -g -std=c99 src/main.c -o bin/main.o
 gcc -c -g -std=c99 src/linkedListQueue.c -o bin/linkedListQueue.o
